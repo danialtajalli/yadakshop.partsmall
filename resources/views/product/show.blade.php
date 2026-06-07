@@ -22,7 +22,7 @@
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($repairCards as $card)
                     <article class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
-                        <h3 class="mb-2 font-semibold text-stone-800">{{ $card['type'] }}</h3>
+                        <h3 class="mb-2 font-semibold text-stone-800">اجرت {{ $card['type'] }}</h3>
                         @if ($card['wage_name'] && $card['wage_name'] !== $card['type'])
                             <p class="mb-3 text-sm text-stone-500">{{ $card['wage_name'] }}</p>
                         @endif
