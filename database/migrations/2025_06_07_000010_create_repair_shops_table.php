@@ -13,12 +13,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('responsible_person_name')->nullable();
-            $table->string('work_description')->nullable();
+            $table->text('work_description')->nullable();
             $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

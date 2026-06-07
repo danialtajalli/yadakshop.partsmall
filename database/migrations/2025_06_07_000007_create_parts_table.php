@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('parts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('category_description')->nullable();
+            $table->text('description')->nullable();
+            $table->text('category_description')->nullable();
             $table->string('slug');
             $table->foreignId('parts_category_id')->constrained('parts_categories')->cascadeOnDelete();
             $table->timestamps();

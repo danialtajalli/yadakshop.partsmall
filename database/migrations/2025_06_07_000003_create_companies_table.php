@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('slug');
             $table->string('country')->nullable();
             $table->integer('wage_strike')->default(1);

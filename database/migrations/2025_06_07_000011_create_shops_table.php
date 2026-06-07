@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('slug');
             $table->boolean('confirmed')->default(false);
             $table->boolean('show_under_product')->default(false);
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('person_responsible_name')->nullable();
             $table->string('person_responsible_email')->nullable();
             $table->string('website_show')->nullable();
