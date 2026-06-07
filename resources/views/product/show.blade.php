@@ -3,86 +3,112 @@
 @section('title', $title)
 
 @section('content')
-    {{-- Navigation --}}
-    <nav class="mb-8 flex flex-wrap items-center gap-2 text-sm text-stone-500" aria-label="مسیر">
-        <a href="{{ url('/') }}" class="font-medium text-amber-700 transition hover:text-amber-800">خانه</a>
-        <span class="text-stone-300">/</span>
-        <span class="font-medium text-stone-700">{{ $company->name }}</span>
-        <span class="text-stone-300">/</span>
-        <span>{{ $car->name }}</span>
-        <span class="text-stone-300">/</span>
-        <span class="text-stone-800">{{ $model->name }}</span>
-    </nav>
+    {{-- Hero + breadcrumb --}}
+    <div class="mb-10 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        <div class="border-b border-line bg-gradient-to-l from-brand-soft via-white to-white px-5 py-6 sm:px-8 sm:py-8">
+            <x-site.breadcrumb :items="[
+                ['label' => 'خانه', 'url' => url('/')],
+                ['label' => $company->name, 'emphasized' => true],
+                ['label' => $car->name],
+                ['label' => $model->name, 'active' => true],
+            ]" />
 
-    {{-- Repair descriptions --}}
-    <section class="mb-10">
-        <h2 class="mb-4 text-xl font-bold text-stone-800">شرح تعمیرات و هزینه</h2>
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    @if ($part->partsCategory)
+                        <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                            {{ $part->partsCategory->name }}
+                        </span>
+                    @endif
+                    <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name }}</h1>
+                    <p class="mt-1.5 text-sm text-ink-muted">
+                        {{ $company->name }} · {{ $car->name }} · {{ $model->name }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Repair cards --}}
+    <section class="mb-12">
+        <x-ui.section-heading
+            label="تعمیرات"
+            title="شرح تعمیرات و هزینه"
+            description="برآورد هزینه اجرت بر اساس نوع تعمیر"
+        />
 
         @if (count($repairCards) > 0)
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($repairCards as $card)
-                    <article class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
-                        <h3 class="mb-2 font-semibold text-stone-800">اجرت {{ $card['type'] }}</h3>
+                    <article class="ps-card-interactive group relative overflow-hidden p-6">
+                        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-brand to-brand-dark opacity-80 transition group-hover:opacity-100"></div>
+                        <div class="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-soft text-brand">
+                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.88m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336 4.5 4.5 0 0 0-6.336-4.486c-.072 1.172-.088 2.402.14 3.743Z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-ink">اجرت {{ $card['type'] }}</h3>
                         @if ($card['wage_name'] && $card['wage_name'] !== $card['type'])
-                            <p class="mb-3 text-sm text-stone-500">{{ $card['wage_name'] }}</p>
+                            <p class="mt-1 text-sm text-ink-muted">{{ $card['wage_name'] }}</p>
                         @endif
-                        <p class="text-sm text-stone-600">هزینه تقریبی تعمیر</p>
-                        <p class="mt-1 text-2xl font-bold text-amber-700">
+                        <div class="mt-5 border-t border-line pt-4">
+                            <p class="text-xs font-medium text-ink-muted">هزینه تقریبی</p>
                             @if ($card['cost'] !== null)
-                                {{ number_format($card['cost']) }}
-                                <span class="text-base font-normal text-stone-500">تومان</span>
+                                <p class="mt-0.5 text-2xl font-bold tabular-nums text-accent">
+                                    {{ number_format($card['cost']) }}
+                                    <span class="text-sm font-medium text-ink-muted">تومان</span>
+                                </p>
                             @else
-                                <span class="text-base font-normal text-stone-400">نامشخص</span>
+                                <p class="mt-0.5 text-base text-ink-muted">نامشخص</p>
                             @endif
-                        </p>
+                        </div>
                     </article>
                 @endforeach
             </div>
         @else
-            <p class="rounded-xl border border-dashed border-stone-300 bg-white p-6 text-center text-stone-500">
-                اطلاعات تعمیر برای این قطعه ثبت نشده است.
-            </p>
+            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+                <p class="text-sm text-ink-muted">اطلاعات تعمیر برای این قطعه ثبت نشده است.</p>
+            </div>
         @endif
     </section>
 
     {{-- Shops --}}
-    <section class="mb-10">
-        <h2 class="mb-4 text-xl font-bold text-stone-800">فروشگاه‌های مرتبط</h2>
+    <section class="mb-12">
+        <x-ui.section-heading
+            label="فروشندگان"
+            title="فروشگاه‌های مرتبط"
+            description="فروشگاه‌هایی که این قطعه یا دسته آن را عرضه می‌کنند"
+        />
 
         @if ($shops->isNotEmpty())
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($shops as $shop)
-                    <article class="flex flex-col rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-start gap-4">
-                            <div class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-lg font-bold text-amber-800">
+                    <article class="ps-card-interactive flex flex-col p-5">
+                        <div class="mb-5 flex items-start gap-4">
+                            <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
                                 {{ mb_substr($shop->name, 0, 1) }}
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="truncate font-semibold text-stone-800">{{ $shop->name }}</h3>
+                                <h3 class="truncate font-semibold text-ink">{{ $shop->name }}</h3>
                                 @if ($shop->secondary_name)
-                                    <p class="truncate text-sm text-stone-500">{{ $shop->secondary_name }}</p>
+                                    <p class="truncate text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
                                 @endif
-                                <div class="mt-1 flex items-center gap-1 text-sm text-amber-600">
+                                <div class="mt-2 inline-flex items-center gap-1 rounded-lg bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
                                     @if ($shop->average_rating)
-                                        <span aria-hidden="true">★</span>
+                                        <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
                                         <span>{{ number_format($shop->average_rating, 1) }}</span>
                                     @else
-                                        <span class="text-stone-400">بدون امتیاز</span>
+                                        <span class="text-ink-muted">بدون امتیاز</span>
                                     @endif
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-auto flex gap-2">
-                            <a
-                                href="#"
-                                class="flex-1 rounded-lg bg-amber-600 px-3 py-2 text-center text-sm font-medium text-white transition hover:bg-amber-700"
-                            >
-                                مشاهده فروشگاه
-                            </a>
+                        <div class="mt-auto flex gap-2.5">
+                            <a href="#" class="ps-btn-primary flex-1 text-center">مشاهده</a>
                             <button
                                 type="button"
-                                class="rounded-lg border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50"
+                                class="ps-btn-secondary shrink-0"
                                 onclick="document.getElementById('shop-modal-{{ $shop->id }}').showModal()"
                             >
                                 اطلاعات
@@ -91,41 +117,42 @@
 
                         <dialog
                             id="shop-modal-{{ $shop->id }}"
-                            class="w-full max-w-md rounded-xl border border-stone-200 bg-white p-0 shadow-xl backdrop:bg-stone-900/50"
+                            class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
                         >
-                            <div class="border-b border-stone-100 px-5 py-4">
-                                <div class="flex items-center justify-between gap-3">
-                                    <h4 class="font-bold text-stone-800">{{ $shop->name }}</h4>
-                                    <button
-                                        type="button"
-                                        class="rounded-lg p-1 text-stone-400 transition hover:bg-stone-100 hover:text-stone-600"
-                                        onclick="document.getElementById('shop-modal-{{ $shop->id }}').close()"
-                                        aria-label="بستن"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
+                            <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+                                <h4 class="font-bold text-ink">{{ $shop->name }}</h4>
+                                <button
+                                    type="button"
+                                    class="flex size-8 items-center justify-center rounded-lg text-ink-muted transition hover:bg-surface hover:text-ink"
+                                    onclick="document.getElementById('shop-modal-{{ $shop->id }}').close()"
+                                    aria-label="بستن"
+                                >
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                                </button>
                             </div>
-                            <div class="max-h-[70vh] space-y-4 overflow-y-auto px-5 py-4 text-sm">
+                            <div class="max-h-[70vh] space-y-5 overflow-y-auto px-5 py-5 text-sm">
                                 @if ($shop->description)
-                                    <p class="leading-relaxed text-stone-600">{{ $shop->description }}</p>
+                                <div class="border-t border-line px-5 py-6 sm:px-6">
+                                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</p>
+                                        {!! $shop->description !!}
+                                </div>
                                 @endif
 
                                 @if ($shop->address)
-                                    <div>
-                                        <p class="mb-1 font-semibold text-stone-700">آدرس</p>
-                                        <p class="text-stone-600">{{ $shop->address }}</p>
+                                    <div class="rounded-xl bg-surface p-4">
+                                        <p class="mb-1 text-xs font-semibold text-ink">آدرس</p>
+                                        <p class="text-ink-muted">{{ $shop->address }}</p>
                                     </div>
                                 @endif
 
                                 @if ($shop->phones->isNotEmpty())
                                     <div>
-                                        <p class="mb-1 font-semibold text-stone-700">تلفن‌ها</p>
-                                        <ul class="space-y-1">
+                                        <p class="mb-2 text-xs font-semibold text-ink">تلفن‌ها</p>
+                                        <ul class="space-y-2">
                                             @foreach ($shop->phones as $phone)
-                                                <li class="flex justify-between gap-2 text-stone-600">
-                                                    <span>{{ $phone->phone_number }}</span>
-                                                    <span class="text-xs text-stone-400">{{ $phone->type->value }}</span>
+                                                <li class="flex items-center justify-between gap-2 rounded-lg bg-surface px-3 py-2">
+                                                    <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
+                                                    <span class="text-xs text-ink-muted">{{ $phone->type->value }}</span>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -134,13 +161,13 @@
 
                                 @if ($shop->links->isNotEmpty())
                                     <div>
-                                        <p class="mb-1 font-semibold text-stone-700">شبکه‌های اجتماعی و وب</p>
-                                        <ul class="space-y-1">
+                                        <p class="mb-2 text-xs font-semibold text-ink">شبکه‌های اجتماعی</p>
+                                        <ul class="flex flex-wrap gap-2">
                                             @foreach ($shop->links as $link)
                                                 <li>
                                                     <a
                                                         href="{{ str_starts_with($link->name, 'http') ? $link->name : '#' }}"
-                                                        class="text-amber-700 hover:underline"
+                                                        class="inline-flex rounded-lg bg-brand-soft px-3 py-1.5 text-xs font-medium text-brand-dark transition hover:bg-brand hover:text-white"
                                                         target="_blank"
                                                         rel="noopener"
                                                     >
@@ -153,9 +180,9 @@
                                 @endif
 
                                 @if ($shop->open_time && $shop->close_time)
-                                    <div>
-                                        <p class="mb-1 font-semibold text-stone-700">ساعات کاری</p>
-                                        <p class="text-stone-600">{{ $shop->open_time }} – {{ $shop->close_time }}</p>
+                                    <div class="rounded-xl bg-surface p-4">
+                                        <p class="mb-1 text-xs font-semibold text-ink">ساعات کاری</p>
+                                        <p class="tabular-nums text-ink-muted" dir="ltr">{{ $shop->open_time }} – {{ $shop->close_time }}</p>
                                     </div>
                                 @endif
                             </div>
@@ -164,64 +191,53 @@
                 @endforeach
             </div>
         @else
-            <p class="rounded-xl border border-dashed border-stone-300 bg-white p-6 text-center text-stone-500">
-                فروشگاهی برای این قطعه یافت نشد.
-            </p>
+            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+                <p class="text-sm text-ink-muted">فروشگاهی برای این قطعه یافت نشد.</p>
+            </div>
         @endif
     </section>
 
-    {{-- Part description --}}
+    {{-- Part specs --}}
     <section>
-        <h2 class="mb-4 text-xl font-bold text-stone-800">مشخصات قطعه</h2>
+        <x-ui.section-heading label="جزئیات" title="مشخصات قطعه" />
 
-        <div class="rounded-xl border border-stone-200 bg-white shadow-sm">
-            <div class="border-b border-stone-100 px-5 py-4">
-                <h3 class="text-lg font-bold text-stone-800">{{ $part->name }}</h3>
-                @if ($part->partsCategory)
-                    <span class="mt-2 inline-block rounded-full bg-amber-100 px-3 py-0.5 text-xs font-medium text-amber-800">
-                        {{ $part->partsCategory->name }}
-                    </span>
-                @endif
-            </div>
-
-            <dl class="grid gap-4 px-5 py-4 sm:grid-cols-2">
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">نام خودرو</dt>
-                    <dd class="mt-0.5 font-semibold text-stone-800">{{ $car->name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">نام قطعه</dt>
-                    <dd class="mt-0.5 font-semibold text-stone-800">{{ $part->name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">مدل خودرو</dt>
-                    <dd class="mt-0.5 font-semibold text-stone-800">{{ $model->name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">شرکت سازنده</dt>
-                    <dd class="mt-0.5 font-semibold text-stone-800">{{ $company->name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">کشور سازنده</dt>
-                    <dd class="mt-0.5 font-semibold text-stone-800">{{ $company->country ?? '—' }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">اسلاگ خودرو</dt>
-                    <dd class="mt-0.5 font-mono text-sm text-stone-700">{{ $car->slug }}</dd>
-                </div>
-                <div>
-                    <dt class="text-sm font-medium text-stone-500">اسلاگ قطعه</dt>
-                    <dd class="mt-0.5 font-mono text-sm text-stone-700">{{ $part->slug }}</dd>
-                </div>
+        <div class="ps-card overflow-hidden">
+            <dl class="divide-y divide-line">
+                @foreach ([
+                    'نام خودرو' => $car->name,
+                    'نام قطعه' => $part->name,
+                    'مدل خودرو' => $model->name,
+                    'شرکت سازنده' => $company->name,
+                    'کشور سازنده' => $company->country ?? '—',
+                    'نام لاتین خودرو' => $car->slug,
+                    'نام لاتین قطعه' => $part->slug,
+                ] as $label => $value)
+                    <div class="grid gap-1 px-5 py-4 sm:grid-cols-3 sm:gap-4 sm:px-6 even:bg-surface/50">
+                        <dt class="text-sm font-medium text-ink-muted">{{ $label }}</dt>
+                        <dd @class([
+                            'text-sm font-semibold text-ink sm:col-span-2',
+                            'font-mono font-normal text-ink-muted' => str_contains($label, 'اسلاگ'),
+                        ])>{{ $value }}</dd>
+                    </div>
+                @endforeach
             </dl>
 
             @if ($part->description)
-                    <div class="border-t border-stone-100 px-5 py-4">
-                        <p class="mb-2 text-sm font-medium text-stone-500">توضیحات</p>
-                        <div class="space-y-3 text-sm leading-relaxed text-stone-600 [&_h3]:font-semibold [&_h3]:text-stone-800 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pr-5">
-                            {!! $part->description !!}
-                        </div>
-                    </div>
+                <div class="border-t border-line px-5 py-6 sm:px-6">
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</p>
+                    <x-ui.expandable-description id="part-description">
+                        {!! $part->description !!}
+                    </x-ui.expandable-description>
+                </div>
+            @endif
+
+            @if ($car->description)
+                <div class="border-t border-line px-5 py-6 sm:px-6">
+                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی خودرو {{ $company->name }} {{ $car->name }}</p>
+                    <x-ui.expandable-description id="car-description">
+                        {!! $car->description !!}
+                    </x-ui.expandable-description>
+                </div>
             @endif
         </div>
     </section>

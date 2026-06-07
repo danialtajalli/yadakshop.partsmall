@@ -4,7 +4,128 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 
+/*
+ * Partsmall design tokens — reuse on every page:
+ *   brand      teal   #0d9488  primary actions, links, logo
+ *   brand-dark teal   #0f766e  hover / emphasis
+ *   brand-soft teal   #f0fdfa  tinted surfaces
+ *   accent     amber  #d97706  prices, ratings, highlights
+ *   accent-soft amber #fffbeb  warm tinted backgrounds
+ *   ink        slate  #0f172a  headings
+ *   ink-muted  slate  #64748b  secondary text
+ *   surface    slate  #f1f5f9  page background
+ *   line       slate  #e2e8f0  borders
+ */
+
 @theme {
-    --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Vazirmatn', 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
+
+    --color-brand: #0d9488;
+    --color-brand-dark: #0f766e;
+    --color-brand-soft: #f0fdfa;
+    --color-accent: #d97706;
+    --color-accent-soft: #fffbeb;
+    --color-ink: #0f172a;
+    --color-ink-muted: #64748b;
+    --color-surface: #f1f5f9;
+    --color-line: #e2e8f0;
+
+    --radius-card: 1rem;
+    --shadow-card: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+    --shadow-card-hover: 0 10px 25px -5px rgb(15 23 42 / 0.08), 0 4px 10px -4px rgb(15 23 42 / 0.04);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-surface text-ink;
+    }
+
+    ::selection {
+        @apply bg-brand-soft text-brand-dark;
+    }
+}
+
+@layer components {
+    .ps-container {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    }
+
+    .ps-card {
+        @apply rounded-2xl border border-line bg-white;
+        box-shadow: var(--shadow-card);
+    }
+
+    .ps-card-interactive {
+        @apply ps-card transition duration-200;
+    }
+
+    .ps-card-interactive:hover {
+        box-shadow: var(--shadow-card-hover);
+        @apply border-brand/20;
+    }
+
+    .ps-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition duration-150;
+    }
+
+    .ps-btn-primary {
+        @apply ps-btn bg-brand text-white hover:bg-brand-dark active:scale-[0.98];
+    }
+
+    .ps-btn-secondary {
+        @apply ps-btn border border-line bg-white text-ink hover:border-brand/30 hover:bg-brand-soft/50;
+    }
+
+    .ps-section-label {
+        @apply text-xs font-semibold uppercase tracking-wider text-brand;
+    }
+
+    .ps-section-title {
+        @apply text-xl font-bold text-ink sm:text-2xl;
+    }
+
+    .ps-prose {
+        @apply space-y-3 text-sm leading-7 text-ink-muted;
+    }
+
+    .ps-prose :is(h2, h3, h4) {
+        @apply font-semibold text-ink;
+    }
+
+    .ps-prose :is(ul, ol) {
+        @apply pr-5;
+    }
+
+    .ps-prose ul {
+        @apply list-disc;
+    }
+
+    .ps-prose ol {
+        @apply list-decimal;
+    }
+
+    .ps-expandable-content {
+        @apply overflow-hidden;
+    }
+
+    .ps-expandable:not(.is-expanded) .ps-expandable-content {
+        @apply line-clamp-5;
+    }
+
+    .ps-expandable:not(.is-expanded)::after {
+        content: '';
+        @apply pointer-events-none absolute inset-x-0 bottom-10 h-16 bg-gradient-to-t from-white to-transparent;
+    }
+
+    .ps-expandable-toggle {
+        @apply relative z-10 mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-line bg-surface py-2.5 text-sm font-medium text-brand transition hover:border-brand/30 hover:bg-brand-soft;
+    }
+
+    .ps-expandable-toggle[hidden] {
+        display: none;
+    }
 }
