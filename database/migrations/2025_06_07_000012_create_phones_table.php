@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PhoneType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
             $table->foreignId('repair_shop_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('phone_number');
-            $table->string('type');
+            $table->enum('type', PhoneType::cases());
             $table->timestamps();
         });
     }

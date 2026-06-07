@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LinkType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,7 +12,7 @@ return new class extends Migration
         Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('link_type');
+            $table->enum('link_type', LinkType::cases());
             $table->foreignId('company_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('repair_shop_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('shop_id')->nullable()->constrained()->cascadeOnDelete();
