@@ -9,45 +9,45 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('car_model', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('car_id')->constrained()->cascadeOnDelete();
             $table->foreignId('model_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['car_id', 'model_id']);
+            $table->timestamps();
         });
 
         Schema::create('repair_category_repair_shop', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('repair_shop_id')->constrained()->cascadeOnDelete();
             $table->foreignId('repair_category_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['repair_shop_id', 'repair_category_id'], 'repair_shop_category_primary');
+            $table->timestamps();
         });
 
         Schema::create('part_repair_category', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('part_id')->constrained()->cascadeOnDelete();
             $table->foreignId('repair_category_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['part_id', 'repair_category_id']);
+            $table->timestamps();
         });
 
         Schema::create('part_wage', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('part_id')->constrained()->cascadeOnDelete();
             $table->foreignId('wage_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['part_id', 'wage_id']);
+            $table->timestamps();
         });
 
         Schema::create('parts_category_shop', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('shop_id')->constrained()->cascadeOnDelete();
             $table->foreignId('parts_category_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['shop_id', 'parts_category_id'], 'parts_category_shop_primary');
+            $table->timestamps();
         });
 
         Schema::create('part_shop', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('shop_id')->constrained()->cascadeOnDelete();
             $table->foreignId('part_id')->constrained()->cascadeOnDelete();
-
-            $table->primary(['shop_id', 'part_id']);
+            $table->timestamps();
         });
     }
 
