@@ -87,18 +87,6 @@ class Shop extends Model
         return $this->belongsToMany(PartsCategory::class, 'parts_category_shop');
     }
 
-    public function partsThroughCategories(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            Part::class,
-            PartsCategoryShop::class,
-            'shop_id',
-            'parts_category_id',
-            'id',
-            'parts_category_id',
-        );
-    }
-
     public function parts(): BelongsToMany
     {
         return $this->belongsToMany(Part::class, 'part_shop');
