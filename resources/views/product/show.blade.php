@@ -3,74 +3,85 @@
 @section('title', $title)
 
 @section('content')
-    {{-- Hero + breadcrumb --}}
-    <div class="mb-10 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-        <div class="border-b border-line bg-gradient-to-l from-brand-soft via-white to-white px-5 py-6 sm:px-8 sm:py-8">
-            <x-site.breadcrumb :items="[
-                ['label' => 'خانه', 'url' => url('/')],
-                ['label' => $company->name, 'emphasized' => true],
-                ['label' => $car->name],
-                ['label' => $model->name, 'active' => true],
-            ]" />
+    {{-- Hero + repair cards beside CTA sidebar --}}
+    <div class="mb-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
+        <div class="space-y-8 lg:col-span-8">
+            <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+                <div class="border-b border-line bg-gradient-to-l from-brand-soft via-white to-white px-5 py-6 sm:px-8 sm:py-8">
+                    <x-site.breadcrumb :items="[
+                        ['label' => 'خانه', 'url' => url('/')],
+                        ['label' => $company->name, 'emphasized' => true],
+                        ['label' => $car->name],
+                        ['label' => $model->name, 'active' => true],
+                    ]" />
 
-            <div class="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                    @if ($part->partsCategory)
-                        <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
-                            {{ $part->partsCategory->name }}
-                        </span>
-                    @endif
-                    <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name }}</h1>
-                    <p class="mt-1.5 text-sm text-ink-muted">
-                        {{ $company->name }} · {{ $car->name }} · {{ $model->name }}
-                    </p>
+                    <div class="flex flex-wrap items-end justify-between gap-4">
+                        <div>
+                            @if ($part->partsCategory)
+                                <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                                    {{ $part->partsCategory->name }}
+                                </span>
+                            @endif
+                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name }}</h1>
+                            <p class="mt-1.5 text-sm text-ink-muted">
+                                {{ $company->name }} · {{ $car->name }} · {{ $model->name }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <section>
+            <x-ui.section-heading
+                label="تعمیرات"
+                title="شرح تعمیرات و هزینه"
+                description="برآورد هزینه اجرت بر اساس نوع تعمیر"
+            />
+
+            @if (count($repairCards) > 0)
+                <div class="grid gap-5 sm:grid-cols-2">
+                    @foreach ($repairCards as $card)
+                        <article class="ps-card-interactive group relative overflow-hidden p-6">
+                            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-brand to-brand-dark opacity-80 transition group-hover:opacity-100"></div>
+                            <div class="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-soft text-brand">
+                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.88m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336 4.5 4.5 0 0 0-6.336-4.486c-.072 1.172-.088 2.402.14 3.743Z" />
+                                </svg>
+                            </div>
+                            <h3 class="font-semibold text-ink">اجرت {{ $card['type'] }}</h3>
+                            @if ($card['wage_name'] && $card['wage_name'] !== $card['type'])
+                                <p class="mt-1 text-sm text-ink-muted">{{ $card['wage_name'] }}</p>
+                            @endif
+                            <div class="mt-5 border-t border-line pt-4">
+                                <p class="text-xs font-medium text-ink-muted">هزینه تقریبی</p>
+                                @if ($card['cost'] !== null)
+                                    <p class="mt-0.5 text-2xl font-bold tabular-nums text-accent">
+                                        {{ number_format($card['cost']) }}
+                                        <span class="text-sm font-medium text-ink-muted">تومان</span>
+                                    </p>
+                                @else
+                                    <p class="mt-0.5 text-base text-ink-muted">نامشخص</p>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+                    <p class="text-sm text-ink-muted">اطلاعات تعمیر برای این قطعه ثبت نشده است.</p>
+                </div>
+            @endif
+            </section>
+        </div>
+
+        <div class="mt-6 lg:col-span-4 lg:mt-0">
+            <div class="lg:sticky lg:top-24">
+                <x-site.cta-sidebar
+                    :telegram-title="'به گروه تلگرام ' . $company->name . ' ' . $car->name . ' سواران بپیوندید'"
+                />
             </div>
         </div>
     </div>
-
-    {{-- Repair cards --}}
-    <section class="mb-12">
-        <x-ui.section-heading
-            label="تعمیرات"
-            title="شرح تعمیرات و هزینه"
-            description="برآورد هزینه اجرت بر اساس نوع تعمیر"
-        />
-
-        @if (count($repairCards) > 0)
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($repairCards as $card)
-                    <article class="ps-card-interactive group relative overflow-hidden p-6">
-                        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-brand to-brand-dark opacity-80 transition group-hover:opacity-100"></div>
-                        <div class="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-soft text-brand">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.88m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336 4.5 4.5 0 0 0-6.336-4.486c-.072 1.172-.088 2.402.14 3.743Z" />
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold text-ink">اجرت {{ $card['type'] }}</h3>
-                        @if ($card['wage_name'] && $card['wage_name'] !== $card['type'])
-                            <p class="mt-1 text-sm text-ink-muted">{{ $card['wage_name'] }}</p>
-                        @endif
-                        <div class="mt-5 border-t border-line pt-4">
-                            <p class="text-xs font-medium text-ink-muted">هزینه تقریبی</p>
-                            @if ($card['cost'] !== null)
-                                <p class="mt-0.5 text-2xl font-bold tabular-nums text-accent">
-                                    {{ number_format($card['cost']) }}
-                                    <span class="text-sm font-medium text-ink-muted">تومان</span>
-                                </p>
-                            @else
-                                <p class="mt-0.5 text-base text-ink-muted">نامشخص</p>
-                            @endif
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        @else
-            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-                <p class="text-sm text-ink-muted">اطلاعات تعمیر برای این قطعه ثبت نشده است.</p>
-            </div>
-        @endif
-    </section>
 
     {{-- Shops --}}
     <section class="mb-12">
