@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ShopOrderScope;
+use App\Models\Scopes\ShopProductScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
+#[ScopedBy([ShopProductScope::Class, ShopOrderScope::class])]
 class Shop extends Model
 {
     protected $fillable = [
@@ -77,6 +82,18 @@ class Shop extends Model
     public function partsCategories(): BelongsToMany
     {
         return $this->belongsToMany(PartsCategory::class, 'parts_category_shop');
+    }
+
+    public function partsThroughCategories(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Part::class,
+            PartsCategoryShop::class,
+            'shop_id',
+            'parts_category_id',
+            'id',
+            'parts_category_id',
+        );
     }
 
     public function parts(): BelongsToMany

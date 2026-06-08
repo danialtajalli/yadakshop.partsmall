@@ -6,6 +6,7 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\Part;
+use App\Models\PartRepairCategory;
 use App\Models\Shop;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -103,18 +104,21 @@ class ProductService
     /** @return Collection<int, Shop> */
     private function loadShopsForPart(Part $part): Collection
     {
+        $part_category = PartRepairCategory::where('part_id', $part->id)->first()->repair_category_id;
         $query = fn () => Shop::query()
             ->with(['phones', 'links', 'state'])
-            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating')
-            ->orderBy('order');
+            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 
         $shops = $query()
-            ->whereHas('parts', fn ($q) => $q->where('parts.id', $part->id))
+            ->whereHas('parts', fn ($q) => $q->whereKey($part->id))
             ->get();
 
         if ($shops->isEmpty() && $part->parts_category_id) {
             $shops = $query()
-                ->whereHas('partsCategories', fn ($q) => $q->where('parts_categories.id', $part->parts_category_id))
+                ->whereHas(
+                    'partsThroughCategories',
+                    fn ($q) => $q->where('parts_category_shop.parts_category_id', $part_category),
+                )
                 ->get();
         }
 
