@@ -89,10 +89,11 @@ class ProductService
                 break;
             }
 
+
             $cards[] = [
                 'type' => $category?->name ?? $wage->name,
                 'cost' => $wage
-                    ? (int) round($wage->variable * $wage->coefficient * $company->wage_strike)
+                    ? ($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000
                     : null,
                 'wage_name' => $wage?->name,
             ];
