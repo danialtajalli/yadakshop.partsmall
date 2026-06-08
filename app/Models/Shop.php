@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ShopConfirmedScope;
 use App\Models\Scopes\ShopOrderScope;
 use App\Models\Scopes\ShopProductScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
@@ -11,7 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-#[ScopedBy([ShopProductScope::Class, ShopOrderScope::class])]
+#[ScopedBy([ShopProductScope::Class, ShopOrderScope::class
+// , ShopConfirmedScope::class
+])]
 class Shop extends Model
 {
     protected $fillable = [
