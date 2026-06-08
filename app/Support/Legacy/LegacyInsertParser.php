@@ -4,195 +4,275 @@ namespace App\Support\Legacy;
 
 class LegacyInsertParser
 {
-    /** @var array<string, list<array<string, mixed>>> */
-    private array $cache = [];
-
-    public function __construct(private readonly string $sql) {}
+    public function __construct(
+        private readonly string $sql,
+    ) {}
 
     /**
      * @return list<array<string, mixed>>
      */
     public function rows(string $table): array
     {
-        if (isset($this->cache[$table])) {
-            return $this->cache[$table];
+        $rows = [];
+        $pattern = '/INSERT INTO `'.preg_quote($table, '/').'` \(([^)]+)\) VALUES\s*/i';
+
+        if (! preg_match_all($pattern, $this->sql, $matches, PREG_OFFSET_CAPTURE)) {
+            return [];
         }
 
-        $rows = [];
-        $search = 'INSERT INTO `'.$table.'`';
-        $offset = 0;
+        foreach ($matches[0] as $index => $match) {
+            $columns = $this->parseColumnList($matches[1][$index][0]);
+            $valuesStart = $match[1] + strlen($match[0]);
+            $valuesBlock = $this->extractValuesBlock($valuesStart);
 
-        while (($start = stripos($this->sql, $search, $offset)) !== false) {
-            $valuesPos = stripos($this->sql, 'VALUES', $start);
-            if ($valuesPos === false) {
-                break;
-            }
+            foreach ($this->parseValueTuples($valuesBlock) as $tuple) {
+                $values = $this->parseTupleValues($tuple);
 
-            $columnsStart = strpos($this->sql, '(', $start);
-            $columnsEnd = strpos($this->sql, ')', $columnsStart);
-            $columns = array_map(
-                fn (string $column): string => trim($column, " `\t\n\r"),
-                explode(',', substr($this->sql, $columnsStart + 1, $columnsEnd - $columnsStart - 1))
-            );
-
-            $dataStart = strpos($this->sql, '(', $valuesPos);
-            $dataEnd = $this->findClosingSemicolon($dataStart);
-
-            foreach ($this->parseValueGroups(substr($this->sql, $dataStart, $dataEnd - $dataStart)) as $values) {
                 if (count($values) !== count($columns)) {
                     continue;
                 }
 
                 $rows[] = array_combine($columns, $values);
             }
-
-            $offset = $dataEnd + 1;
         }
 
-        return $this->cache[$table] = $rows;
+        return $rows;
     }
 
-    private function findClosingSemicolon(int $start): int
+    /**
+     * @return list<string>
+     */
+    private function parseColumnList(string $list): array
+    {
+        return array_map(
+            static fn (string $column): string => trim($column, " `\t\n\r"),
+            explode(',', $list),
+        );
+    }
+
+    private function extractValuesBlock(int $offset): string
     {
         $length = strlen($this->sql);
-        $index = $start;
+        $depth = 0;
         $inString = false;
+        $escape = false;
+        $block = '';
 
-        while ($index < $length) {
-            $char = $this->sql[$index];
+        for ($i = $offset; $i < $length; $i++) {
+            $char = $this->sql[$i];
 
             if ($inString) {
-                if ($char === '\\' && $index + 1 < $length) {
-                    $index += 2;
+                $block .= $char;
+
+                if ($escape) {
+                    $escape = false;
+
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escape = true;
+
                     continue;
                 }
 
                 if ($char === "'") {
-                    if ($index + 1 < $length && $this->sql[$index + 1] === "'") {
-                        $index += 2;
-                        continue;
-                    }
-
                     $inString = false;
                 }
 
-                $index++;
                 continue;
             }
 
             if ($char === "'") {
                 $inString = true;
-                $index++;
+                $block .= $char;
+
                 continue;
             }
 
-            if ($char === ';') {
-                return $index;
+            if ($char === '(') {
+                $depth++;
+                $block .= $char;
+
+                continue;
             }
 
-            $index++;
-        }
+            if ($char === ')') {
+                $depth--;
+                $block .= $char;
 
-        return $length;
-    }
+                if ($depth === 0) {
+                    $next = $this->sql[$i + 1] ?? '';
 
-    /**
-     * @return list<list<mixed>>
-     */
-    private function parseValueGroups(string $valuesSql): array
-    {
-        $groups = [];
-        $length = strlen($valuesSql);
-        $index = 0;
+                    if ($next === ';' || $next === '') {
+                        break;
+                    }
 
-        while ($index < $length) {
-            while ($index < $length && in_array($valuesSql[$index], [' ', ',', "\n", "\r", "\t"], true)) {
-                $index++;
+                    if ($next === ',') {
+                        $block .= ',';
+                        $i++;
+                    }
+                }
+
+                continue;
             }
 
-            if ($index >= $length || $valuesSql[$index] !== '(') {
+            if ($depth === 0 && $char === ';') {
                 break;
             }
 
-            $index++;
-            $values = [];
-            $current = '';
-            $inString = false;
-            $depth = 0;
+            if ($depth > 0 || ! ctype_space($char)) {
+                $block .= $char;
+            }
+        }
 
-            while ($index < $length) {
-                $char = $valuesSql[$index];
+        return $block;
+    }
 
-                if ($inString) {
-                    if ($char === '\\' && $index + 1 < $length) {
-                        $current .= $valuesSql[$index + 1];
-                        $index += 2;
-                        continue;
-                    }
+    /**
+     * @return list<string>
+     */
+    private function parseValueTuples(string $block): array
+    {
+        $tuples = [];
+        $length = strlen($block);
+        $depth = 0;
+        $inString = false;
+        $escape = false;
+        $start = null;
 
-                    if ($char === "'") {
-                        if ($index + 1 < $length && $valuesSql[$index + 1] === "'") {
-                            $current .= "'";
-                            $index += 2;
-                            continue;
-                        }
+        for ($i = 0; $i < $length; $i++) {
+            $char = $block[$i];
 
-                        $inString = false;
-                        $index++;
-                        continue;
-                    }
+            if ($inString) {
+                if ($escape) {
+                    $escape = false;
 
-                    $current .= $char;
-                    $index++;
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escape = true;
+
                     continue;
                 }
 
                 if ($char === "'") {
-                    $inString = true;
-                    $current = '';
-                    $index++;
-                    continue;
+                    $inString = false;
                 }
 
-                if ($char === '(') {
-                    $depth++;
-                    $current .= $char;
-                    $index++;
-                    continue;
+                continue;
+            }
+
+            if ($char === "'") {
+                $inString = true;
+
+                continue;
+            }
+
+            if ($char === '(') {
+                if ($depth === 0) {
+                    $start = $i;
                 }
 
-                if ($char === ')') {
-                    if ($depth === 0) {
-                        $values[] = $this->castValue(trim($current));
-                        $groups[] = $values;
-                        $index++;
-                        break;
-                    }
+                $depth++;
 
-                    $depth--;
-                    $current .= $char;
-                    $index++;
-                    continue;
+                continue;
+            }
+
+            if ($char === ')') {
+                $depth--;
+
+                if ($depth === 0 && $start !== null) {
+                    $tuples[] = substr($block, $start, $i - $start + 1);
+                    $start = null;
                 }
-
-                if ($char === ',' && $depth === 0) {
-                    $values[] = $this->castValue(trim($current));
-                    $current = '';
-                    $index++;
-                    continue;
-                }
-
-                $current .= $char;
-                $index++;
             }
         }
 
-        return $groups;
+        return $tuples;
     }
 
-    private function castValue(string $value): mixed
+    /**
+     * @return list<mixed>
+     */
+    private function parseTupleValues(string $tuple): array
     {
-        if ($value === '' || strcasecmp($value, 'NULL') === 0) {
+        $inner = trim($tuple, '()');
+        $values = [];
+        $length = strlen($inner);
+        $buffer = '';
+        $inString = false;
+        $escape = false;
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $inner[$i];
+
+            if ($inString) {
+                if ($escape) {
+                    $buffer .= $char;
+                    $escape = false;
+
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escape = true;
+
+                    continue;
+                }
+
+                if ($char === "'") {
+                    $inString = false;
+                    $values[] = $this->decodeString($buffer);
+                    $buffer = '';
+
+                    continue;
+                }
+
+                $buffer .= $char;
+
+                continue;
+            }
+
+            if ($char === "'") {
+                $inString = true;
+                $buffer = '';
+
+                continue;
+            }
+
+            if ($char === ',') {
+                if ($buffer !== '') {
+                    $values[] = $this->decodeScalar(trim($buffer));
+                    $buffer = '';
+                }
+
+                continue;
+            }
+
+            $buffer .= $char;
+        }
+
+        if ($buffer !== '') {
+            $values[] = $this->decodeScalar(trim($buffer));
+        }
+
+        return $values;
+    }
+
+    private function decodeString(string $value): string
+    {
+        return str_replace(
+            ["\\'", '\\"', '\\r', '\\n', '\\\\'],
+            ["'", '"', "\r", "\n", '\\'],
+            $value,
+        );
+    }
+
+    private function decodeScalar(string $value): mixed
+    {
+        if (strcasecmp($value, 'NULL') === 0) {
             return null;
         }
 
