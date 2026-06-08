@@ -13,6 +13,6 @@ class ShopOrderScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->orderBy('order', 'DESC')->orderBy('name');
+        $builder->orderBy('order', 'DESC')->orderBy('id', 'ASC');
     }
 }
