@@ -6,7 +6,6 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\Part;
-use App\Models\PartRepairCategory;
 use App\Models\Shop;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -93,7 +92,7 @@ class ProductService
             $cards[] = [
                 'type' => $category?->name ?? $wage->name,
                 'cost' => $wage
-                    ? ($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000
+                    ? (int) ($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000
                     : null,
                 'wage_name' => $wage?->name,
             ];
