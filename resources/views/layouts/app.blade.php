@@ -22,7 +22,7 @@
                             brand: {
                                 DEFAULT: '#3f4857',
                                 dark: '#222c3d',
-                                soft: '#f07a21',
+                                soft: '#f27c22',
                             },
                             accent: {
                                 DEFAULT: '#3f4857',
