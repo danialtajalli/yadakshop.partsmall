@@ -71,21 +71,8 @@
     @endif
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col font-sans antialiased bg-emerald-50">
-    <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
-        <div class="ps-container flex h-16 items-center justify-between">
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-                <span class="flex size-9 items-center justify-center rounded-xl bg-brand text-sm font-bold text-white shadow-sm">پ</span>
-                <span class="text-base font-bold text-ink">{{ config('app.name', 'پارتس‌مال') }}</span>
-            </a>
-            <nav class="flex items-center gap-1 text-sm text-ink-muted">
-                <a href="#" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">قطعات</a>
-                <a href="#" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">فروشگاه‌ها</a>
-                <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">درباره ما</a>
-                <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">تماس</a>
-            </nav>
-        </div>
-    </header>
+<body class="flex min-h-screen flex-col font-sans antialiased">
+    @include('layouts.partials.header')
 
     <main class="flex-1 py-8 sm:py-10">
         <div class="ps-container">
@@ -93,31 +80,7 @@
         </div>
     </main>
 
-    <footer class="border-t border-line bg-white">
-        <div class="ps-container py-10">
-            <div class="grid gap-8 sm:grid-cols-3">
-                <div>
-                    <p class="font-bold text-ink">{{ config('app.name', 'پارتس‌مال') }}</p>
-                    <p class="mt-2 text-sm leading-relaxed text-ink-muted">مرجع لوازم یدکی و اطلاعات تعمیر خودرو — placeholder</p>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-ink">دسترسی سریع</p>
-                    <ul class="mt-3 space-y-2 text-sm text-ink-muted">
-                        <li><a href="#" class="transition hover:text-brand">قطعات</a></li>
-                        <li><a href="#" class="transition hover:text-brand">فروشگاه‌ها</a></li>
-                        <li><a href="#" class="transition hover:text-brand">تماس با ما</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-ink">تماس</p>
-                    <p class="mt-3 text-sm text-ink-muted">placeholder@example.com</p>
-                </div>
-            </div>
-            <div class="mt-8 border-t border-line pt-6 text-center text-xs text-ink-muted/80">
-                &copy; {{ date('Y') }} {{ config('app.name', 'پارتس‌مال') }}. تمامی حقوق محفوظ است.
-            </div>
-        </div>
-    </footer>
+    @include('layouts.partials.footer')
 
     @stack('scripts')
 </body>
