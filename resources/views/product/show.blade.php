@@ -78,6 +78,7 @@
             <div class="lg:sticky lg:top-24">
                 <x-site.cta-sidebar
                     :telegram-title="'به گروه تلگرام ' . $company->name . ' ' . $car->name . ' سواران بپیوندید'"
+                    :telegram-url="'https://t.me/' . $company->slug . '_saravan_partsmall'"
                 />
             </div>
         </div>
