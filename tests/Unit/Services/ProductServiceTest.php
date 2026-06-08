@@ -113,7 +113,7 @@ class ProductServiceTest extends TestCase
         $this->assertNotEmpty($data['repairCards']);
         $this->assertSame('جلوبندی', $data['repairCards'][0]['type']);
         $this->assertSame('تعویض طبق', $data['repairCards'][0]['wage_name']);
-        $this->assertSame(300, $data['repairCards'][0]['cost']);
+        $this->assertSame(30000000, $data['repairCards'][0]['cost']);
     }
 
     public function test_it_limits_repair_cards_to_three(): void
@@ -143,6 +143,7 @@ class ProductServiceTest extends TestCase
         $linkedShop = Shop::create([
             'name' => 'فروشگاه مستقیم',
             'slug' => 'direct-shop',
+            'show_under_product' => true,
             'order' => 1,
         ]);
         $linkedShop->parts()->attach($part);
@@ -160,21 +161,22 @@ class ProductServiceTest extends TestCase
         $this->assertSame('direct-shop', $data['shops']->first()->slug);
     }
 
-    public function test_it_falls_back_to_shops_in_parts_category_when_part_has_no_direct_shops(): void
+    public function test_it_falls_back_to_company_shops_when_part_has_no_direct_shops(): void
     {
         [$company, $car, $model, $part] = $this->seedProductGraph();
 
-        $categoryShop = Shop::create([
-            'name' => 'فروشگاه دسته',
-            'slug' => 'category-shop',
+        $companyShop = Shop::create([
+            'name' => 'فروشگاه شرکت',
+            'slug' => 'company-shop',
+            'show_under_product' => true,
             'order' => 1,
         ]);
-        $categoryShop->partsCategories()->attach($part->parts_category_id);
+        $company->shops()->attach($companyShop);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertCount(1, $data['shops']);
-        $this->assertSame('category-shop', $data['shops']->first()->slug);
+        $this->assertSame('company-shop', $data['shops']->first()->slug);
     }
 
     public function test_it_sanitizes_shop_descriptions(): void
@@ -185,9 +187,10 @@ class ProductServiceTest extends TestCase
             'name' => 'فروشگاه',
             'slug' => 'shop',
             'description' => 'ظظظ طططrn',
+            'show_under_product' => true,
             'order' => 1,
         ]);
-        $shop->parts()->attach($part);
+        $company->shops()->attach($shop);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
@@ -213,6 +216,8 @@ class ProductServiceTest extends TestCase
             'company_id' => $company->id,
             'description' => $overrides['car_description'] ?? null,
         ]);
+
+        $car->company()->associate($company);
 
         $model = CarModel::create([
             'name' => $overrides['model_name'] ?? 'نیو',
