@@ -35,7 +35,6 @@ class ProductService
         $part->description = $this->sanitizeDescription($part->description, $company, $car);
 
         $repairCards = $this->buildRepairCards($part, $company);
-        dd($car);
         $shops = $this->loadShopsForPart($part, $car->company_id);
 
         $shops->each(function (Shop $shop) use ($company, $car): void {
@@ -103,9 +102,8 @@ class ProductService
     }
 
     /** @return Collection<int, Shop> */
-    private function loadShopsForPart(Part $part, int $parts_category_id): Collection
+    private function loadShopsForPart(Part $part, int $company_id): Collection
     {
-        dd($parts_category_id);
         $query = fn () => Shop::query()
             ->with(['phones', 'links', 'state'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
@@ -114,11 +112,11 @@ class ProductService
             ->whereHas('parts', fn ($q) => $q->whereKey($part->id))
             ->get();
 
-        if ($shops->isEmpty() && $part->parts_category_id) {
+        if ($shops->isEmpty() && $company_id) {
             $shops = $query()
                 ->whereHas(
-                    'partsThroughCategories',
-                    fn ($q) => $q->where('parts_category_shop.parts_category_id', $parts_category_id),
+                    'companies',
+                    fn ($q) => $q->where('companies.id', $company_id),
                 )
                 ->get();
         }
