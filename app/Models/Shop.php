@@ -103,4 +103,9 @@ class Shop extends Model
     {
         return $this->belongsToMany(Part::class, 'part_shop');
     }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_shops');
+    }
 }
