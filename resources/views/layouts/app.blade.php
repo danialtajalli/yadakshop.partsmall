@@ -71,7 +71,7 @@
     @endif
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col font-sans antialiased">
+<body class="flex min-h-screen flex-col font-sans antialiased bg-emerald-50">
     <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
         <div class="ps-container flex h-16 items-center justify-between">
             <a href="{{ url('/') }}" class="flex items-center gap-2.5">
