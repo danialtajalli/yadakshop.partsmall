@@ -16,13 +16,6 @@ class Company extends Model
         'wage_strike',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'wage_strike' => 'integer',
-        ];
-    }
-
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
