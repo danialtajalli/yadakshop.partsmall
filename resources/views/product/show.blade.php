@@ -43,7 +43,7 @@
                     @foreach ($repairCards as $card)
                         <article class="ps-card-interactive group relative overflow-hidden p-6">
                             <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-brand to-brand-dark opacity-80 transition group-hover:opacity-100"></div>
-                            <div class="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-soft text-brand">
+                            <div class="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-soft">
                                 <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.88m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336 4.5 4.5 0 0 0-6.336-4.486c-.072 1.172-.088 2.402.14 3.743Z" />
                                 </svg>

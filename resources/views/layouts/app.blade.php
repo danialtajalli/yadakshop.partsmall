@@ -20,12 +20,12 @@
                         },
                         colors: {
                             brand: {
-                                DEFAULT: '#0d9488',
-                                dark: '#0f766e',
-                                soft: '#f0fdfa',
+                                DEFAULT: '#3f4857',
+                                dark: '#222c3d',
+                                soft: '#f07a21',
                             },
                             accent: {
-                                DEFAULT: '#d97706',
+                                DEFAULT: '#3f4857',
                                 soft: '#fffbeb',
                             },
                             ink: {
@@ -71,7 +71,7 @@
     @endif
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col font-sans antialiased">
+<body class="flex min-h-screen flex-col font-sans antialiased bg-gray-50">
     @include('layouts.partials.header')
 
     <main class="flex-1 py-8 sm:py-10">
