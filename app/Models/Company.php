@@ -18,7 +18,7 @@ class Company extends Model
     protected function casts(): array
     {
         return [
-            'wage_strike' => 'integer',
+            'wage_strike' => 'float',
         ];
     }
 

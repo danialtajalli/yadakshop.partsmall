@@ -134,7 +134,7 @@ class LegacyDataImporter
                 'description' => $row['des'] ?: null,
                 'slug' => $row['latin'],
                 'country' => $row['country'] ?: null,
-                'wage_strike' => (int) round((float) ($row['wage_strike'] ?? 1)),
+                'wage_strike' => (float) ($row['wage_strike'] ?? 1),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

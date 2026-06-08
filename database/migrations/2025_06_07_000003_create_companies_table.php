@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('slug');
             $table->string('country')->nullable();
-            $table->integer('wage_strike')->default(1);
+            $table->float('wage_strike')->default(1);
             $table->timestamps();
         });
     }
