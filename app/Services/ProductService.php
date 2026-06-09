@@ -24,12 +24,7 @@ class ProductService
      *     title: string,
      * }
      */
-    public function getProductPageData(
-        Company $company,
-        Car $car,
-        CarModel $model,
-        Part $part,
-    ): array {
+    public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part,): array {
 
 
         $car->description = $this->sanitizeDescription($car->description, $company, $car);
@@ -115,11 +110,10 @@ class ProductService
                 break;
             }
 
-
             $cards[] = [
                 'type' => $category?->name ?? $wage->name,
                 'cost' => $wage
-                    ? (int) ($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000
+                    ? (int) (($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000)
                     : null,
                 'wage_name' => $wage?->name,
             ];
