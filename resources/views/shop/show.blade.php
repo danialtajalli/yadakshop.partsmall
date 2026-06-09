@@ -1,0 +1,250 @@
+@extends('layouts.app')
+
+@section('title', $title)
+
+@section('content')
+    @php
+        $resolveLinkUrl = static function (string $value): string {
+            return str_starts_with($value, 'http') ? $value : '#';
+        };
+    @endphp
+
+    <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        @if ($shop->cover ?? null)
+            <div class="h-40 w-full overflow-hidden border-b border-line sm:h-52">
+                <img src="{{ $shop->cover }}" alt="" class="size-full object-cover">
+            </div>
+        @endif
+
+        <div class="px-5 py-6 sm:px-8 sm:py-8">
+            <x-site.breadcrumb :items="[
+                ['label' => 'خانه', 'url' => url('/')],
+                ['label' => 'فروشگاه‌ها', 'url' => route('shops.index')],
+                ['label' => $shop->name, 'active' => true],
+            ]" />
+
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+                <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-2xl font-bold text-brand-dark ring-1 ring-line sm:size-24">
+                    @if ($shop->logo ?? null)
+                        <img src="{{ $shop->logo }}" alt="{{ $shop->name }}" class="size-full object-cover">
+                    @else
+                        {{ mb_substr($shop->name, 0, 1) }}
+                    @endif
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $shop->name }}</h1>
+
+                    @if ($shop->secondary_name)
+                        <p class="mt-1 text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
+                    @endif
+
+                    <div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
+                        @if ($averageRating)
+                            <span class="inline-flex items-center gap-1 rounded-lg bg-accent-soft px-2.5 py-1 font-medium text-accent">
+                                <svg class="size-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
+                                {{ number_format($averageRating, 1) }}
+                            </span>
+                        @endif
+
+                        @if ($commentsCount > 0)
+                            <span class="text-ink-muted">{{ number_format($commentsCount) }} نظر</span>
+                        @endif
+
+                        @if ($shop->state)
+                            <span class="text-ink-muted">{{ $shop->state->name }}</span>
+                        @endif
+                    </div>
+
+                    @if ($shop->address)
+                        <p class="mt-3 text-sm leading-7 text-ink-muted">{{ $shop->address }}</p>
+                    @endif
+
+                    @if ($shop->latitude && $shop->longitude)
+                        <a
+                            href="https://www.google.com/maps?q={{ $shop->latitude }},{{ $shop->longitude }}"
+                            target="_blank"
+                            rel="noopener"
+                            class="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-dark"
+                        >
+                            مشاهده روی نقشه
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                            </svg>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-12">
+        <div class="space-y-8 lg:col-span-8">
+            @if ($shop->description)
+                <section class="ps-card px-5 py-6 sm:px-6">
+                    <x-ui.section-heading title="درباره فروشگاه" />
+                    <x-ui.expandable-description id="shop-description">
+                        {!! $shop->description !!}
+                    </x-ui.expandable-description>
+                </section>
+            @endif
+
+            @if ($shop->companies->isNotEmpty())
+                <section>
+                    <x-ui.section-heading
+                        title="برندها و شرکت‌های مرتبط"
+                        description="خودروسازان و برندهایی که این فروشگاه پوشش می‌دهد"
+                    />
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @foreach ($shop->companies as $company)
+                            <article class="ps-card flex items-center gap-4 p-4">
+                                <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface ring-1 ring-line">
+                                    @if ($company->logo_url ?? null)
+                                        <img src="{{ $company->logo_url }}" alt="{{ $company->name }}" class="size-full object-contain p-1.5">
+                                    @else
+                                        <span class="text-lg font-bold text-brand-dark">{{ mb_substr($company->name, 0, 1) }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="font-semibold text-ink">{{ $company->name }}</h3>
+                                    @if ($company->country)
+                                        <p class="mt-0.5 text-sm text-ink-muted">{{ $company->country }}</p>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            @if ($shop->partsCategories->isNotEmpty())
+                <section>
+                    <x-ui.section-heading title="دسته‌بندی قطعات" />
+                    <ul class="flex flex-wrap gap-2">
+                        @foreach ($shop->partsCategories as $category)
+                            <li class="rounded-xl bg-brand-soft px-3 py-1.5 text-sm font-medium text-brand-dark">
+                                {{ $category->name }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
+            @if ($shop->comments->isNotEmpty())
+                <section>
+                    <x-ui.section-heading title="نظرات کاربران" />
+                    <div class="space-y-4">
+                        @foreach ($shop->comments as $comment)
+                            <article class="ps-card p-5">
+                                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                    <p class="font-medium text-ink">{{ $comment->fullname ?: 'کاربر' }}</p>
+                                    @if ($comment->rating)
+                                        <span class="inline-flex items-center gap-1 text-sm text-accent">
+                                            <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
+                                            {{ $comment->rating }}
+                                        </span>
+                                    @endif
+                                </div>
+                                @if ($comment->body)
+                                    <p class="text-sm leading-7 text-ink-muted">{{ $comment->body }}</p>
+                                @endif
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+        </div>
+
+        <aside class="space-y-6 lg:col-span-4">
+            @if ($shop->phones->isNotEmpty())
+                <section class="ps-card p-5">
+                    <h2 class="mb-4 text-base font-bold text-ink">تماس</h2>
+                    <ul class="space-y-3">
+                        @foreach ($shop->phones as $phone)
+                            <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
+                                <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
+                                <span class="text-xs text-ink-muted">{{ $phone->type->value }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
+            @if ($shop->person_responsible_name || $shop->person_responsible_email)
+                <section class="ps-card p-5">
+                    <h2 class="mb-4 text-base font-bold text-ink">مسئول فروشگاه</h2>
+                    <dl class="space-y-3 text-sm">
+                        @if ($shop->person_responsible_name)
+                            <div>
+                                <dt class="text-ink-muted">نام</dt>
+                                <dd class="mt-0.5 font-medium text-ink">{{ $shop->person_responsible_name }}</dd>
+                            </div>
+                        @endif
+                        @if ($shop->person_responsible_email)
+                            <div>
+                                <dt class="text-ink-muted">ایمیل</dt>
+                                <dd class="mt-0.5">
+                                    <a href="mailto:{{ $shop->person_responsible_email }}" class="font-medium text-brand hover:text-brand-dark" dir="ltr">
+                                        {{ $shop->person_responsible_email }}
+                                    </a>
+                                </dd>
+                            </div>
+                        @endif
+                    </dl>
+                </section>
+            @endif
+
+            @if ($shop->links->isNotEmpty())
+                <section class="ps-card p-5">
+                    <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
+                    <ul class="space-y-2">
+                        @foreach ($shop->links as $link)
+                            <li>
+                                <a
+                                    href="{{ $resolveLinkUrl($link->name) }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
+                                >
+                                    <span class="font-medium text-ink">{{ $link->link_type->value }}</span>
+                                    <span class="truncate text-xs text-ink-muted" dir="ltr">{{ $link->name }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            @endif
+
+            <section class="ps-card p-5">
+                <h2 class="mb-4 text-base font-bold text-ink">ساعات کاری</h2>
+                <dl class="space-y-3 text-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-ink-muted">شنبه تا چهارشنبه</dt>
+                        <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time }} – {{ $shop->close_time }}</dd>
+                    </div>
+                    @if ($shop->open_time_thursday && $shop->close_time_thursday)
+                        <div class="flex items-center justify-between gap-3">
+                            <dt class="text-ink-muted">پنج‌شنبه</dt>
+                            <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_thursday }} – {{ $shop->close_time_thursday }}</dd>
+                        </div>
+                    @endif
+                    @if ($shop->open_time_friday && $shop->close_time_friday)
+                        <div class="flex items-center justify-between gap-3">
+                            <dt class="text-ink-muted">جمعه</dt>
+                            <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_friday }} – {{ $shop->close_time_friday }}</dd>
+                        </div>
+                    @endif
+                </dl>
+            </section>
+
+            @if ($shop->website_show)
+                <section class="ps-card p-5">
+                    <h2 class="mb-2 text-base font-bold text-ink">وب‌سایت</h2>
+                    <p class="text-sm text-ink-muted" dir="ltr">{{ $shop->website_show }}</p>
+                </section>
+            @endif
+        </aside>
+    </div>
+@endsection
