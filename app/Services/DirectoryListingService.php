@@ -218,17 +218,34 @@ class DirectoryListingService
 
     private function attachImageUrls(Model $model, string $modelType): void
     {
-        $model->images->each(function (Image $image) use ($model, $modelType): void {
-            if (! in_array($image->type, [ImageType::Cover, ImageType::Logo], true)) {
-                return;
-            }
+        if ($model instanceof RepairShop)
+        {
+            if(!$model->images->where('type', ImageType::Logo->value)->first()?->path)
+                $model->logo = 'https://partsmall.ir/img/no_image_repair.jpg';
+            if(!$model->images?->first())
+                $model->logo = 'https://partsmall.ir/img/no_image_repair.jpg';
 
-            $property = $image->type === ImageType::Cover ? 'cover' : 'logo';
-            $model->{$property} = str_replace(
-                ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
-                [$modelType, $image->type->value, (string) $model->id, $image->path],
-                config('partsmall.image_url'),
-            );
-        });
+            if($model->images->first()?->path)
+                $model->logo = str_replace(
+                    ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
+                    ["repair", ImageType::Logo->value, (string) $model->id, $model->images->where('type', ImageType::Logo->value)->first()?->path],
+                    config('partsmall.image_url'),
+                );
+        }
+        else
+        {
+            $model->images->each(function (Image $image) use ($model, $modelType): void {
+                if (! in_array($image->type, [ImageType::Cover, ImageType::Logo], true)) {
+                    return;
+                }
+
+                $property = $image->type === ImageType::Cover ? 'cover' : 'logo';
+                $model->{$property} = str_replace(
+                    ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
+                    [$modelType, $image->type->value, (string) $model->id, $image->path],
+                    config('partsmall.image_url'),
+                );
+            });
+        }
     }
 }
