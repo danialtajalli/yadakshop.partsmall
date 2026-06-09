@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Enums\ImageType;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
@@ -172,11 +173,32 @@ class ProductServiceTest extends TestCase
             'order' => 1,
         ]);
         $company->shops()->attach($companyShop);
+        $company->shops->first()->images()->create([
+            'type' => ImageType::Cover,
+            'path' => 'cover.jpg',
+        ]);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertCount(1, $data['shops']);
         $this->assertSame('company-shop', $data['shops']->first()->slug);
+    }
+
+    public function test_if_shop_has_no_logo_it_wont_be_retrieved(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+
+        $companyShop = Shop::create([
+            'name' => 'فروشگاه شرکت',
+            'slug' => 'company-shop',
+            'show_under_product' => true,
+            'order' => 1,
+        ]);
+        $company->shops()->attach($companyShop);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertCount(0, $data['shops']);
     }
 
     public function test_it_sanitizes_shop_descriptions(): void
@@ -191,6 +213,10 @@ class ProductServiceTest extends TestCase
             'order' => 1,
         ]);
         $company->shops()->attach($shop);
+        $company->shops->first()->images()->create([
+            'type' => ImageType::Cover,
+            'path' => 'cover.jpg',
+        ]);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
