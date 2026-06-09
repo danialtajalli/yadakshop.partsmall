@@ -28,7 +28,7 @@ class ShopProfileTest extends TestCase
         $response->assertViewHas('title', 'یدک شاپ');
         $response->assertSee('یدک شاپ', false);
         $response->assertSee('هیوندای', false);
-        $response->assertSee('۰۲۱۳۳۹۷۹۳۷۰', false);
+        $response->assertSee('02133979370', false);
         $response->assertSee('telegram', false);
         $response->assertSee('نظرات کاربران', false);
     }

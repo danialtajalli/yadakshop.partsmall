@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Phone;
 use App\Models\RepairShop;
+use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RepairShopProfileService
@@ -33,11 +36,20 @@ class RepairShopProfileService
 
         ShopImageUrlBuilder::attachRepairShopMedia($repairShop);
         $repairShop->description = $this->sanitizeDescription($repairShop->description);
+        $this->normalizePhoneNumbers($repairShop->phones);
 
         return [
             'repairShop' => $repairShop,
             'title' => $repairShop->name,
         ];
+    }
+
+    /** @param  Collection<int, Phone>  $phones */
+    private function normalizePhoneNumbers(Collection $phones): void
+    {
+        $phones->each(function (Phone $phone): void {
+            $phone->phone_number = EnglishDigits::convert($phone->phone_number);
+        });
     }
 
     private function sanitizeDescription(?string $description): ?string

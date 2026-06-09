@@ -27,7 +27,7 @@ class RepairShopProfileTest extends TestCase
         $response->assertSee('تعمیرگاه آریا', false);
         $response->assertSee('تعمیر موتور و گیربکس', false);
         $response->assertSee('جلوبندی', false);
-        $response->assertSee('۰۲۱۴۴۵۵۶۶۷۷', false);
+        $response->assertSee('02144556677', false);
         $response->assertSee('telegram', false);
         $response->assertSee('علی رضایی', false);
     }

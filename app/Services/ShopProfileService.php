@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Enums\ImageType;
 use App\Models\Company;
+use App\Models\Phone;
 use App\Models\Shop;
+use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ShopProfileService
@@ -40,6 +43,7 @@ class ShopProfileService
 
         ShopImageUrlBuilder::attachShopMedia($shop);
         $shop->description = $this->sanitizeDescription($shop->description);
+        $this->normalizePhoneNumbers($shop->phones);
 
         $shop->companies->each(function (Company $company): void {
             $logo = $company->images->firstWhere('type', ImageType::Logo);
@@ -55,6 +59,14 @@ class ShopProfileService
             'averageRating' => $shop->average_rating !== null ? (float) $shop->average_rating : null,
             'commentsCount' => $shop->comments->count(),
         ];
+    }
+
+    /** @param  Collection<int, Phone>  $phones */
+    private function normalizePhoneNumbers(Collection $phones): void
+    {
+        $phones->each(function (Phone $phone): void {
+            $phone->phone_number = EnglishDigits::convert($phone->phone_number);
+        });
     }
 
     private function sanitizeDescription(?string $description): ?string
