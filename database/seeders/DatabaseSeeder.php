@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             PartsmallLegacySeeder::class,
             CompanyShopSeeder::class,
             ShopLogoSeeder::class,
+            ShopCoverSeeder::class,
         ]);
     }
 }
