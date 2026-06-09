@@ -105,7 +105,7 @@
                         @foreach ($repairShop->phones as $phone)
                             <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
                                 <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
-                                <span class="text-xs text-ink-muted">{{ $phone->type->value }}</span>
+                                <span class="text-xs text-ink-muted">{{ $phone->type->label() }}</span>
                             </li>
                         @endforeach
                     </ul>
