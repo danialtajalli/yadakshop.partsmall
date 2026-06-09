@@ -7,9 +7,6 @@ use App\Models\City;
 use App\Models\Image;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
-use App\Models\Scopes\ShopConfirmedScope;
-use App\Models\Scopes\ShopOrderScope;
-use App\Models\Scopes\ShopProductScope;
 use App\Models\Shop;
 use App\Models\State;
 use App\Support\ShopImageUrlBuilder;
@@ -40,7 +37,7 @@ class DirectoryListingService
     {
         $filters = $this->filtersFromRequest($request);
 
-        $query = Shop::withoutGlobalScopes([ShopProductScope::class, ShopConfirmedScope::class, ShopOrderScope::class])
+        $query = Shop::query()
             ->with(['state', 'images'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 

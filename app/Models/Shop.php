@@ -2,19 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ShopConfirmedScope;
-use App\Models\Scopes\ShopOrderScope;
-use App\Models\Scopes\ShopProductScope;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-#[ScopedBy([ShopProductScope::Class, ShopOrderScope::class
-// , ShopConfirmedScope::class
-])]
 class Shop extends Model
 {
     protected $fillable = [
@@ -100,5 +93,20 @@ class Shop extends Model
     public function companies(): BelongsToMany
     {
         return $this->belongsToMany(Company::class, 'company_shops');
+    }
+
+    public function scopeVisibleUnderProduct(Builder $query): void
+    {
+        $query->where('show_under_product', true);
+    }
+
+    public function scopeOrdered(Builder $query): void
+    {
+        $query->orderByDesc('order')->orderBy('id');
+    }
+
+    public function scopeConfirmed(Builder $query): void
+    {
+        $query->where('confirmed', true);
     }
 }

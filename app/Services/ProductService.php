@@ -126,6 +126,8 @@ class ProductService
     private function loadShopsForPart(Part $part, int $company_id): Collection
     {
         $query = fn () => Shop::query()
+            ->visibleUnderProduct()
+            ->ordered()
             ->with(['phones', 'links', 'state', 'images'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 

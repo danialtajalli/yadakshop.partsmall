@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Enums\ImageType;
 use App\Models\Company;
-use App\Models\Scopes\ShopOrderScope;
-use App\Models\Scopes\ShopProductScope;
 use App\Models\Shop;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,7 +20,7 @@ class ShopProfileService
      */
     public function getProfilePageData(string $slug): array
     {
-        $shop = Shop::withoutGlobalScopes([ShopProductScope::class, ShopOrderScope::class])
+        $shop = Shop::query()
             ->with([
                 'state',
                 'images',
