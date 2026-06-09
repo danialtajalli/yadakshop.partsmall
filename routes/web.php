@@ -13,6 +13,7 @@ Route::get('/', function () {
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
 Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
+Route::get('repair_profile/{repair_shop_slug}', [RepairShopController::class, 'show'])->name('repair-shop.profile');
 
 Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
     ->name('car.parts');
