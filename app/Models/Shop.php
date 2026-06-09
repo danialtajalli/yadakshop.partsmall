@@ -67,6 +67,11 @@ class Shop extends Model
         return $this->belongsTo(State::class);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
+    }
+
     public function phones(): HasMany
     {
         return $this->hasMany(Phone::class);

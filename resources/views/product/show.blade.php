@@ -98,7 +98,11 @@
                     <article class="ps-card-interactive flex flex-col p-5">
                         <div class="mb-5 flex items-start gap-4">
                             <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
-                                {{ mb_substr($shop->name, 0, 1) }}
+                                @if ($shop->logo)
+                                    <img src="{{ $shop->logo }}" alt="{{ $shop->name }}" class="w-full h-full object-cover" />
+                                @else
+                                    {{ mb_substr($shop->name, 0, 1) }}
+                                @endif
                             </div>
                             <div class="min-w-0 flex-1">
                                 <h3 class="truncate font-semibold text-ink">{{ $shop->name }}</h3>
