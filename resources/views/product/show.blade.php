@@ -12,7 +12,7 @@
                         ['label' => 'خانه', 'url' => url('/')],
                         ['label' => $company->name, 'emphasized' => true],
                         ['label' => $car->name],
-                        ['label' => $model->name, 'active' => true],
+                        ['label' => $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
                     ]" />
 
                     <div class="flex flex-wrap items-end justify-between gap-4">
