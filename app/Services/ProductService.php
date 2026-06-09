@@ -139,7 +139,7 @@ class ProductService
                     'companies',
                     fn ($q) => $q->where('companies.id', $company_id),
                 )
-                ->whereHas('images')
+                ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
                 ->get();
         }
 
