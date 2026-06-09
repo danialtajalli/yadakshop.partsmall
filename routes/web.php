@@ -11,6 +11,7 @@ Route::get('/', function () {
 });
 
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
+Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
 Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
 
 Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
