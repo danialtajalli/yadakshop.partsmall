@@ -16,9 +16,27 @@
                 label="انتخاب قطعه"
                 :title="$company->name . ' · ' . $car->name . ' · ' . $model->name"
                 description="قطعه مورد نظر خود را جستجو کنید یا از لیست انتخاب نمایید"
+                heading="h1"
             />
         </div>
     </div>
+
+    @if ($car->description)
+        <div class="mb-8 ps-card px-5 py-6 sm:px-6">
+            <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">
+                معرفی خودرو {{ $company->name }} {{ $car->name }}
+            </h2>
+            <x-ui.expandable-description id="car-description">
+                {!! $car->description !!}
+            </x-ui.expandable-description>
+        </div>
+    @endif
+
+    <x-ui.section-heading
+        class="mb-4"
+        title="قطعات موجود"
+        description="برای یافتن سریع‌تر، نام قطعه را جستجو کنید"
+    />
 
     <div class="mb-8">
         <label for="part-search" class="sr-only">جستجوی قطعه</label>
@@ -52,7 +70,7 @@
                         @if ($part->partsCategory)
                             <p class="mb-2 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
                         @endif
-                        <h2 class="text-lg font-semibold text-ink">{{ $part->name }}</h2>
+                        <h3 class="text-lg font-semibold text-ink">{{ $part->name }}</h3>
                     </div>
 
                     <a

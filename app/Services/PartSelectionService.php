@@ -24,9 +24,10 @@ class PartSelectionService
         Car $car,
         CarModel $model,
     ): array {
+        $car->description = $this->sanitizeDescription($car->description, $company, $car);
+
         $parts = Part::query()
             ->with('partsCategory')
-            ->orderBy('name')
             ->get();
 
         return [
@@ -43,5 +44,18 @@ class PartSelectionService
         $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
 
         return 'لوازم یدکی '.$company->name.' '.$car->name.' '.$modelName;
+    }
+
+    private function sanitizeDescription(?string $description, Company $company, Car $car): ?string
+    {
+        if ($description === null || $description === '') {
+            return $description;
+        }
+
+        return str_replace(
+            ['ظظظ', 'rn', 'ططط'],
+            [$company->name, '', $car->name],
+            $description,
+        );
     }
 }
