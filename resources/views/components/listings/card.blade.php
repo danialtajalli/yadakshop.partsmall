@@ -3,6 +3,8 @@
 <article {{ $attributes->merge(['class' => 'ps-card-interactive relative flex h-full flex-col p-5']) }}>
     @if ($type === 'shop')
         <a href="{{ route('shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
+    @elseif ($type === 'repair_shop')
+        <a href="{{ route('repair-shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @endif
     <div class="mb-4 flex items-start gap-4">
         <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
