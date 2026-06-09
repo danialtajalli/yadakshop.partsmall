@@ -15,6 +15,32 @@
                         ['label' => $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
                     ]" />
 
+                    @if ($shops->isNotEmpty())
+                        <a
+                            href="#shops"
+                            data-shops-jump
+                            class="ps-shops-jump mb-5 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99] lg:hidden"
+                        >
+                            <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
+                                <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36a1.125 1.125 0 0 1-1.009-.69L.5 9.75A1.125 1.125 0 0 1 1.509 8.5H5.25m8.25 0V5.625A2.625 2.625 0 0 0 11.625 3h-3.75A2.625 2.625 0 0 0 5.25 5.625V8.5m8.25 0H5.25" />
+                                    </svg>
+                                </span>
+                                <span>
+                                    <span class="block font-semibold text-brand-dark">{{ $shops->count() }} فروشگاه مرتبط</span>
+                                    <span class="block text-xs text-ink-muted">برای خرید {{ $part->name }} کلیک کنید</span>
+                                </span>
+                            </span>
+                            <span class="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand">
+                                مشاهده
+                                <svg class="ps-shops-jump-chevron size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </span>
+                        </a>
+                    @endif
+
                     <div class="flex flex-wrap items-end justify-between gap-4">
                         <div>
                             @if ($part->partsCategory)
@@ -85,7 +111,7 @@
     </div>
 
     {{-- Shops --}}
-    <section class="mb-12">
+    <section id="shops" class="mb-12 scroll-mt-20 ps-shops-section">
         <x-ui.section-heading
             label="فروشندگان"
             title="فروشگاه‌های مرتبط"
@@ -240,7 +266,7 @@
 
             @if ($part->description)
                 <div class="border-t border-line px-5 py-6 sm:px-6">
-                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</p>
+                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</h2>
                     <x-ui.expandable-description id="part-description">
                         {!! $part->description !!}
                     </x-ui.expandable-description>
@@ -249,7 +275,7 @@
 
             @if ($car->description)
                 <div class="border-t border-line px-5 py-6 sm:px-6">
-                    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی خودرو {{ $company->name }} {{ $car->name }}</p>
+                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی خودرو {{ $company->name }} {{ $car->name }}</h2>
                     <x-ui.expandable-description id="car-description">
                         {!! $car->description !!}
                     </x-ui.expandable-description>
@@ -257,4 +283,53 @@
             @endif
         </div>
     </section>
+
+    @if ($shops->isNotEmpty())
+        @push('scripts')
+            <script>
+                (function () {
+                    const link = document.querySelector('[data-shops-jump]');
+                    const target = document.getElementById('shops');
+
+                    if (!link || !target) {
+                        return;
+                    }
+
+                    const headerOffset = 80;
+                    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault();
+
+                        link.classList.add('is-scrolling');
+
+                        const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+                        const finish = function () {
+                            link.classList.remove('is-scrolling');
+                            target.classList.add('ps-shops-section--highlight');
+                            window.setTimeout(function () {
+                                target.classList.remove('ps-shops-section--highlight');
+                            }, 900);
+                        };
+
+                        if (reducedMotion) {
+                            window.scrollTo(0, top);
+                            finish();
+
+                            return;
+                        }
+
+                        window.scrollTo({ top: top, behavior: 'smooth' });
+
+                        if ('onscrollend' in window) {
+                            window.addEventListener('scrollend', finish, { once: true });
+                        } else {
+                            window.setTimeout(finish, 750);
+                        }
+                    });
+                })();
+            </script>
+        @endpush
+    @endif
 @endsection
