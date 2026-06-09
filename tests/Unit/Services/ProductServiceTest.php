@@ -174,7 +174,7 @@ class ProductServiceTest extends TestCase
         ]);
         $company->shops()->attach($companyShop);
         $company->shops->first()->images()->create([
-            'type' => ImageType::Cover,
+            'type' => ImageType::Logo,
             'path' => 'cover.jpg',
         ]);
 
@@ -214,7 +214,7 @@ class ProductServiceTest extends TestCase
         ]);
         $company->shops()->attach($shop);
         $company->shops->first()->images()->create([
-            'type' => ImageType::Cover,
+            'type' => ImageType::Logo,
             'path' => 'cover.jpg',
         ]);
 
