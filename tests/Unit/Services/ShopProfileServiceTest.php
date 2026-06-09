@@ -8,6 +8,7 @@ use App\Models\Shop;
 use App\Models\State;
 use App\Services\ShopProfileService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class ShopProfileServiceTest extends TestCase
@@ -37,7 +38,8 @@ class ShopProfileServiceTest extends TestCase
         $this->assertSame($shop->id, $data['shop']->id);
         $this->assertStringContainsString('shop/logo/'.$shop->id.'/logo.webp', $data['shop']->logo);
         $this->assertCount(1, $data['shop']->companies);
-        $this->assertStringContainsString('company/logo/', $data['shop']->companies->first()->logo_url);
+        Log::info($data['shop']->companies->first()->logo_url);
+        $this->assertStringContainsString('uploads/company', $data['shop']->companies->first()->logo_url);
     }
 
     public function test_it_finds_shop_even_when_hidden_from_product_scope(): void
