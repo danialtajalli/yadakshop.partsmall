@@ -540,7 +540,7 @@ class LegacyDataImporter
             $instagram = (string) $row['instagram'];
             $links[] = $this->linkRow(
                 name: str_starts_with($instagram, 'http') ? $instagram : 'https://www.instagram.com/'.$instagram,
-                type: LinkType::Website->value,
+                type: LinkType::Instagram->value,
                 companyId: null,
                 repairShopId: $repairShopId,
                 shopId: $shopId,
