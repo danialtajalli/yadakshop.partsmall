@@ -26,6 +26,7 @@ class ShopImageUrlBuilder
             config('partsmall.image_url'),
         );
     }
+
     public static function attachShopMedia(Model $model, string $modelType = 'shop'): void
     {
         if (! method_exists($model, 'images')) {
