@@ -632,6 +632,7 @@ class LegacyDataImporter
         string $path,
         ?int $companyId = null,
         ?int $repairShopId = null,
+        ?int $shopId = null,
     ): array {
         $now = now();
 
@@ -640,6 +641,7 @@ class LegacyDataImporter
             'path' => $path,
             'company_id' => $companyId,
             'repair_shop_id' => $repairShopId,
+            'shop_id' => $shopId,
             'created_at' => $now,
             'updated_at' => $now,
         ];

@@ -13,6 +13,7 @@ class Image extends Model
         'path',
         'company_id',
         'repair_shop_id',
+        'shop_id',
     ];
 
     protected function casts(): array
@@ -30,5 +31,10 @@ class Image extends Model
     public function repairShop(): BelongsTo
     {
         return $this->belongsTo(RepairShop::class);
+    }
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
     }
 }
