@@ -112,11 +112,11 @@
         @apply overflow-hidden;
     }
 
-    .ps-expandable:not(.is-expanded) .ps-expandable-content {
+    .ps-expandable:not(.is-expanded):not(.is-compact) .ps-expandable-content {
         @apply line-clamp-5;
     }
 
-    .ps-expandable:not(.is-expanded)::after {
+    .ps-expandable.is-truncated:not(.is-expanded)::after {
         content: '';
         @apply pointer-events-none absolute inset-x-0 bottom-10 h-16 bg-gradient-to-t from-white to-transparent;
     }

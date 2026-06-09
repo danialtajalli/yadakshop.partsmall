@@ -42,10 +42,17 @@
                             return;
                         }
 
+                        block.classList.remove('is-compact');
+                        const clampedHeight = content.clientHeight;
+
                         block.classList.add('is-expanded');
                         const fullHeight = content.scrollHeight;
                         block.classList.remove('is-expanded');
-                        toggle.hidden = fullHeight <= content.clientHeight + 2;
+
+                        const overflows = fullHeight > clampedHeight + 2;
+                        block.classList.toggle('is-truncated', overflows);
+                        block.classList.toggle('is-compact', !overflows);
+                        toggle.hidden = !overflows;
                     };
 
                     toggle?.addEventListener('click', () => {
