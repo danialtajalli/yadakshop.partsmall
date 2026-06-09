@@ -62,8 +62,8 @@
                 .ps-prose ul { @apply list-disc; }
                 .ps-prose ol { @apply list-decimal; }
                 .ps-expandable-content { @apply overflow-hidden; }
-                .ps-expandable:not(.is-expanded) .ps-expandable-content { @apply line-clamp-5; }
-                .ps-expandable:not(.is-expanded)::after { content: ''; @apply pointer-events-none absolute inset-x-0 bottom-10 h-16 bg-gradient-to-t from-white to-transparent; }
+                .ps-expandable:not(.is-expanded):not(.is-compact) .ps-expandable-content { @apply line-clamp-5; }
+                .ps-expandable.is-truncated:not(.is-expanded)::after { content: ''; @apply pointer-events-none absolute inset-x-0 bottom-10 h-16 bg-gradient-to-t from-white to-transparent; }
                 .ps-expandable-toggle { @apply relative z-10 mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-line bg-surface py-2.5 text-sm font-medium text-brand transition hover:border-brand/30 hover:bg-brand-soft; }
                 .ps-expandable-toggle[hidden] { display: none; }
                 .ps-shops-jump { animation: ps-shops-jump-enter 0.5s ease-out both, ps-shops-jump-glow 2.4s ease-in-out 0.5s infinite; }

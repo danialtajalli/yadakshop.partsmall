@@ -121,7 +121,7 @@
         @if ($shops->isNotEmpty())
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($shops as $shop)
-                    <article class="ps-card-interactive flex flex-col p-5">
+                    <article class="ps-card-interactive relative flex flex-col p-5">
                         <div class="mb-5 flex items-start gap-4">
                             <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
                                 @if ($shop->logo)
@@ -147,7 +147,7 @@
                         </div>
 
                         <div class="mt-auto flex gap-2.5">
-                            <a href="#" class="ps-btn-primary flex-1 text-center">مشاهده</a>
+                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 text-center">مشاهده</a>
                             <button
                                 type="button"
                                 class="ps-btn-secondary shrink-0"
