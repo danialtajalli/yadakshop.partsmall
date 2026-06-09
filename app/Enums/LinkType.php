@@ -6,6 +6,7 @@ enum LinkType: string
 {
     case Website = 'website';
     case Telegram = 'telegram';
+    case Instagram = 'instagram';
     case Whatsapp = 'whatsapp';
     case Rubika = 'rubika';
     case Eita = 'eita';
