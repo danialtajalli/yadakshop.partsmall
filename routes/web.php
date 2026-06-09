@@ -2,11 +2,16 @@
 
 use App\Http\Controllers\PartSelectionController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RepairShopController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
+Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
 
 Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
     ->name('car.parts');
