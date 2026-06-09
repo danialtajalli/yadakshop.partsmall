@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\ImageType;
 use App\Models\Image;
+use App\Models\RepairShop;
 use Illuminate\Database\Eloquent\Model;
 
 class ShopImageUrlBuilder
@@ -44,5 +45,20 @@ class ShopImageUrlBuilder
     public static function companyLogoUrl(Image $image): string
     {
         return self::buildCompanyLogoUrl('company', $image->company_id, $image->path);
+    }
+
+    public static function attachRepairShopMedia(RepairShop $repairShop): void
+    {
+        $logo = $repairShop->images->firstWhere('type', ImageType::Logo);
+
+        $repairShop->logo = $logo?->path
+            ? self::build('repair', ImageType::Logo, $repairShop->id, $logo->path)
+            : 'https://partsmall.ir/img/no_image_repair.jpg';
+
+        $cover = $repairShop->images->firstWhere('type', ImageType::Cover);
+
+        if ($cover?->path) {
+            $repairShop->cover = self::build('repair', ImageType::Cover, $repairShop->id, $cover->path);
+        }
     }
 }

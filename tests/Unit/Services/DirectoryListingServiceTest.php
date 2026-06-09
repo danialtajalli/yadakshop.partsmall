@@ -226,7 +226,7 @@ class DirectoryListingServiceTest extends TestCase
         $data = $this->service->getRepairShopListing(Request::create('/repair_shops', 'GET'));
         $listing = $data['listings']->first();
 
-        $this->assertStringContainsString('repair_shop/logo/'.$shop->id.'/aria.webp', $listing->logo);
+        $this->assertStringContainsString('repair/logo/'.$shop->id.'/aria.webp', $listing->logo);
     }
 
     public function test_listing_builds_cities_grouped_by_state(): void

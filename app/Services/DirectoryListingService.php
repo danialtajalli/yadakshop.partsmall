@@ -12,6 +12,7 @@ use App\Models\Scopes\ShopOrderScope;
 use App\Models\Scopes\ShopProductScope;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\ShopImageUrlBuilder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -218,22 +219,9 @@ class DirectoryListingService
 
     private function attachImageUrls(Model $model, string $modelType): void
     {
-        if ($model instanceof RepairShop)
-        {
-            if(!$model->images->where('type', ImageType::Logo->value)->first()?->path)
-                $model->logo = 'https://partsmall.ir/img/no_image_repair.jpg';
-            if(!$model->images?->first())
-                $model->logo = 'https://partsmall.ir/img/no_image_repair.jpg';
-
-            if($model->images->first()?->path)
-                $model->logo = str_replace(
-                    ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
-                    ["repair", ImageType::Logo->value, (string) $model->id, $model->images->where('type', ImageType::Logo->value)->first()?->path],
-                    config('partsmall.image_url'),
-                );
-        }
-        else
-        {
+        if ($model instanceof RepairShop) {
+            ShopImageUrlBuilder::attachRepairShopMedia($model);
+        } else {
             $model->images->each(function (Image $image) use ($model, $modelType): void {
                 if (! in_array($image->type, [ImageType::Cover, ImageType::Logo], true)) {
                     return;
