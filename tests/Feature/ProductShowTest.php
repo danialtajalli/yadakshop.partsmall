@@ -7,6 +7,7 @@ use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\Part;
 use App\Models\PartsCategory;
+use App\Models\RepairCategory;
 use App\Models\Shop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -32,6 +33,27 @@ class ProductShowTest extends TestCase
         $response->assertSee('طبق', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('سانتافه', false);
+    }
+
+    public function test_product_show_displays_repair_locator_when_part_has_repair_category(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+
+        $repairCategory = RepairCategory::create(['name' => 'جلوبندی']);
+        $part->repairCategories()->attach($repairCategory);
+
+        $response = $this->get(route('product.show', [
+            'company' => 'hyundai',
+            'car' => 'santafe',
+            'model' => 'new',
+            'part' => 'arm',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('مشاهده خدمات جلوبندی سانتافه در محدوده شما', false);
+        $response->assertSee('name="specialization_id"', false);
+        $response->assertSee('value="'.$repairCategory->id.'"', false);
+        $response->assertSee(route('repair-shops.index'), false);
     }
 
     public function test_product_show_returns_not_found_for_unknown_company(): void

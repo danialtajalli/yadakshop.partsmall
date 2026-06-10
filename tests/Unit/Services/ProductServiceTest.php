@@ -35,9 +35,10 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'title'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'title', 'repairLocator'],
             array_keys($data),
         );
+        $this->assertNull($data['repairLocator']);
         $this->assertSame($company->id, $data['company']->id);
         $this->assertSame($car->id, $data['car']->id);
         $this->assertSame($model->id, $data['model']->id);
@@ -90,6 +91,25 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame('طبق هیوندای سانتافه سال 1402', $data['title']);
+    }
+
+    public function test_it_builds_repair_locator_context_when_part_has_repair_category(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+
+        $repairCategory = RepairCategory::create(['name' => 'جلوبندی']);
+        $part->repairCategories()->attach($repairCategory);
+        $part->load('repairCategories');
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertNotNull($data['repairLocator']);
+        $this->assertSame('جلوبندی', $data['repairLocator']['category']->name);
+        $this->assertSame('سانتافه', $data['repairLocator']['carName']);
+        $this->assertSame(
+            'مشاهده خدمات جلوبندی سانتافه در محدوده شما',
+            $data['repairLocator']['buttonLabel'],
+        );
     }
 
     public function test_it_builds_repair_cards_with_calculated_cost(): void

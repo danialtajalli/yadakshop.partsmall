@@ -52,8 +52,14 @@
                     </div>
                 </div>
             </div>
-
             <section>
+
+            @if ($repairLocator)
+                <div class="mt-6 mb-6">
+                    <x-product.repair-locator :repair-locator="$repairLocator" />
+                </div>
+            @endif
+
             <x-ui.section-heading
                 label="تعمیرات"
                 title="شرح تعمیرات و هزینه"

@@ -5,10 +5,12 @@ namespace App\Services;
 use App\Enums\ImageType;
 use App\Models\Car;
 use App\Models\CarModel;
+use App\Models\City;
 use App\Models\Company;
 use App\Models\Image;
 use App\Models\Part;
 use App\Models\Shop;
+use App\Models\State;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProductService
@@ -22,6 +24,14 @@ class ProductService
      *     repairCards: list<array{type: string, cost: ?int, wage_name: ?string}>,
      *     shops: Collection<int, Shop>,
      *     title: string,
+     *     repairLocator: ?array{
+     *         category: \App\Models\RepairCategory,
+     *         carName: string,
+     *         buttonLabel: string,
+     *         states: Collection<int, State>,
+     *         citiesByState: array<int, list<array{id: int, name: string}>>,
+     *         defaultStateId: ?int,
+     *     },
      * }
      */
     public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part,): array {
@@ -46,6 +56,59 @@ class ProductService
             'repairCards' => $repairCards,
             'shops' => $shops,
             'title' => $this->buildTitle($part, $company, $car, $model),
+            'repairLocator' => $this->buildRepairLocatorContext($part, $car),
+        ];
+    }
+
+    /**
+     * @return ?array{
+     *     category: \App\Models\RepairCategory,
+     *     carName: string,
+     *     buttonLabel: string,
+     *     states: Collection<int, State>,
+     *     citiesByState: array<int, list<array{id: int, name: string}>>,
+     *     defaultStateId: ?int,
+     * }
+     */
+    private function buildRepairLocatorContext(Part $part, Car $car): ?array
+    {
+        $category = $part->repairCategories->first();
+
+        if ($category === null) {
+            return null;
+        }
+
+        $location = $this->locationFilterData();
+
+        return [
+            'category' => $category,
+            'carName' => $car->name,
+            'buttonLabel' => "مشاهده خدمات {$category->name} {$car->name} در محدوده شما",
+            'states' => $location['states'],
+            'citiesByState' => $location['citiesByState'],
+            'defaultStateId' => null,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     states: Collection<int, State>,
+     *     citiesByState: array<int, list<array{id: int, name: string}>>,
+     * }
+     */
+    private function locationFilterData(): array
+    {
+        return [
+            'states' => State::query()->orderBy('name')->get(['id', 'name']),
+            'citiesByState' => City::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'state_id'])
+                ->groupBy('state_id')
+                ->map(fn (Collection $cities) => $cities->map(fn (City $city) => [
+                    'id' => $city->id,
+                    'name' => $city->name,
+                ])->values()->all())
+                ->all(),
         ];
     }
 
