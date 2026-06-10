@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Enums\ImageType;
 use App\Models\Image;
 use App\Models\RepairShop;
+use App\Models\Representation;
 use Illuminate\Database\Eloquent\Model;
 
 class ShopImageUrlBuilder
@@ -61,5 +62,20 @@ class ShopImageUrlBuilder
         if ($cover?->path) {
             $repairShop->cover = self::build('repair', ImageType::Cover, $repairShop->id, $cover->path);
         }
+    }
+
+    public static function attachRepresentationMedia(Representation $representation): void
+    {
+        if (! $representation->logo) {
+            $representation->logo = "https://partsmall.ir/img/no_image_representation.jpg";
+            return;
+        }
+
+        $representation->logo = self::build(
+            'representation',
+            ImageType::Logo,
+            $representation->id,
+            $representation->logo,
+        );
     }
 }
