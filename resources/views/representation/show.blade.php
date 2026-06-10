@@ -82,7 +82,7 @@
 
                     <ul class="flex flex-wrap gap-2">
                         @foreach ($serviceTypes as $service)
-                            <li class="rounded-xl bg-brand-soft px-3 py-1.5 text-sm font-medium text-brand-dark">
+                            <li class="rounded-xl bg-gray-100 px-3 py-1.5 text-sm font-medium text-brand-dark">
                                 {{ $service }}
                             </li>
                         @endforeach

@@ -55,7 +55,7 @@
         <ul class="mb-4 flex flex-wrap gap-2">
             @foreach (array_slice(preg_split('/\s*,\s*/', $listing->service_type) ?: [], 0, 3) as $service)
                 @if (trim($service) !== '')
-                    <li class="rounded-lg bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-dark">
+                    <li class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
                         {{ trim($service) }}
                     </li>
                 @endif
