@@ -29,6 +29,7 @@ class ShopProfileTest extends TestCase
         $response->assertSee('یدک شاپ', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('02133979370', false);
+        $response->assertSee('https://t.me/yadakshop', false);
         $response->assertSee('telegram', false);
         $response->assertSee('نظرات کاربران', false);
         $response->assertSee('aria-current="page"', false);
@@ -70,7 +71,7 @@ class ShopProfileTest extends TestCase
         ]);
 
         $shop->links()->create([
-            'name' => 'https://t.me/yadakshop',
+            'name' => '@yadakshop',
             'link_type' => LinkType::Telegram,
         ]);
 
