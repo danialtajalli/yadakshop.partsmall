@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-        <div class="px-5 py-6 sm:px-8 sm:py-8">
+        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
             <x-site.breadcrumb :items="[
                 ['label' => 'خانه', 'url' => url('/')],
                 ['label' => 'نمایندگی‌ها', 'url' => route('representations.index')],
