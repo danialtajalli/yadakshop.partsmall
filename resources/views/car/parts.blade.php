@@ -66,7 +66,9 @@
                     data-part-name="{{ $part->name }}"
                 >
                     <div class="mb-4 min-w-0 flex-1">
-                        <h3 class="text-lg font-semibold text-ink">{{ $part->name }}</h3>
+                        <h3 class="text-lg font-semibold text-ink">
+                            <a href="{{ route('part.show', $part->slug) }}" class="transition hover:text-brand">{{ $part->name }}</a>
+                        </h3>
                         @if ($part->partsCategory)
                             <p class="mb-2 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
                         @endif
