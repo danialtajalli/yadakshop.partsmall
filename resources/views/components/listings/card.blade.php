@@ -5,6 +5,8 @@
         <a href="{{ route('shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @elseif ($type === 'repair_shop')
         <a href="{{ route('repair-shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
+    @elseif ($type === 'representation')
+        <a href="{{ route('representation.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @endif
     <div class="mb-4 flex items-start gap-4">
         <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
@@ -22,6 +24,8 @@
                 <p class="truncate text-sm text-ink-muted">{{ $listing->secondary_name }}</p>
             @elseif ($type === 'repair_shop' && $listing->work_description)
                 <p class="line-clamp-2 text-sm text-ink-muted">{{ $listing->work_description }}</p>
+            @elseif ($type === 'representation' && $listing->company)
+                <p class="truncate text-sm text-ink-muted">{{ $listing->company->name }}</p>
             @endif
 
             @if ($type === 'shop')
@@ -47,9 +51,26 @@
         </ul>
     @endif
 
+    @if ($type === 'representation' && $listing->service_type)
+        <ul class="mb-4 flex flex-wrap gap-2">
+            @foreach (array_slice(preg_split('/\s*,\s*/', $listing->service_type) ?: [], 0, 3) as $service)
+                @if (trim($service) !== '')
+                    <li class="rounded-lg bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-dark">
+                        {{ trim($service) }}
+                    </li>
+                @endif
+            @endforeach
+        </ul>
+    @endif
+
     <div class="mt-auto space-y-1 text-sm text-ink-muted">
         @if ($listing->state)
-            <p>{{ $listing->state->name }}</p>
+            <p>
+                {{ $listing->state->name }}
+                @if ($type === 'representation' && $listing->city)
+                    ، {{ $listing->city->name }}
+                @endif
+            </p>
         @endif
         @if ($listing->address)
             <p class="line-clamp-2">{{ $listing->address }}</p>

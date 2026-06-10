@@ -11,18 +11,28 @@
             ]" />
 
             <x-ui.section-heading
-                :label="$type === 'repair_shop' ? 'تعمیرگاه‌ها' : 'فروشگاه‌ها'"
+                :label="match ($type) {
+                    'repair_shop' => 'تعمیرگاه‌ها',
+                    'representation' => 'نمایندگی‌ها',
+                    default => 'فروشگاه‌ها',
+                }"
                 :title="$title"
-                :description="$type === 'repair_shop'
-                    ? 'جستجو و فیلتر تعمیرگاه‌ها بر اساس استان، شهر و تخصص'
-                    : 'جستجو و فیلتر فروشگاه‌های لوازم یدکی بر اساس استان و شهر'"
+                :description="match ($type) {
+                    'repair_shop' => 'جستجو و فیلتر تعمیرگاه‌ها بر اساس استان، شهر و تخصص',
+                    'representation' => 'جستجو و فیلتر نمایندگی‌های رسمی بر اساس استان، شهر و برند',
+                    default => 'جستجو و فیلتر فروشگاه‌های لوازم یدکی بر اساس استان و شهر',
+                }"
                 heading="h1"
             />
         </div>
     </div>
 
     <x-listings.filters
-        :action="route($type === 'repair_shop' ? 'repair-shops.index' : 'shops.index')"
+        :action="route(match ($type) {
+            'repair_shop' => 'repair-shops.index',
+            'representation' => 'representations.index',
+            default => 'shops.index',
+        })"
         :filters="$filters"
         :states="$states"
         :cities="$cities"
@@ -35,7 +45,7 @@
         <p class="text-sm text-ink-muted">
             {{ number_format($listings->total()) }} مورد یافت شد
         </p>
-        <div class="flex gap-2 text-sm">
+        <div class="flex flex-wrap gap-2 text-sm">
             <a
                 href="{{ route('shops.index', request()->except('page')) }}"
                 @class([
@@ -55,6 +65,16 @@
                 ])
             >
                 تعمیرگاه‌ها
+            </a>
+            <a
+                href="{{ route('representations.index', request()->except('page')) }}"
+                @class([
+                    'rounded-lg px-3 py-1.5 transition',
+                    'bg-brand text-white' => $type === 'representation',
+                    'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
+                ])
+            >
+                نمایندگی‌ها
             </a>
         </div>
     </div>
