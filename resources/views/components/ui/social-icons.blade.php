@@ -1,7 +1,6 @@
 @props([
     'links' => null,
     'items' => [],
-    'resolveUrl' => null,
 ])
 
 @php
@@ -11,12 +10,9 @@
 <ul {{ $attributes->merge(['class' => 'space-y-2']) }}>
     @if ($links)
         @foreach ($links as $link)
-            @php
-                $href = $resolveUrl ? ($resolveUrl)($link->name) : (str_starts_with($link->name, 'http') ? $link->name : "https://t.me/".$link->name);
-            @endphp
             <li>
                 <a
-                    href="{{ $href }}"
+                    href="{{ $link->link_type->actionUrl($link->name) }}"
                     target="_blank"
                     rel="noopener"
                     class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"

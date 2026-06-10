@@ -41,4 +41,31 @@ enum LinkType: string
             default => 'fa-solid fa-share-nodes',
         };
     }
+
+    public function actionUrl(string $name): string
+    {
+        $value = trim($name);
+
+        if ($value === '') {
+            return '#';
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        if (str_starts_with($value, 't.me/') || str_starts_with($value, 'telegram.me/')) {
+            return 'https://'.$value;
+        }
+
+        return match ($this) {
+            self::Telegram => 'https://t.me/'.ltrim($value, '@'),
+            self::Instagram => 'https://www.instagram.com/'.ltrim($value, '@/'),
+            self::Whatsapp => str_contains($value, 'wa.me') || str_contains($value, 'whatsapp.com')
+                ? 'https://'.ltrim($value, '/')
+                : 'https://wa.me/'.preg_replace('/\D+/', '', $value),
+            self::Website => 'https://'.ltrim($value, '/'),
+            default => 'https://'.ltrim($value, '/'),
+        };
+    }
 }

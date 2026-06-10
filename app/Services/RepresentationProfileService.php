@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Enums\LinkType;
 use App\Enums\PhoneType;
 use App\Models\Representation;
 use App\Support\EnglishDigits;
@@ -122,18 +123,15 @@ class RepresentationProfileService
         if ($representation->website) {
             $links[] = [
                 'label' => $representation->website_name ?: 'وب‌سایت',
-                'url' => $this->externalUrl($representation->website),
+                'url' => LinkType::Website->actionUrl($representation->website),
                 'kind' => 'website',
             ];
         }
 
         if ($representation->instagram) {
-            $instagram = $representation->instagram;
             $links[] = [
                 'label' => 'اینستاگرام',
-                'url' => str_starts_with($instagram, 'http')
-                    ? $instagram
-                    : 'https://www.instagram.com/'.$instagram,
+                'url' => LinkType::Instagram->actionUrl($representation->instagram),
                 'kind' => 'instagram',
             ];
         }
@@ -141,7 +139,7 @@ class RepresentationProfileService
         if ($representation->telegram) {
             $links[] = [
                 'label' => 'تلگرام',
-                'url' => $this->externalUrl($representation->telegram),
+                'url' => LinkType::Telegram->actionUrl($representation->telegram),
                 'kind' => 'telegram',
             ];
         }
@@ -149,17 +147,12 @@ class RepresentationProfileService
         if ($representation->whatsapp) {
             $links[] = [
                 'label' => 'واتساپ',
-                'url' => $this->externalUrl($representation->whatsapp),
+                'url' => LinkType::Whatsapp->actionUrl($representation->whatsapp),
                 'kind' => 'whatsapp',
             ];
         }
 
         return $links;
-    }
-
-    private function externalUrl(string $value): string
-    {
-        return str_starts_with($value, 'http') ? $value : 'https://'.$value;
     }
 
     private function normalizePhoneFields(Representation $representation): void

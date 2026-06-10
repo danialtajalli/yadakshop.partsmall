@@ -3,12 +3,6 @@
 @section('title', $title)
 
 @section('content')
-    @php
-        $resolveLinkUrl = static function (string $value): string {
-            return str_starts_with($value, 'http') ? $value : "https://t.me/".$value;
-        };
-    @endphp
-
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($repairShop->cover ?? null)
             <div class="h-40 w-full overflow-hidden border-b border-line sm:h-52">
@@ -115,7 +109,7 @@
             @if ($repairShop->links->isNotEmpty())
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
-                    <x-ui.social-icons :links="$repairShop->links" :resolve-url="$resolveLinkUrl" />
+                    <x-ui.social-icons :links="$repairShop->links" />
                 </section>
             @endif
         </aside>
