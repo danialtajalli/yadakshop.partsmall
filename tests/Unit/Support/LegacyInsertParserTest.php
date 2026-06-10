@@ -18,4 +18,16 @@ class LegacyInsertParserTest extends TestCase
         $this->assertCount(353, $shops);
         $this->assertSame('1,2', $shops[0]['cat']);
     }
+
+    public function test_it_parses_all_representation_rows_from_sql_dump(): void
+    {
+        $sql = file_get_contents(dirname(__DIR__, 3).'/partsmall_db.sql');
+
+        $this->assertNotFalse($sql);
+
+        $representations = (new LegacyInsertParser($sql ?: ''))->rows('representation');
+
+        $this->assertCount(223, $representations);
+        $this->assertSame('asanmotor', $representations[0]['latin']);
+    }
 }

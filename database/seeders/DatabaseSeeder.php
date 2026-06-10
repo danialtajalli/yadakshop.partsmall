@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CompanyShopSeeder::class,
             ShopLogoSeeder::class,
             ShopCoverSeeder::class,
+            RepresentationSeeder::class,
         ]);
     }
 }
