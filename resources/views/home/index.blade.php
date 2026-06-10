@@ -45,7 +45,7 @@
         <x-ui.section-heading
             class="mb-6"
             title="قطعات خودرو"
-            description="فهرست کامل قطعات — صفحه جزئیات هر قطعه به زودی اضافه می‌شود"
+            description="فهرست کامل قطعات — برای جزئیات و خودروهای مرتبط روی هر قطعه کلیک کنید"
         />
 
         @if ($parts->isEmpty())
@@ -72,8 +72,9 @@
 
             <div id="home-parts-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach ($parts as $part)
-                    <article
-                        class="home-part-card ps-card flex flex-col p-5"
+                    <a
+                        href="{{ route('part.show', $part->slug) }}"
+                        class="home-part-card ps-card-interactive flex flex-col p-5"
                         data-part-name="{{ $part->name }}"
                     >
                         <div class="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand-soft text-brand">
@@ -83,7 +84,7 @@
                         @if ($part->partsCategory)
                             <p class="mt-1 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
                         @endif
-                    </article>
+                    </a>
                 @endforeach
             </div>
         @endif
