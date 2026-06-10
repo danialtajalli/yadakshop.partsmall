@@ -11,8 +11,7 @@
                     <x-site.breadcrumb :items="[
                         ['label' => 'خانه', 'url' => url('/')],
                         ['label' => $company->name, 'emphasized' => true],
-                        ['label' => $car->name],
-                        ['label' => $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
+                        ['label' => $car->name . ' ' . $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
                     ]" />
 
                     @if ($shops->isNotEmpty())
@@ -48,10 +47,7 @@
                                     {{ $part->partsCategory->name }}
                                 </span>
                             @endif
-                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name }}</h1>
-                            <p class="mt-1.5 text-sm text-ink-muted">
-                                {{ $company->name }} · {{ $car->name }} · {{ $model->name }}
-                            </p>
+                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name . ' ' . $company->name . ' ' . $car->name . ' ' . $model->name }}</h1>
                         </div>
                     </div>
                 </div>

@@ -8,13 +8,12 @@
             <x-site.breadcrumb :items="[
                 ['label' => 'خانه', 'url' => url('/')],
                 ['label' => $company->name, 'emphasized' => true],
-                ['label' => $car->name],
-                ['label' => $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
+                ['label' => $car->name . ' ' . $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
             ]" />
 
             <x-ui.section-heading
                 label="انتخاب قطعه"
-                :title="$company->name . ' · ' . $car->name . ' · ' . $model->name"
+                :title="$company->name . ' ' . $car->name . ' ' . $model->name"
                 description="قطعه مورد نظر خود را جستجو کنید یا از لیست انتخاب نمایید"
                 heading="h1"
             />
@@ -67,10 +66,10 @@
                     data-part-name="{{ $part->name }}"
                 >
                     <div class="mb-4 min-w-0 flex-1">
+                        <h3 class="text-lg font-semibold text-ink">{{ $part->name }}</h3>
                         @if ($part->partsCategory)
                             <p class="mb-2 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
                         @endif
-                        <h3 class="text-lg font-semibold text-ink">{{ $part->name }}</h3>
                     </div>
 
                     <a
@@ -82,7 +81,7 @@
                         ]) }}"
                         class="ps-btn-primary w-full text-center"
                     >
-                        مشاهده جزئیات
+                        مشاهده {{ $part->name . ' ' . $company->name . ' ' . $car->name . ' ' . $model->name }}
                     </a>
                 </article>
             @endforeach
