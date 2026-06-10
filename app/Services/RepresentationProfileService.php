@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Enums\PhoneType;
 use App\Models\Representation;
 use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
@@ -15,8 +16,8 @@ class RepresentationProfileService
      *     representation: Representation,
      *     title: string,
      *     serviceTypes: list<string>,
-     *     contacts: list<array{label: string, value: string}>,
-     *     socialLinks: list<array{label: string, url: string}>,
+     *     contacts: list<array{label: string, value: string, kind: string, url: string, external: bool}>,
+     *     socialLinks: list<array{label: string, url: string, kind: string}>,
      * }
      */
     public function getProfilePageData(string $slug): array
@@ -61,31 +62,59 @@ class RepresentationProfileService
         )));
     }
 
-    /** @return list<array{label: string, value: string}> */
+    /** @return list<array{label: string, value: string, kind: string, url: string, external: bool}> */
     private function buildContacts(Representation $representation): array
     {
         $contacts = [];
 
         if ($representation->telephone) {
-            $contacts[] = ['label' => 'تلفن ثابت', 'value' => $representation->telephone];
+            $contacts[] = $this->contactEntry(
+                'تلفن ثابت',
+                $representation->telephone,
+                PhoneType::Land,
+            );
         }
 
         if ($representation->mobile) {
-            $contacts[] = ['label' => 'تلفن همراه', 'value' => $representation->mobile];
+            $contacts[] = $this->contactEntry(
+                'تلفن همراه',
+                $representation->mobile,
+                PhoneType::Mobile,
+            );
         }
 
         if ($representation->whatsapp_phone) {
-            $contacts[] = ['label' => 'واتساپ', 'value' => $representation->whatsapp_phone];
+            $contacts[] = $this->contactEntry(
+                'واتساپ',
+                $representation->whatsapp_phone,
+                PhoneType::Whatsapp,
+            );
         }
 
         if ($representation->telegram_phone) {
-            $contacts[] = ['label' => 'تلگرام', 'value' => $representation->telegram_phone];
+            $contacts[] = $this->contactEntry(
+                'تلگرام',
+                $representation->telegram_phone,
+                PhoneType::Telegram,
+            );
         }
 
         return $contacts;
     }
 
-    /** @return list<array{label: string, url: string}> */
+    /** @return array{label: string, value: string, kind: string, url: string, external: bool} */
+    private function contactEntry(string $label, string $value, PhoneType $type): array
+    {
+        return [
+            'label' => $label,
+            'value' => $value,
+            'kind' => $type->value,
+            'url' => $type->actionUrl($value),
+            'external' => ! in_array($type, [PhoneType::Land, PhoneType::Mobile], true),
+        ];
+    }
+
+    /** @return list<array{label: string, url: string, kind: string}> */
     private function buildSocialLinks(Representation $representation): array
     {
         $links = [];
@@ -94,6 +123,7 @@ class RepresentationProfileService
             $links[] = [
                 'label' => $representation->website_name ?: 'وب‌سایت',
                 'url' => $this->externalUrl($representation->website),
+                'kind' => 'website',
             ];
         }
 
@@ -104,6 +134,7 @@ class RepresentationProfileService
                 'url' => str_starts_with($instagram, 'http')
                     ? $instagram
                     : 'https://www.instagram.com/'.$instagram,
+                'kind' => 'instagram',
             ];
         }
 
@@ -111,6 +142,7 @@ class RepresentationProfileService
             $links[] = [
                 'label' => 'تلگرام',
                 'url' => $this->externalUrl($representation->telegram),
+                'kind' => 'telegram',
             ];
         }
 
@@ -118,6 +150,7 @@ class RepresentationProfileService
             $links[] = [
                 'label' => 'واتساپ',
                 'url' => $this->externalUrl($representation->whatsapp),
+                'kind' => 'whatsapp',
             ];
         }
 
