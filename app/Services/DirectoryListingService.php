@@ -6,6 +6,7 @@ use App\Enums\ImageType;
 use App\Models\City;
 use App\Models\Image;
 use App\Models\RepairCategory;
+use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Models\State;
@@ -115,16 +116,74 @@ class DirectoryListingService
     }
 
     /**
+     * @return array{
+     *     listings: LengthAwarePaginator,
+     *     type: string,
+     *     title: string,
+     *     states: Collection<int, State>,
+     *     cities: Collection<int, City>,
+     *     citiesByState: array<int, list<array{id: int, name: string}>>,
+     *     specializations: Collection<int, RepairCategory>,
+     *     filters: array{q: ?string, state_id: ?int, city_id: ?int, specialization_id: ?int},
+     *     showSpecializationFilter: bool,
+     * }
+     */
+    public function getRepresentationListing(Request $request): array
+    {
+        $filters = $this->filtersFromRequest($request);
+
+        $query = Representation::query()
+            ->with(['state', 'city', 'company']);
+
+        $this->applyCommonFilters($query, $filters, [
+            'name',
+            'address',
+            'responsible_person_name',
+            'service_type',
+            'work_fields',
+        ], matchCityById: true, searchCompanyName: true);
+
+        $listings = $query
+            ->orderBy('name')
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
+        $listings->getCollection()->each(function (Representation $representation): void {
+            ShopImageUrlBuilder::attachRepresentationMedia($representation);
+        });
+
+        return $this->buildPageData(
+            listings: $listings,
+            type: 'representation',
+            title: 'نمایندگی‌ها',
+            filters: $filters,
+            showSpecializationFilter: false,
+        );
+    }
+
+    /**
      * @param  list<string>  $searchColumns
      */
-    private function applyCommonFilters(Builder $query, array $filters, array $searchColumns): void
-    {
+    private function applyCommonFilters(
+        Builder $query,
+        array $filters,
+        array $searchColumns,
+        bool $matchCityById = false,
+        bool $searchCompanyName = false,
+    ): void {
         if ($filters['q']) {
             $search = $filters['q'];
 
-            $query->where(function (Builder $builder) use ($search, $searchColumns): void {
+            $query->where(function (Builder $builder) use ($search, $searchColumns, $searchCompanyName): void {
                 foreach ($searchColumns as $column) {
                     $builder->orWhere($column, 'like', '%'.$search.'%');
+                }
+
+                if ($searchCompanyName) {
+                    $builder->orWhereHas(
+                        'company',
+                        fn (Builder $relation) => $relation->where('name', 'like', '%'.$search.'%'),
+                    );
                 }
             });
         }
@@ -134,12 +193,16 @@ class DirectoryListingService
         }
 
         if ($filters['city_id']) {
-            $city = City::query()->find($filters['city_id']);
+            if ($matchCityById) {
+                $query->where('city_id', $filters['city_id']);
+            } else {
+                $city = City::query()->find($filters['city_id']);
 
-            if ($city) {
-                $query
-                    ->where('state_id', $city->state_id)
-                    ->where('address', 'like', '%'.$city->name.'%');
+                if ($city) {
+                    $query
+                        ->where('state_id', $city->state_id)
+                        ->where('address', 'like', '%'.$city->name.'%');
+                }
             }
         }
     }
