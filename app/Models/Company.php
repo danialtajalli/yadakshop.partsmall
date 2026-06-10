@@ -35,4 +35,9 @@ class Company extends Model
     {
         return $this->hasMany(Image::class);
     }
+
+    public function representations(): HasMany
+    {
+        return $this->hasMany(Representation::class);
+    }
 }
