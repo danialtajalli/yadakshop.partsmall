@@ -60,7 +60,8 @@ class RepresentationPagesTest extends TestCase
         $response->assertViewHas('title', 'شركت آسان موتور');
         $response->assertSee('شركت آسان موتور', false);
         $response->assertSee('فروش خودرو', false);
-        $response->assertSee('02137606000', false);
+        $response->assertSee('تلفن ثابت', false);
+        $response->assertSee('fa-solid fa-phone', false);
         $response->assertSee('هیوندای', false);
     }
 
