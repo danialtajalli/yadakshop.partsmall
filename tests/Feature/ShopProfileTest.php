@@ -31,6 +31,9 @@ class ShopProfileTest extends TestCase
         $response->assertSee('02133979370', false);
         $response->assertSee('telegram', false);
         $response->assertSee('نظرات کاربران', false);
+        $response->assertSee('aria-current="page"', false);
+        $response->assertSee('BreadcrumbList', false);
+        $response->assertSee(route('shops.index'), false);
     }
 
     public function test_shop_profile_returns_not_found_for_unknown_slug(): void
