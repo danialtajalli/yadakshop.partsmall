@@ -117,35 +117,14 @@
             @if (count($contacts) > 0)
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">تماس</h2>
-                    <ul class="space-y-3">
-                        @foreach ($contacts as $contact)
-                            <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
-                                <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $contact['value'] }}</span>
-                                <span class="text-xs text-ink-muted">{{ $contact['label'] }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <x-ui.phone-icons :contacts="$contacts" />
                 </section>
             @endif
 
             @if (count($socialLinks) > 0)
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
-                    <ul class="space-y-2">
-                        @foreach ($socialLinks as $link)
-                            <li>
-                                <a
-                                    href="{{ $link['url'] }}"
-                                    target="_blank"
-                                    rel="noopener"
-                                    class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
-                                >
-                                    <span class="font-medium text-ink">{{ $link['label'] }}</span>
-                                    <span class="truncate text-xs text-ink-muted" dir="ltr">{{ $link['url'] }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <x-ui.social-icons :items="$socialLinks" />
                 </section>
             @endif
 

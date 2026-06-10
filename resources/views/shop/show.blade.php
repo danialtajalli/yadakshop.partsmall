@@ -161,14 +161,7 @@
             @if ($shop->phones->isNotEmpty())
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">تماس</h2>
-                    <ul class="space-y-3">
-                        @foreach ($shop->phones as $phone)
-                            <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2.5">
-                                <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
-                                <span class="text-xs text-ink-muted">{{ $phone->type->label() }}</span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <x-ui.phone-icons :phones="$shop->phones" />
                 </section>
             @endif
 
@@ -199,21 +192,7 @@
             @if ($shop->links->isNotEmpty())
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
-                    <ul class="space-y-2">
-                        @foreach ($shop->links as $link)
-                            <li>
-                                <a
-                                    href="{{ $resolveLinkUrl($link->name) }}"
-                                    target="_blank"
-                                    rel="noopener"
-                                    class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
-                                >
-                                    <span class="font-medium text-ink">{{ $link->link_type->value }}</span>
-                                    <span class="truncate text-xs text-ink-muted" dir="ltr">{{ $link->name }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <x-ui.social-icons :links="$shop->links" :resolve-url="$resolveLinkUrl" />
                 </section>
             @endif
 

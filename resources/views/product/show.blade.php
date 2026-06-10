@@ -192,34 +192,17 @@
                                 @if ($shop->phones->isNotEmpty())
                                     <div>
                                         <p class="mb-2 text-xs font-semibold text-ink">تلفن‌ها</p>
-                                        <ul class="space-y-2">
-                                            @foreach ($shop->phones as $phone)
-                                                <li class="flex items-center justify-between gap-2 rounded-lg bg-surface px-3 py-2">
-                                                    <span class="font-medium tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
-                                                    <span class="text-xs text-ink-muted">{{ $phone->type->label() }}</span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                        <x-ui.phone-icons :phones="$shop->phones" />
                                     </div>
                                 @endif
 
                                 @if ($shop->links->isNotEmpty())
                                     <div>
                                         <p class="mb-2 text-xs font-semibold text-ink">شبکه‌های اجتماعی</p>
-                                        <ul class="flex flex-wrap gap-2">
-                                            @foreach ($shop->links as $link)
-                                                <li>
-                                                    <a
-                                                        href="{{ str_starts_with($link->name, 'http') ? $link->name : '#' }}"
-                                                        class="inline-flex rounded-lg bg-brand-soft px-3 py-1.5 text-xs font-medium text-brand-dark transition hover:bg-brand hover:text-white"
-                                                        target="_blank"
-                                                        rel="noopener"
-                                                    >
-                                                        {{ $link->link_type->value }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                        @php
+                                            $resolveShopLinkUrl = static fn (string $value): string => str_starts_with($value, 'http') ? $value : '#';
+                                        @endphp
+                                        <x-ui.social-icons :links="$shop->links" :resolve-url="$resolveShopLinkUrl" />
                                     </div>
                                 @endif
 
