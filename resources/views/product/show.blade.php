@@ -200,7 +200,7 @@
                                     <div>
                                         <p class="mb-2 text-xs font-semibold text-ink">شبکه‌های اجتماعی</p>
                                         @php
-                                            $resolveShopLinkUrl = static fn (string $value): string => str_starts_with($value, 'http') ? $value : '#';
+                                            $resolveShopLinkUrl = static fn (string $value): string => str_starts_with($value, 'http') ? $value : 'https://t.me/'.$value;
                                         @endphp
                                         <x-ui.social-icons :links="$shop->links" :resolve-url="$resolveShopLinkUrl" />
                                     </div>

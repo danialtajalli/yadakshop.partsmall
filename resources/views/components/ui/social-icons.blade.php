@@ -12,7 +12,7 @@
     @if ($links)
         @foreach ($links as $link)
             @php
-                $href = $resolveUrl ? ($resolveUrl)($link->name) : (str_starts_with($link->name, 'http') ? $link->name : '#');
+                $href = $resolveUrl ? ($resolveUrl)($link->name) : (str_starts_with($link->name, 'http') ? $link->name : "https://t.me/".$link->name);
             @endphp
             <li>
                 <a

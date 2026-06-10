@@ -5,7 +5,7 @@
 @section('content')
     @php
         $resolveLinkUrl = static function (string $value): string {
-            return str_starts_with($value, 'http') ? $value : '#';
+            return str_starts_with($value, 'http') ? $value : "https://t.me/".$value;
         };
     @endphp
 
