@@ -3,6 +3,7 @@
 {{--
     SEO breadcrumb — semantic nav + Schema.org BreadcrumbList (JSON-LD).
     Each item: ['label' => string, 'url' => ?string, 'active' => ?bool, 'emphasized' => ?bool]
+    Items with a url are always rendered as links, including the current page when appropriate.
 --}}
 
 @php
@@ -51,8 +52,9 @@
             @foreach ($crumbs as $index => $item)
                 @php
                     $isLast = $index === $lastIndex;
-                    $isCurrent = (bool) ($item['active'] ?? false) || ($isLast && empty($item['url']));
                     $href = $item['url'] ?? null;
+                    $isEmphasized = (bool) ($item['emphasized'] ?? false);
+                    $isActive = (bool) ($item['active'] ?? false);
                 @endphp
 
                 <li class="flex items-center gap-1.5">
@@ -60,10 +62,14 @@
                         <span class="text-line select-none" aria-hidden="true">/</span>
                     @endif
 
-                    @if ($href && ! $isCurrent)
+                    @if ($href)
                         <a
                             href="{{ $href }}"
-                            class="rounded-md px-1.5 py-0.5 transition hover:bg-brand-soft hover:text-brand"
+                            @class([
+                                'rounded-md px-1.5 py-0.5 transition hover:bg-brand-soft hover:text-brand',
+                                'font-medium text-ink' => $isEmphasized || $isActive || $isLast,
+                            ])
+                            @if ($isLast) aria-current="page" @endif
                         >
                             {{ $item['label'] }}
                         </a>
@@ -71,10 +77,9 @@
                         <span
                             @class([
                                 'px-1.5 py-0.5',
-                                'rounded-md font-medium text-ink' => $item['emphasized'] ?? false,
-                                'font-medium text-ink' => $isCurrent && ! ($item['emphasized'] ?? false),
+                                'rounded-md font-medium text-ink' => $isEmphasized || $isActive || $isLast,
                             ])
-                            @if ($isCurrent) aria-current="page" @endif
+                            @if ($isLast) aria-current="page" @endif
                         >{{ $item['label'] }}</span>
                     @endif
                 </li>
