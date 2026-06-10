@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mb-10 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-        <div class="border-b border-line bg-gradient-to-l from-brand-soft via-white to-white px-5 py-8 sm:px-8 sm:py-10">
+        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white to-white px-5 py-8 sm:px-8 sm:py-10">
             <x-ui.section-heading
                 label="پلتفرم لوازم یدکی"
                 :title="$title"

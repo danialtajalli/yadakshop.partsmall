@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <div class="px-5 py-6 sm:px-8 sm:py-8">
+        <div class="px-5 py-6 sm:px-8 sm:py-8 bg-gradient-to-l from-gray-100 via-white">
             <x-site.breadcrumb :items="[
                 ['label' => 'خانه', 'url' => url('/')],
                 ['label' => 'فروشگاه‌ها', 'url' => route('shops.index')],
