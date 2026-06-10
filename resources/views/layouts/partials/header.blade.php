@@ -5,8 +5,8 @@
             <span class="text-base font-bold text-ink">{{ config('app.name', 'پارتس‌مال') }}</span>
         </a>
         <nav class="flex items-center gap-1 text-sm text-ink-muted">
-            <a href="#" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">قطعات</a>
-            <a href="#" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">فروشگاه‌ها</a>
+            <a href="{{ route('home') }}#parts" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">قطعات</a>
+            <a href="{{ route('shops.index') }}" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">فروشگاه‌ها</a>
             <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">درباره ما</a>
             <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">تماس</a>
         </nav>
