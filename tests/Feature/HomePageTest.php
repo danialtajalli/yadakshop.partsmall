@@ -79,6 +79,6 @@ class HomePageTest extends TestCase
         $response->assertSee(route('repair-shops.index'), false);
         $response->assertSee(route('representations.index'), false);
         $response->assertSee(route('shop.profile', 'yadak-shop'), false);
-        $response->assertDontSee('route(\'product.show\'', false);
+        $response->assertSee(route('part.show', 'spark-plug'), false);
     }
 }
