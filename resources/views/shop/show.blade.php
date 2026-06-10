@@ -124,7 +124,7 @@
                     <x-ui.section-heading title="دسته‌بندی قطعات" />
                     <ul class="flex flex-wrap gap-2">
                         @foreach ($shop->partsCategories as $category)
-                            <li class="rounded-xl bg-brand-soft px-3 py-1.5 text-sm font-medium text-brand-dark">
+                            <li class="rounded-xl bg-gray-100 px-3 py-1.5 text-sm font-medium text-brand-dark">
                                 {{ $category->name }}
                             </li>
                         @endforeach

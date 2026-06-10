@@ -40,7 +40,7 @@
     @if ($type === 'repair_shop' && $listing->repairCategories?->isNotEmpty())
         <ul class="mb-4 flex flex-wrap gap-2">
             @foreach ($listing->repairCategories->take(3) as $category)
-                <li class="rounded-lg bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-dark">
+                <li class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
                     {{ $category->name }}
                 </li>
             @endforeach
