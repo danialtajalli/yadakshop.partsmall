@@ -30,4 +30,28 @@ enum PhoneType: string
             self::Igap => 'آی‌گپ',
         };
     }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::Mobile => 'fa-solid fa-mobile-screen-button',
+            self::Land => 'fa-solid fa-phone',
+            self::Telegram => 'fa-brands fa-telegram',
+            self::Whatsapp => 'fa-brands fa-whatsapp',
+            default => 'fa-solid fa-phone',
+        };
+    }
+
+    public function actionUrl(string $phoneNumber): string
+    {
+        $number = trim($phoneNumber);
+
+        return match ($this) {
+            self::Whatsapp => 'https://wa.me/'.preg_replace('/\D+/', '', $number),
+            self::Telegram => str_starts_with($number, 'http')
+                ? $number
+                : 'https://t.me/'.ltrim($number, '@'),
+            default => 'tel:'.$number,
+        };
+    }
 }
