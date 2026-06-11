@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\ImageType;
+use App\Models\Car;
+use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Company;
 use App\Models\Part;
@@ -80,5 +82,29 @@ class HomePageTest extends TestCase
         $response->assertSee(route('representations.index'), false);
         $response->assertSee(route('shop.profile', 'yadak-shop'), false);
         $response->assertSee(route('part.show', 'spark-plug'), false);
+    }
+
+    public function test_home_page_includes_company_picker_modal_data(): void
+    {
+        $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai', 'wage_strike' => 2.5]);
+        $car = Car::create(['name' => 'سانتافه', 'slug' => 'santafe', 'company_id' => $company->id]);
+        $model = CarModel::create(['name' => 'نیو', 'slug' => 'new']);
+        $car->models()->attach($model);
+
+        $response = $this->get(route('home'));
+
+        $response->assertOk();
+        $response->assertSee('home-company-picker-modal', false);
+        $response->assertSee('data-company-picker-trigger', false);
+        $response->assertViewHas('companyPicker', function (array $picker): bool {
+            return collect($picker)->contains(
+                fn (array $company) => $company['slug'] === 'hyundai'
+                    && $company['cars'][0]['models'][0]['url'] === route('car.parts', [
+                        'company' => 'hyundai',
+                        'car' => 'santafe',
+                        'model' => 'new',
+                    ]),
+            );
+        });
     }
 }
