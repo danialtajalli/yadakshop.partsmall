@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -59,6 +60,11 @@ class Shop extends Model
         return $this->belongsTo(State::class);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(Image::class);
+    }
+
     public function phones(): HasMany
     {
         return $this->hasMany(Phone::class);
@@ -82,5 +88,25 @@ class Shop extends Model
     public function parts(): BelongsToMany
     {
         return $this->belongsToMany(Part::class, 'part_shop');
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_shops');
+    }
+
+    public function scopeVisibleUnderProduct(Builder $query): void
+    {
+        $query->where('show_under_product', true);
+    }
+
+    public function scopeOrdered(Builder $query): void
+    {
+        $query->orderByDesc('order')->orderBy('id');
+    }
+
+    public function scopeConfirmed(Builder $query): void
+    {
+        $query->where('confirmed', true);
     }
 }
