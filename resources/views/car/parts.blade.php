@@ -5,11 +5,7 @@
 @section('content')
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            <x-site.breadcrumb :items="[
-                ['label' => 'خانه', 'url' => url('/')],
-                ['label' => $company->name, 'emphasized' => true],
-                ['label' => $car->name . ' ' . $model->name, 'active' => true, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
-            ]" />
+            <x-site.breadcrumb :items="$breadcrumbs" />
 
             <x-ui.section-heading
                 label="انتخاب قطعه"
@@ -18,6 +14,20 @@
                 heading="h1"
             />
         </div>
+    </div>
+
+    @php
+        $catalogContext = new \App\Support\VehicleCatalogContext($company, $car, $model);
+    @endphp
+
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <x-catalog.vehicle-nav :context="$catalogContext" active="parts" />
+        <a
+            href="{{ route('parts.index', $catalogContext->queryParams()) }}"
+            class="text-sm font-medium text-brand transition hover:text-brand-dark"
+        >
+            فهرست همه قطعات
+        </a>
     </div>
 
     @if ($car->description)

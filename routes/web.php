@@ -7,9 +7,15 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\RepairShopController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\VehicleCatalogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('companies', [VehicleCatalogController::class, 'companies'])->name('companies.index');
+Route::get('cars', [VehicleCatalogController::class, 'cars'])->name('cars.index');
+Route::get('models', [VehicleCatalogController::class, 'models'])->name('models.index');
+Route::get('parts', [PartController::class, 'index'])->name('parts.index');
 
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');

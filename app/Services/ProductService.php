@@ -11,6 +11,7 @@ use App\Models\Image;
 use App\Models\Part;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\VehicleCatalogBreadcrumbs;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProductService
@@ -24,6 +25,7 @@ class ProductService
      *     repairCards: list<array{type: string, cost: ?int, wage_name: ?string}>,
      *     shops: Collection<int, Shop>,
      *     title: string,
+     *     breadcrumbs: list<array<string, mixed>>,
      *     repairLocator: ?array{
      *         category: \App\Models\RepairCategory,
      *         carName: string,
@@ -56,6 +58,19 @@ class ProductService
             'repairCards' => $repairCards,
             'shops' => $shops,
             'title' => $this->buildTitle($part, $company, $car, $model),
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
+                company: $company,
+                car: $car,
+                model: $model,
+                terminalLabel: $part->name,
+                terminalActive: true,
+                terminalUrl: route('product.show', [
+                    'company' => $company->slug,
+                    'car' => $car->slug,
+                    'model' => $model->slug,
+                    'part' => $part->slug,
+                ]),
+            ),
             'repairLocator' => $this->buildRepairLocatorContext($part, $car),
         ];
     }

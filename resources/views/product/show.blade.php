@@ -8,12 +8,7 @@
         <div class="space-y-8 lg:col-span-8">
             <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
                 <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-                    <x-site.breadcrumb :items="[
-                        ['label' => 'خانه', 'url' => url('/')],
-                        ['label' => $company->name, 'emphasized' => true],
-                        ['label' => $car->name . ' ' . $model->name, 'url' => route('car.parts', ['company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug])],
-                        ['label' => $part->name, 'active' => true],
-                    ]" />
+                    <x-site.breadcrumb :items="$breadcrumbs" />
 
                     @if ($shops->isNotEmpty())
                         <a

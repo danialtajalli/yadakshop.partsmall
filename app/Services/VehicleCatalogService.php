@@ -1,0 +1,280 @@
+<?php
+
+namespace App\Services;
+
+use App\Enums\ImageType;
+use App\Models\Car;
+use App\Models\CarModel;
+use App\Models\Company;
+use App\Models\Part;
+use App\Support\CarModelLabel;
+use App\Support\ShopImageUrlBuilder;
+use App\Support\VehicleCatalogBreadcrumbs;
+use App\Support\VehicleCatalogContext;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+
+class VehicleCatalogService
+{
+    private const PARTS_PER_PAGE = 24;
+
+    /**
+     * @return array{
+     *     companies: Collection<int, Company>,
+     *     context: VehicleCatalogContext,
+     *     breadcrumbs: list<array<string, mixed>>,
+     *     title: string,
+     * }
+     */
+    public function getCompaniesIndexData(Request $request): array
+    {
+        $context = VehicleCatalogContext::fromRequest($request);
+
+        $companies = Company::query()
+            ->with(['images', 'cars.models'])
+            ->withCount('cars')
+            ->orderBy('id')
+            ->get();
+
+        $companies->each(function (Company $company): void {
+            $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+            $company->logo_url = $logo
+                ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                : null;
+        });
+
+        return [
+            'companies' => $companies,
+            'context' => $context,
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
+                terminalLabel: 'برندها',
+                terminalActive: true,
+                terminalUrl: route('companies.index'),
+            ),
+            'title' => 'برندهای خودرو',
+        ];
+    }
+
+    /**
+     * @return array{
+     *     cars: Collection<int, Car>,
+     *     companies: Collection<int, Company>,
+     *     context: VehicleCatalogContext,
+     *     breadcrumbs: list<array<string, mixed>>,
+     *     title: string,
+     *     description: string,
+     * }
+     */
+    public function getCarsIndexData(Request $request): array
+    {
+        $context = VehicleCatalogContext::fromRequest($request);
+
+        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+
+        $carsQuery = Car::query()
+            ->with('company')
+            ->withCount('models')
+            ->orderBy('name');
+
+        if ($context->company !== null) {
+            $carsQuery->where('company_id', $context->company->id);
+        }
+
+        $cars = $carsQuery->get();
+
+        $title = $context->company !== null
+            ? 'خودروهای '.$context->company->name
+            : 'همه خودروها';
+
+        $description = $context->company !== null
+            ? 'خودروی '.$context->company->name.' را انتخاب کنید تا مدل‌های آن را ببینید.'
+            : 'خودروی مورد نظر را انتخاب کنید یا ابتدا برند را فیلتر کنید.';
+
+        return [
+            'cars' => $cars,
+            'companies' => $companies,
+            'context' => $context,
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
+                company: $context->company,
+                terminalLabel: 'خودروها',
+                terminalActive: true,
+                terminalUrl: route('cars.index', $context->queryParams()),
+            ),
+            'title' => $title,
+            'description' => $description,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     models: Collection<int, array{model: CarModel, url: string}>,
+     *     cars: Collection<int, Car>,
+     *     companies: Collection<int, Company>,
+     *     context: VehicleCatalogContext,
+     *     breadcrumbs: list<array<string, mixed>>,
+     *     title: string,
+     *     description: string,
+     * }
+     */
+    public function getModelsIndexData(Request $request): array
+    {
+        $context = VehicleCatalogContext::fromRequest($request);
+
+        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+
+        $carsQuery = Car::query()->with('company')->orderBy('name');
+
+        if ($context->company !== null) {
+            $carsQuery->where('company_id', $context->company->id);
+        }
+
+        $cars = $carsQuery->get();
+
+        $modelsQuery = CarModel::query()
+            ->with(['cars.company'])
+            ->orderBy('name');
+
+        if ($context->car !== null) {
+            $modelsQuery->whereHas('cars', fn ($query) => $query->where('cars.id', $context->car->id));
+        } elseif ($context->company !== null) {
+            $modelsQuery->whereHas('cars', fn ($query) => $query->where('company_id', $context->company->id));
+        }
+
+        $models = $modelsQuery->get()->map(function (CarModel $model) use ($context): array {
+            $car = $context->car ?? $model->cars->sortBy('name')->first();
+            $company = $context->company ?? $car?->company;
+
+            return [
+                'model' => $model,
+                'label' => $company && $car
+                    ? trim($company->name.' '.$car->name.' '.CarModelLabel::display($model))
+                    : CarModelLabel::display($model),
+                'url' => $company && $car
+                    ? route('car.parts', [
+                        'company' => $company->slug,
+                        'car' => $car->slug,
+                        'model' => $model->slug,
+                    ])
+                    : route('models.index', [
+                        'company' => $company?->slug,
+                        'car' => $car?->slug,
+                        'model' => $model->slug,
+                    ]),
+            ];
+        })->values();
+
+        $title = match (true) {
+            $context->company !== null && $context->car !== null => 'مدل‌های '.$context->company->name.' '.$context->car->name,
+            $context->company !== null => 'مدل‌های '.$context->company->name,
+            default => 'همه مدل‌ها',
+        };
+
+        $description = match (true) {
+            $context->company !== null && $context->car !== null => 'مدل مورد نظر را انتخاب کنید تا به فهرست قطعات هدایت شوید.',
+            $context->company !== null => 'ابتدا خودرو را انتخاب کنید یا مستقیماً مدل را بزنید.',
+            default => 'مدل خودرو را انتخاب کنید یا با فیلتر برند و خودرو نتایج را محدود کنید.',
+        };
+
+        return [
+            'models' => $models,
+            'cars' => $cars,
+            'companies' => $companies,
+            'context' => $context,
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
+                company: $context->company,
+                car: $context->car,
+                terminalLabel: 'مدل‌ها',
+                terminalActive: true,
+                terminalUrl: route('models.index', $context->queryParams()),
+            ),
+            'title' => $title,
+            'description' => $description,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     parts: LengthAwarePaginator,
+     *     categories: Collection<int, \App\Models\PartsCategory>,
+     *     context: VehicleCatalogContext,
+     *     breadcrumbs: list<array<string, mixed>>,
+     *     title: string,
+     *     description: string,
+     *     filters: array{q: ?string, category: ?int},
+     * }
+     */
+    public function getPartsIndexData(Request $request): array
+    {
+        $context = VehicleCatalogContext::fromRequest($request);
+
+        $filters = [
+            'q' => $request->string('q')->trim()->toString() ?: null,
+            'category' => $request->integer('category') ?: null,
+        ];
+
+        $partsQuery = Part::query()
+            ->with('partsCategory')
+            ->orderBy('name');
+
+        if ($filters['q']) {
+            $partsQuery->where('name', 'like', '%'.$filters['q'].'%');
+        }
+
+        if ($filters['category']) {
+            $partsQuery->where('parts_category_id', $filters['category']);
+        }
+
+        $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
+
+        $parts->getCollection()->transform(function (Part $part) use ($context): Part {
+            $part->setAttribute('catalog_url', $this->partUrl($part, $context));
+
+            return $part;
+        });
+
+        $title = match (true) {
+            $context->company !== null && $context->car !== null && $context->model !== null => 'قطعات '
+                .$context->company->name.' '
+                .$context->car->name.' '
+                .CarModelLabel::display($context->model),
+            default => 'قطعات خودرو',
+        };
+
+        $description = match (true) {
+            $context->model !== null => 'قطعات موجود برای این خودرو — برای مشاهده فروشگاه‌ها و قیمت کلیک کنید.',
+            $context->car !== null => 'قطعات را برای خودروی انتخاب‌شده مرور کنید یا مدل را مشخص کنید.',
+            $context->company !== null => 'قطعات مرتبط با برند انتخاب‌شده یا کل فهرست قطعات.',
+            default => 'فهرست کامل قطعات — برای جزئیات و خودروهای مرتبط روی هر قطعه کلیک کنید.',
+        };
+
+        return [
+            'parts' => $parts,
+            'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
+            'context' => $context,
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::forPartsIndex(
+                $context->company,
+                $context->car,
+                $context->model,
+            ),
+            'title' => $title,
+            'description' => $description,
+            'filters' => $filters,
+        ];
+    }
+
+    public function partUrl(Part $part, VehicleCatalogContext $context): string
+    {
+        if ($context->company !== null && $context->car !== null && $context->model !== null) {
+            return route('product.show', [
+                'company' => $context->company->slug,
+                'car' => $context->car->slug,
+                'model' => $context->model->slug,
+                'part' => $part->slug,
+            ]);
+        }
+
+        return route('part.show', $part->slug);
+    }
+}

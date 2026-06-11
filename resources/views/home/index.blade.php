@@ -46,6 +46,8 @@
             class="mb-6"
             title="ماشین ها"
             description="برند ماشین خود را انتخاب کنید، تا به صفحه انتخاب قطعه هدایت شوید."
+            :more-url="route('companies.index')"
+            more-label="مشاهده همه برندها"
         />
 
         @if ($companies->isEmpty())
@@ -106,6 +108,8 @@
             class="mb-6"
             title="قطعات خودرو"
             description="فهرست کامل قطعات — برای جزئیات و خودروهای مرتبط روی هر قطعه کلیک کنید"
+            :more-url="route('parts.index')"
+            more-label="مشاهده همه قطعات"
         />
 
         @if ($parts->isEmpty())
