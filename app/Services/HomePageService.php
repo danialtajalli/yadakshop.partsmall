@@ -46,7 +46,7 @@ class HomePageService
             'companyPicker' => $this->buildCompanyPicker($companies),
             'representations' => $this->featuredRepresentations(),
             'parts' => $this->allParts(),
-            'title' => "پارتسمال",
+            'title' => "پارتس‌مال",
         ];
     }
 
