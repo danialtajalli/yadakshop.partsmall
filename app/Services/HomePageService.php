@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Models\Company;
 use App\Models\Part;
 use App\Models\Representation;
 use App\Models\RepairShop;
@@ -18,6 +19,17 @@ class HomePageService
      * @return array{
      *     shops: Collection<int, Shop>,
      *     repairShops: Collection<int, RepairShop>,
+     *     companies: Collection<int, Company>,
+     *     companyPicker: list<array{
+     *         slug: string,
+     *         name: string,
+     *         logo_url: ?string,
+     *         cars: list<array{
+     *             slug: string,
+     *             name: string,
+     *             models: list<array{slug: string, name: string, url: string}>,
+     *         }>,
+     *     }>,
      *     representations: Collection<int, Representation>,
      *     parts: Collection<int, Part>,
      *     title: string,
@@ -25,13 +37,95 @@ class HomePageService
      */
     public function getHomePageData(): array
     {
+        $companies = $this->featuredCompanies();
+
         return [
             'shops' => $this->featuredShops(),
             'repairShops' => $this->featuredRepairShops(),
+            'companies' => $companies,
+            'companyPicker' => $this->buildCompanyPicker($companies),
             'representations' => $this->featuredRepresentations(),
             'parts' => $this->allParts(),
-            'title' => config('app.name', 'پارتس‌مال'),
+            'title' => "پارتسمال",
         ];
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    private function featuredCompanies(): Collection
+    {
+        $companies = Company::query()
+            ->with(['images', 'cars.models'])
+            ->orderBy('name')
+            ->get();
+
+        $companies->each(function (Company $company): void {
+            $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+            $company->logo_url = $logo
+                ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                : null;
+        });
+
+        return $companies;
+    }
+
+    /**
+     * @param  Collection<int, Company>  $companies
+     * @return list<array{
+     *     slug: string,
+     *     name: string,
+     *     logo_url: ?string,
+     *     cars: list<array{
+     *         slug: string,
+     *         name: string,
+     *         models: list<array{slug: string, name: string, url: string}>,
+     *     }>,
+     * }>
+     */
+    private function buildCompanyPicker(Collection $companies): array
+    {
+        return $companies
+            ->map(function (Company $company): array {
+                return [
+                    'slug' => $company->slug,
+                    'name' => $company->name,
+                    'logo_url' => $company->logo_url,
+                    'cars' => $company->cars
+                        ->sortBy('name')
+                        ->values()
+                        ->map(function ($car) use ($company): array {
+                            return [
+                                'slug' => $car->slug,
+                                'name' => $car->name,
+                                'models' => $car->models
+                                    ->sortBy('name')
+                                    ->values()
+                                    ->map(function ($model) use ($company, $car): array {
+                                        $modelName = is_numeric($model->slug) ? 'سال '.$model->name : $model->name;
+
+                                        return [
+                                            'slug' => $model->slug,
+                                            'name' => $modelName,
+                                            'url' => route('car.parts', [
+                                                'company' => $company->slug,
+                                                'car' => $car->slug,
+                                                'model' => $model->slug,
+                                            ]),
+                                        ];
+                                    })
+                                    ->all(),
+                            ];
+                        })
+                        ->filter(fn (array $car) => $car['models'] !== [])
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->filter(fn (array $company) => $company['cars'] !== [])
+            ->values()
+            ->all();
     }
 
     /**
