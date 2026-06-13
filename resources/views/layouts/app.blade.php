@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name') }}</title>
     <link rel="icon" type="image/png" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="manifest" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="mask-icon" href="https://partsmall.ir/img/favicon.webp" color="#0d9488">
+    <link rel="shortcut icon" href="https://partsmall.ir/img/favicon.webp">
+    <meta name="msapplication-TileColor" content="#0d9488">
+    <meta name="msapplication-config" content="https://partsmall.ir/img/favicon.webp">
+    <meta name="theme-color" content="#0d9488">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
