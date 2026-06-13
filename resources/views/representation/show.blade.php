@@ -42,21 +42,6 @@
                     @if ($representation->address)
                         <p class="mt-3 text-sm leading-7 text-ink-muted">{{ $representation->address }}</p>
                     @endif
-
-                    @if ($representation->latitude && $representation->longitude)
-                        <a
-                            href="https://www.google.com/maps?q={{ $representation->latitude }},{{ $representation->longitude }}"
-                            target="_blank"
-                            rel="noopener"
-                            class="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-dark"
-                        >
-                            مشاهده روی نقشه
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                            </svg>
-                        </a>
-                    @endif
                 </div>
             </div>
         </div>
@@ -64,6 +49,15 @@
 
     <div class="grid gap-8 lg:grid-cols-12">
         <div class="space-y-8 lg:col-span-8">
+            @if ($representation->latitude && $representation->longitude)
+                <x-ui.location-map
+                    :latitude="$representation->latitude"
+                    :longitude="$representation->longitude"
+                    :title="$representation->name"
+                    :address="$representation->address"
+                />
+            @endif
+
             @if ($representation->description)
                 <section class="ps-card px-5 py-6 sm:px-6">
                     <x-ui.section-heading title="درباره نمایندگی" />

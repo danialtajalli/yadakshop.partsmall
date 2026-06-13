@@ -35,6 +35,11 @@ class ShopProfileTest extends TestCase
         $response->assertSee('aria-current="page"', false);
         $response->assertSee('BreadcrumbList', false);
         $response->assertSee(route('shops.index'), false);
+        $response->assertSee('موقعیت روی نقشه', false);
+        $response->assertSee('data-location-map', false);
+        $response->assertSee('leaflet@1.9.4', false);
+        $response->assertSee('data-lat="35.68843735"', false);
+        $response->assertSee('data-lng="51.43004894"', false);
     }
 
     public function test_shop_profile_returns_not_found_for_unknown_slug(): void

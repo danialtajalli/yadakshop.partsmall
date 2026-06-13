@@ -63,6 +63,11 @@ class RepresentationPagesTest extends TestCase
         $response->assertSee('تلفن ثابت', false);
         $response->assertSee('fa-solid fa-phone', false);
         $response->assertSee('هیوندای', false);
+        $response->assertSee('موقعیت روی نقشه', false);
+        $response->assertSee('data-location-map', false);
+        $response->assertSee('leaflet@1.9.4', false);
+        $response->assertSee('data-lat="35.70626415"', false);
+        $response->assertSee('data-lng="51.24677896"', false);
     }
 
     public function test_representation_profile_returns_not_found_for_unknown_slug(): void
