@@ -113,7 +113,7 @@
         />
 
         @if ($shops->isNotEmpty())
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-5 sm:grid-cols-1 lg:grid-cols-1">
                 @foreach ($shops as $shop)
                     <article class="ps-card-interactive relative flex flex-col p-5">
                         <div class="mb-5 flex items-start gap-4">
@@ -144,7 +144,7 @@
                             <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 text-center">مشاهده</a>
                             <button
                                 type="button"
-                                class="ps-btn-secondary shrink-0"
+                                class="ps-btn-secondary shrink-0 flex-1"
                                 onclick="document.getElementById('shop-modal-{{ $shop->id }}').showModal()"
                             >
                                 اطلاعات
