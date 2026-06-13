@@ -82,6 +82,11 @@
             @endforeach
         </div>
 
+
+        <div class="mt-10">
+            {{ $vehicleApplications->withQueryString()->links() }}
+        </div>
+        @endif
         @if ($part->description || $part->category_description)
         <div class="mb-8 space-y-6">
             @if ($part->description)
@@ -109,9 +114,4 @@
             @endif
         </div>
         @endif
-
-        <div class="mt-10">
-            {{ $vehicleApplications->withQueryString()->links() }}
-        </div>
-    @endif
 @endsection
