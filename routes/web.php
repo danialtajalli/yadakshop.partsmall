@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\PartSelectionController;
 use App\Http\Controllers\ProductController;
@@ -31,3 +32,6 @@ Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');
+
+Route::get('page/{slug}', [PageController::class, 'show'])
+    ->name('page.show');

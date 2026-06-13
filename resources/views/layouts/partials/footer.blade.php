@@ -8,9 +8,15 @@
             <div>
                 <p class="text-sm font-semibold text-ink">دسترسی سریع</p>
                 <ul class="mt-3 space-y-2 text-sm text-ink-muted">
-                    <li><a href="#" class="transition hover:text-brand">قطعات</a></li>
-                    <li><a href="#" class="transition hover:text-brand">فروشگاه‌ها</a></li>
-                    <li><a href="#" class="transition hover:text-brand">تماس با ما</a></li>
+                    <li><a href="{{ route('parts.index') }}" class="transition hover:text-brand">قطعات</a></li>
+                    <li><a href="{{ route('shops.index') }}" class="transition hover:text-brand">فروشگاه‌ها</a></li>
+                    @foreach ($navigationPages ?? [] as $navPage)
+                        <li>
+                            <a href="{{ route('page.show', $navPage->slug) }}" class="transition hover:text-brand">
+                                {{ $navPage->title }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <div>

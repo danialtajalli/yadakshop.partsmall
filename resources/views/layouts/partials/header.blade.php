@@ -8,8 +8,11 @@
             <a href="{{ route('companies.index') }}" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">خودروها</a>
             <a href="{{ route('parts.index') }}" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">قطعات</a>
             <a href="{{ route('shops.index') }}" class="hidden rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink sm:inline">فروشگاه‌ها</a>
-            <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">درباره ما</a>
-            <a href="#" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">تماس</a>
+            @foreach ($navigationPages ?? [] as $navPage)
+                <a href="{{ route('page.show', $navPage->slug) }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">
+                    {{ $navPage->title }}
+                </a>
+            @endforeach
         </nav>
     </div>
 </header>
