@@ -179,7 +179,7 @@
 
             @if ($shop->links->isNotEmpty())
                 <section class="ps-card p-5">
-                    <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
+                    <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی</h2>
                     <x-ui.social-icons :links="$shop->links" />
                 </section>
             @endif
@@ -206,10 +206,13 @@
                 </dl>
             </section>
 
-            @if ($shop->website_show)
+            @if ($shop->website_show !== null)
+            @php
+                //dd($shop->website_show);
+            @endphp
                 <section class="ps-card p-5">
-                    <h2 class="mb-2 text-base font-bold text-ink">وب‌سایت</h2>
-                    <p class="text-sm text-ink-muted" dir="ltr">{{ $shop->website_show }}</p>
+                    <h2 class="mb-4 text-base font-bold text-ink">وب سایت</h2>
+                    <x-ui.social-icons :links="[$shop->website_show]" />
                 </section>
             @endif
         </aside>
