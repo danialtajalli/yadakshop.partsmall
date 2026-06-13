@@ -19,9 +19,9 @@ class VehicleCatalogBreadcrumbs
         bool $terminalActive = true,
         ?string $terminalUrl = null,
     ): array {
+
         $items = [
             ['label' => 'خانه', 'url' => route('home')],
-            ['label' => 'برندها', 'url' => route('companies.index')],
         ];
 
         if ($company !== null) {

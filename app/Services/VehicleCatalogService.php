@@ -50,8 +50,6 @@ class VehicleCatalogService
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 terminalLabel: 'برندها',
-                terminalActive: true,
-                terminalUrl: route('companies.index'),
             ),
             'title' => 'برندهای خودرو',
         ];
@@ -99,8 +97,6 @@ class VehicleCatalogService
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
                 terminalLabel: 'خودروها',
-                terminalActive: true,
-                terminalUrl: route('cars.index', $context->queryParams()),
             ),
             'title' => $title,
             'description' => $description,
@@ -186,8 +182,6 @@ class VehicleCatalogService
                 company: $context->company,
                 car: $context->car,
                 terminalLabel: 'مدل‌ها',
-                terminalActive: true,
-                terminalUrl: route('models.index', $context->queryParams()),
             ),
             'title' => $title,
             'description' => $description,
@@ -253,10 +247,8 @@ class VehicleCatalogService
             'parts' => $parts,
             'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
             'context' => $context,
-            'breadcrumbs' => VehicleCatalogBreadcrumbs::forPartsIndex(
-                $context->company,
-                $context->car,
-                $context->model,
+            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
+                terminalLabel: 'قطعات',
             ),
             'title' => $title,
             'description' => $description,
