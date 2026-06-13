@@ -30,17 +30,6 @@
         </a>
     </div>
 
-    @if ($car->description)
-        <div class="mb-8 ps-card px-5 py-6 sm:px-6">
-            <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">
-                معرفی خودرو {{ $company->name }} {{ $car->name }}
-            </h2>
-            <x-ui.expandable-description id="car-description">
-                {!! $car->description !!}
-            </x-ui.expandable-description>
-        </div>
-    @endif
-
     <x-ui.section-heading
         class="mb-4"
         title="قطعات موجود"
@@ -72,7 +61,7 @@
         <div id="parts-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($parts as $part)
                 <article
-                    class="part-card ps-card-interactive flex flex-col p-5"
+                    class="part-card ps-card-interactive flex flex-col p-5 mb-8"
                     data-part-name="{{ $part->name }}"
                 >
                     <div class="mb-4 min-w-0 flex-1">
@@ -98,6 +87,16 @@
                 </article>
             @endforeach
         </div>
+        @if ($car->description)
+        <div class="mb-8 ps-card px-5 py-6 sm:px-6">
+            <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">
+                معرفی خودرو {{ $company->name }} {{ $car->name }}
+            </h2>
+            <x-ui.expandable-description id="car-description">
+                {!! $car->description !!}
+            </x-ui.expandable-description>
+        </div>
+        @endif
     @endif
 @endsection
 

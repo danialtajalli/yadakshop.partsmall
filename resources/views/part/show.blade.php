@@ -21,34 +21,6 @@
         </div>
     </div>
 
-    @if ($part->description || $part->category_description)
-        <div class="mb-8 space-y-6">
-            @if ($part->description)
-                <section class="ps-card px-5 py-6 sm:px-6">
-                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }}</h2>
-                    <x-ui.expandable-description id="part-description">
-                        {!! $part->description !!}
-                    </x-ui.expandable-description>
-                </section>
-            @endif
-
-            @if ($part->category_description)
-                <section class="ps-card px-5 py-6 sm:px-6">
-                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">
-                        @if ($part->partsCategory)
-                            درباره دسته {{ $part->partsCategory->name }}
-                        @else
-                            توضیحات دسته‌بندی
-                        @endif
-                    </h2>
-                    <x-ui.expandable-description id="part-category-description">
-                        {!! $part->category_description !!}
-                    </x-ui.expandable-description>
-                </section>
-            @endif
-        </div>
-    @endif
-
     <x-ui.section-heading
         class="mb-4"
         title="خودروها و مدل‌های مرتبط"
@@ -85,7 +57,7 @@
     </div>
 
     @if ($vehicleApplications->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center mb-6">
             <p class="text-sm text-ink-muted">
                 @if ($filters['q'] ?? null)
                     خودرویی با این نام یافت نشد.
@@ -95,7 +67,7 @@
             </p>
         </div>
     @else
-        <div class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        <div class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-card mb-6">
             @foreach ($vehicleApplications as $application)
                 <a
                     href="{{ $application['url'] }}"
@@ -109,6 +81,34 @@
                 </a>
             @endforeach
         </div>
+
+        @if ($part->description || $part->category_description)
+        <div class="mb-8 space-y-6">
+            @if ($part->description)
+                <section class="ps-card px-5 py-6 sm:px-6">
+                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }}</h2>
+                    <x-ui.expandable-description id="part-description">
+                        {!! $part->description !!}
+                    </x-ui.expandable-description>
+                </section>
+            @endif
+
+            @if ($part->category_description)
+                <section class="ps-card px-5 py-6 sm:px-6">
+                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">
+                        @if ($part->partsCategory)
+                            درباره دسته {{ $part->partsCategory->name }}
+                        @else
+                            توضیحات دسته‌بندی
+                        @endif
+                    </h2>
+                    <x-ui.expandable-description id="part-category-description">
+                        {!! $part->category_description !!}
+                    </x-ui.expandable-description>
+                </section>
+            @endif
+        </div>
+        @endif
 
         <div class="mt-10">
             {{ $vehicleApplications->withQueryString()->links() }}
