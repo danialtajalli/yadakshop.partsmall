@@ -38,12 +38,13 @@ class ShopProfileService
             ->where('slug', $slug)
             ->first();
 
-        $shop->website_show = $shop->links->firstWhere('link_type', LinkType::Website);
-        $shop->links = $shop->links->where('link_type', '!=', LinkType::Website);
-
         if ($shop === null) {
             throw (new ModelNotFoundException)->setModel(Shop::class, [$slug]);
         }
+
+        $shop->website_show = $shop->links->firstWhere('link_type', LinkType::Website);
+        $shop->links = $shop->links->where('link_type', '!=', LinkType::Website);
+
 
         ShopImageUrlBuilder::attachShopMedia($shop);
         $shop->description = $this->sanitizeDescription($shop->description);
