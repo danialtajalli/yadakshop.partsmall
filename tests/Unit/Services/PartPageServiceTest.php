@@ -31,13 +31,13 @@ class PartPageServiceTest extends TestCase
         $part = Part::create([
             'name' => 'طبق',
             'slug' => 'arm',
-            'description' => 'ظظظ و ططط',
+            'description' => 'یکی از قطعات xxx می باشد.',
             'parts_category_id' => $category->id,
         ]);
 
         $data = $this->service->getPartPageData('arm', Request::create('/part/arm'));
 
-        $this->assertSame('طبق و جلوبندی', $data['part']->description);
+        $this->assertSame('یکی از قطعات جلوبندی می باشد.', $data['part']->description);
     }
 
     public function test_it_filters_and_paginates_vehicle_applications(): void
