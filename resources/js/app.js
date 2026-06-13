@@ -1,1 +1,1 @@
-//
+import './entity-carousel';

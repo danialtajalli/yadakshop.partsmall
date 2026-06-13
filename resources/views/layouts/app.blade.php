@@ -84,10 +84,10 @@
                 .ps-shops-jump.is-scrolling .ps-shops-jump-chevron { animation: ps-shops-jump-chevron-scroll 0.55s ease-in-out infinite; }
                 .ps-shops-section--highlight { animation: ps-shops-section-reveal 0.9s ease-out; }
                 .ps-carousel { @apply relative; }
-                .ps-carousel-viewport { @apply w-full snap-x snap-mandatory overflow-x-auto scroll-smooth; direction: ltr; scrollbar-width: none; -ms-overflow-style: none; }
-                .ps-carousel-viewport::-webkit-scrollbar { display: none; }
-                .ps-carousel-track { @apply flex flex-nowrap gap-4; direction: ltr; }
-                .ps-carousel-slide { @apply w-[9.5rem] shrink-0 snap-start sm:w-[11rem]; direction: rtl; }
+                .ps-carousel-viewport { @apply w-full overflow-hidden; direction: ltr; cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; }
+                .ps-carousel-viewport.is-dragging { cursor: grabbing; }
+                .ps-carousel-track { @apply flex; direction: ltr; margin-left: -1rem; }
+                .ps-carousel-slide { @apply min-w-0 shrink-0 grow-0 basis-[9.5rem] pl-4 sm:basis-[11rem]; direction: rtl; }
                 .ps-carousel-nav { @apply absolute top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-white text-sm text-ink shadow-card transition hover:border-brand/30 hover:bg-brand-soft hover:text-brand; }
                 .ps-carousel-nav--prev { @apply -end-3 sm:-end-4; }
                 .ps-carousel-nav--next { @apply -start-3 sm:-start-4; }
