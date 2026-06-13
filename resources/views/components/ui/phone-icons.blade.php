@@ -21,7 +21,6 @@
                 >
                 <span class="text-sm font-medium text-ink">{{ $phone->type->label() }}</span>
                 <p>{{ $phone->phone_number }}</p>
-                    {{-- <i class="{{ $phone->type->icon() }}" aria-hidden="true"></i> --}}
                 </a>
             </li>
         @endforeach
