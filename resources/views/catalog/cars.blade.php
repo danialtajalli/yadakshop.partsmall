@@ -21,29 +21,28 @@
         <x-catalog.vehicle-nav :context="$context" active="cars" />
     </div>
 
-    <x-catalog.context-summary :context="$context" clear-route="cars.index" />
+    <x-catalog.context-summary :context="$context" :clear-url="route('cars.index')" />
 
-    <div class="ps-card mb-6 p-5 sm:p-6">
+    <x-catalog.filter-card
+        data-catalog-type="cars"
+        data-catalog-cars-base="{{ route('cars.index') }}"
+        data-catalog-cars-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
+        :clear-url="$context->company ? route('cars.index') : null"
+    >
         <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر برند</label>
-        <div class="flex flex-wrap items-center gap-3">
-            <select
-                id="company-filter"
-                name="company"
-                class="min-w-[12rem] rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-            >
-                <option value="">همه برندها</option>
-                @foreach ($companies as $company)
-                    <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
-                        {{ $company->name }}
-                    </option>
-                @endforeach
-            </select>
-            <a id="company-selection-apply" href="" class="ps-btn-primary">اعمال</a>
-            @if ($context->company)
-                <a href="{{ route('cars.index') }}" class="ps-btn-secondary">پاک کردن</a>
-            @endif
-        </div>
-    </div>
+        <select
+            id="company-filter"
+            data-catalog-field="company"
+            class="min-w-[12rem] rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+        >
+            <option value="">همه برندها</option>
+            @foreach ($companies as $company)
+                <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
+                    {{ $company->name }}
+                </option>
+            @endforeach
+        </select>
+    </x-catalog.filter-card>
 
     @if ($cars->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -70,20 +69,4 @@
             @endforeach
         </div>
     @endif
-    @push('scripts')
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('company-selection-apply').addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('here');
-                const company = document.getElementById('company-filter').value;
-                if (company) {
-                    window.location.href = "{{ route('cars.index', ['company' => ':company']) }}".replace(':company', company);
-                } else {
-                    window.location.href = "{{ route('cars.index') }}";
-                }
-            });
-        });
-    </script>
-    @endpush('scripts')
 @endsection

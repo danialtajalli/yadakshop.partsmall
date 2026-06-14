@@ -21,47 +21,48 @@
         <x-catalog.vehicle-nav :context="$context" active="models" />
     </div>
 
-    <x-catalog.context-summary :context="$context" clear-route="models.index" />
+    <x-catalog.context-summary :context="$context" :clear-url="route('models.index')" />
 
-    <form method="GET" action="{{ route('models.index') }}" class="ps-card mb-6 grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
-        <div>
-            <label for="models-company-filter" class="mb-2 block text-sm font-medium text-ink">برند</label>
-            <select
-                id="models-company-filter"
-                name="company"
-                class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-            >
-                <option value="">همه برندها</option>
-                @foreach ($companies as $company)
-                    <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
-                        {{ $company->name }}
-                    </option>
-                @endforeach
-            </select>
+    <x-catalog.filter-card
+        data-catalog-type="models"
+        data-catalog-models-base="{{ route('models.index') }}"
+        data-catalog-models-company-template="{{ route('models.index', ['company' => '__COMPANY__']) }}"
+        data-catalog-models-car-template="{{ route('models.index', ['company' => '__COMPANY__', 'car' => '__CAR__']) }}"
+        :clear-url="($context->company || $context->car) ? route('models.index') : null"
+    >
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="models-company-filter" class="mb-2 block text-sm font-medium text-ink">برند</label>
+                <select
+                    id="models-company-filter"
+                    data-catalog-field="company"
+                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                >
+                    <option value="">همه برندها</option>
+                    @foreach ($companies as $company)
+                        <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
+                            {{ $company->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="models-car-filter" class="mb-2 block text-sm font-medium text-ink">خودرو</label>
+                <select
+                    id="models-car-filter"
+                    data-catalog-field="car"
+                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                >
+                    <option value="">همه خودروها</option>
+                    @foreach ($cars as $car)
+                        <option value="{{ $car->slug }}" @selected($context->car?->slug === $car->slug)>
+                            {{ $context->company ? $car->name : $car->company->name.' '.$car->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-        <div>
-            <label for="models-car-filter" class="mb-2 block text-sm font-medium text-ink">خودرو</label>
-            <select
-                id="models-car-filter"
-                name="car"
-                class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                @disabled(! $context->company && $cars->isEmpty())
-            >
-                <option value="">همه خودروها</option>
-                @foreach ($cars as $car)
-                    <option value="{{ $car->slug }}" @selected($context->car?->slug === $car->slug)>
-                        {{ $context->company ? $car->name : $car->company->name.' '.$car->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex flex-wrap items-end gap-3 sm:col-span-2">
-            <button type="submit" class="ps-btn-primary">اعمال</button>
-            @if ($context->company || $context->car)
-                <a href="{{ route('models.index') }}" class="ps-btn-secondary">پاک کردن</a>
-            @endif
-        </div>
-    </form>
+    </x-catalog.filter-card>
 
     @if ($models->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
