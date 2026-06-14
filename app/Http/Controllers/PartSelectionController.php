@@ -5,21 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
-use App\Services\PartSelectionService;
+use App\Services\VehicleCatalogService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PartSelectionController extends Controller
 {
     public function __construct(
-        private readonly PartSelectionService $partSelectionService,
+        private readonly VehicleCatalogService $vehicleCatalogService,
     ) {}
 
-    public function show(string $company, string $car, string $model): View
+    public function show(Request $request, ?string $company = null, ?string $car = null, ?string $model = null): View
     {
-        $company = Company::where('slug', $company)->firstOrFail();
-        $car = Car::where('slug', $car)->where('company_id', $company->id)->firstOrFail();
-        $model = CarModel::where('slug', $model)->whereHas('cars', fn ($query) => $query->where('cars.id', $car->id))->firstOrFail();
-
-        return view('car.parts', $this->partSelectionService->getPartSelectionPageData($company, $car, $model));
+        return view('catalog.parts', $this->vehicleCatalogService->getPartsIndexData($request, $company ?? null, $car ?? null, $model ?? null));
     }
 }

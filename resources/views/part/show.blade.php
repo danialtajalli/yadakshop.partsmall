@@ -8,7 +8,7 @@
             <x-site.breadcrumb :items="[
                 ['label' => 'خانه', 'url' => route('home')],
                 ['label' => 'برندها', 'url' => route('companies.index')],
-                ['label' => 'قطعات', 'url' => route('parts.index')],
+                ['label' => 'قطعات', 'url' => route('car.parts')],
                 ['label' => $part->name, 'active' => true, 'url' => route('part.show', $part->slug)],
             ]" />
 

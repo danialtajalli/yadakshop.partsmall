@@ -122,8 +122,8 @@ class PartPageService
         }
 
         return str_replace(
-            ['rn', 'xxx'],
-            ['', $part->partsCategory?->name ?? ''],
+            ['rn', 'xxx', 'ططط', 'ظظظ'],
+            ['', $part->partsCategory?->name ?? '', ''],
             $description,
         );
     }

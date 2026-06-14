@@ -25,7 +25,7 @@ class PartSelectionTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertViewIs('car.parts');
+        $response->assertViewIs('catalog.parts');
         $response->assertViewHas('title', 'لوازم یدکی هیوندای سانتافه نیو');
         $response->assertSee('جستجوی نام قطعه', false);
         $response->assertSee('طبق', false);

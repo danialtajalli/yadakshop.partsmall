@@ -83,7 +83,12 @@ class PartPageTest extends TestCase
             'model' => $model->slug,
         ]))
             ->assertOk()
-            ->assertSee(route('part.show', $part->slug), false);
+            ->assertSee(route('product.show', [
+                'company' => 'hyundai',
+                'car' => 'santafe',
+                'model' => $model->slug,
+                'part' => $part->slug,
+            ]), false);
     }
 
     /**

@@ -8,7 +8,9 @@ use App\Models\Company;
 use App\Models\Part;
 use App\Support\CarModelLabel;
 use App\Support\VehicleCatalogBreadcrumbs;
+use App\Support\VehicleCatalogContext;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class PartSelectionService
 {
@@ -23,12 +25,11 @@ class PartSelectionService
      * }
      */
     public function getPartSelectionPageData(
+        Request $request,
         Company $company,
         Car $car,
         CarModel $model,
     ): array {
-        $car->description = $this->sanitizeDescription($car->description, $company, $car);
-
         $parts = Part::query()
             ->with('partsCategory')
             ->get();
@@ -37,21 +38,16 @@ class PartSelectionService
 
         return [
             'company' => $company,
+            'context' => VehicleCatalogContext::fromRequest($request, $company, $car),
             'car' => $car,
             'model' => $model,
+            'description' => $this->sanitizeDescription($car->description, $company, $car),
             'parts' => $parts,
             'title' => $this->buildTitle($company, $car, $model),
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $company,
                 car: $car,
                 model: $model,
-                terminalLabel: 'انتخاب قطعه',
-                terminalActive: true,
-                terminalUrl: route('car.parts', [
-                    'company' => $company->slug,
-                    'car' => $car->slug,
-                    'model' => $model->slug,
-                ]),
             ),
         ];
     }
