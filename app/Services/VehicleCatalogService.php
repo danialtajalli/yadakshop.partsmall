@@ -73,6 +73,10 @@ class VehicleCatalogService
     {
         $context = VehicleCatalogContext::fromRequest($request, $companySlug);
 
+        if ($companySlug && $context->company === null) {
+            throw (new ModelNotFoundException)->setModel(Company::class, [$companySlug]);
+        }
+
         $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
 
         $carsQuery = Car::query()
