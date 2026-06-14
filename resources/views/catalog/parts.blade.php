@@ -21,9 +21,9 @@
         <x-catalog.vehicle-nav :context="$context" active="parts" />
     </div>
 
-    <x-catalog.context-summary :context="$context" clear-route="parts.index" />
+    <x-catalog.context-summary :context="$context" clear-route="car.parts" />
 
-    <form method="GET" action="{{ route('parts.index') }}" class="ps-card mb-6 space-y-4 p-5 sm:p-6">
+    <form method="GET" action="{{ route('car.parts') }}" class="ps-card mb-6 space-y-4 p-5 sm:p-6">
         @foreach ($context->queryParams() as $key => $value)
             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
         @endforeach
@@ -76,7 +76,7 @@
     @else
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @foreach ($parts as $part)
-                <a href="{{ $part->catalog_url }}" class="ps-card-interactive flex flex-col p-5">
+                <a href="{{ $context->model ? route('product.show', [$context->company->slug, $context->car->slug, $context->model->slug, $part->slug]) : $part->catalog_url }}" class="ps-card-interactive flex flex-col p-5">
                     <div class="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand-soft text-brand">
                         <i class="fa-solid fa-gear" aria-hidden="true"></i>
                     </div>

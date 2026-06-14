@@ -17,13 +17,13 @@ class VehicleCatalogController extends Controller
         return view('catalog.companies', $this->vehicleCatalogService->getCompaniesIndexData($request));
     }
 
-    public function cars(Request $request): View
+    public function cars(Request $request, ?string $companySlug = null): View
     {
-        return view('catalog.cars', $this->vehicleCatalogService->getCarsIndexData($request));
+        return view('catalog.cars', $this->vehicleCatalogService->getCarsIndexData($request, $companySlug));
     }
 
-    public function models(Request $request): View
+    public function models(Request $request, ?string $companySlug = null, ?string $carSlug = null): View
     {
-        return view('catalog.models', $this->vehicleCatalogService->getModelsIndexData($request));
+        return view('catalog.models', $this->vehicleCatalogService->getModelsIndexData($request, $companySlug, $carSlug));
     }
 }

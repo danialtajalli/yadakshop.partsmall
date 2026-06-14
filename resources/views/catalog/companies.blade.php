@@ -17,13 +17,13 @@
     </div>
 
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">{{ number_format($companies->count()) }} برند</p>
+        <p class="text-sm text-ink-muted">{{ number_format($companies->count()) }} کمپانی</p>
         <x-catalog.vehicle-nav :context="$context" active="companies" />
     </div>
 
     @if ($companies->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">برندی برای نمایش ثبت نشده است.</p>
+            <p class="text-sm text-ink-muted">کمپانی برای نمایش ثبت نشده است.</p>
         </div>
     @else
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -40,7 +40,7 @@
                         @endif
                     </div>
                     <h2 class="text-base font-semibold text-ink">{{ $company->name }}</h2>
-                    <p class="mt-1 text-xs text-ink-muted">{{ $company->cars_count }} خودرو</p>
+                    <p class="mt-1 text-xs text-ink-muted">{{ $company->cars_count }} کمپانی</p>
                 </a>
             @endforeach
         </div>

@@ -23,7 +23,7 @@
 
     <x-catalog.context-summary :context="$context" clear-route="cars.index" />
 
-    <form method="GET" action="{{ route('cars.index') }}" class="ps-card mb-6 p-5 sm:p-6">
+    <div class="ps-card mb-6 p-5 sm:p-6">
         <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر برند</label>
         <div class="flex flex-wrap items-center gap-3">
             <select
@@ -38,12 +38,12 @@
                     </option>
                 @endforeach
             </select>
-            <button type="submit" class="ps-btn-primary">اعمال</button>
+            <a id="company-selection-apply" href="" class="ps-btn-primary">اعمال</a>
             @if ($context->company)
                 <a href="{{ route('cars.index') }}" class="ps-btn-secondary">پاک کردن</a>
             @endif
         </div>
-    </form>
+    </div>
 
     @if ($cars->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -70,4 +70,20 @@
             @endforeach
         </div>
     @endif
+    @push('scripts')
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('company-selection-apply').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('here');
+                const company = document.getElementById('company-filter').value;
+                if (company) {
+                    window.location.href = "{{ route('cars.index', ['company' => ':company']) }}".replace(':company', company);
+                } else {
+                    window.location.href = "{{ route('cars.index') }}";
+                }
+            });
+        });
+    </script>
+    @endpush('scripts')
 @endsection
