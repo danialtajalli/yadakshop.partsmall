@@ -1,7 +1,8 @@
-@props(['context'])
+@props(['context', 'clearUrl' => null])
 
 @php
     use App\Support\CarModelLabel;
+    use App\Support\CatalogUrls;
 
     $hasContext = $context->company || $context->car || $context->model;
 @endphp
@@ -12,7 +13,7 @@
 
         @if ($context->company)
             <a
-                href="{{ route('cars.index', ['company' => $context->company->slug]) }}"
+                href="{{ CatalogUrls::cars($context->company->slug) }}"
                 class="rounded-lg bg-white px-2.5 py-1 text-ink transition hover:text-brand"
             >
                 {{ $context->company->name }}
@@ -22,7 +23,7 @@
         @if ($context->car && $context->company)
             <span class="text-ink-muted" aria-hidden="true">/</span>
             <a
-                href="{{ route('models.index', ['company' => $context->company->slug, 'car' => $context->car->slug]) }}"
+                href="{{ CatalogUrls::models($context->company->slug, $context->car->slug) }}"
                 class="rounded-lg bg-white px-2.5 py-1 text-ink transition hover:text-brand"
             >
                 {{ $context->car->name }}
@@ -32,15 +33,17 @@
         @if ($context->model && $context->company && $context->car)
             <span class="text-ink-muted" aria-hidden="true">/</span>
             <a
-                href="{{ route('car.parts', ['company' => $context->company->slug, 'car' => $context->car->slug, 'model' => $context->model->slug]) }}"
+                href="{{ CatalogUrls::parts($context->company->slug, $context->car->slug, $context->model->slug) }}"
                 class="rounded-lg bg-white px-2.5 py-1 text-ink transition hover:text-brand"
             >
                 {{ CarModelLabel::display($context->model) }}
             </a>
         @endif
 
-        <a href="{{ route($attributes->get('clear-route', 'companies.index')) }}" class="ms-auto text-xs font-medium text-brand transition hover:text-brand-dark">
-            پاک کردن فیلتر
-        </a>
+        @if ($clearUrl)
+            <a href="{{ $clearUrl }}" class="ms-auto text-xs font-medium text-brand transition hover:text-brand-dark">
+                پاک کردن فیلتر
+            </a>
+        @endif
     </div>
 @endif
