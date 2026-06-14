@@ -12,6 +12,7 @@ use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -49,9 +50,9 @@ class VehicleCatalogService
             'companies' => $companies,
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
-                terminalLabel: 'برندها',
+                terminalLabel: 'کمپانی ها',
             ),
-            'title' => 'برندهای خودرو',
+            'title' => 'کمپانی های خودرو',
         ];
     }
 
@@ -65,9 +66,18 @@ class VehicleCatalogService
      *     description: string,
      * }
      */
-    public function getCarsIndexData(Request $request): array
+    public function getCarsIndexData(Request $request, ?string $companySlug = null): array
     {
-        $context = VehicleCatalogContext::fromRequest($request);
+        $context = VehicleCatalogContext::fromRequest($request, $companySlug ?? null);
+
+        if($companySlug !== null) {
+            $company = $companySlug;
+            $company = Company::query()->where('slug', $company)->first();
+
+            $title = 'خودروهای '.$company->name;
+
+            $description = 'خودروی '.$company->name.' را انتخاب کنید تا مدل‌های آن را ببینید.';
+        }
 
         $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
 
@@ -75,6 +85,9 @@ class VehicleCatalogService
             ->with('company')
             ->withCount('models')
             ->orderBy('name');
+        if($companySlug !== null) {
+            $carsQuery->whereRelation('company', 'slug', $companySlug);
+        }
 
         if ($context->company !== null) {
             $carsQuery->where('company_id', $context->company->id);
@@ -96,7 +109,6 @@ class VehicleCatalogService
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
-                terminalLabel: 'خودروها',
             ),
             'title' => $title,
             'description' => $description,
@@ -114,9 +126,9 @@ class VehicleCatalogService
      *     description: string,
      * }
      */
-    public function getModelsIndexData(Request $request): array
+    public function getModelsIndexData(Request $request, ?string $company = null, ?string $car = null): array
     {
-        $context = VehicleCatalogContext::fromRequest($request);
+        $context = VehicleCatalogContext::fromRequest($request, $company ?? null, $car ?? null);
 
         $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
 
@@ -181,7 +193,6 @@ class VehicleCatalogService
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
                 car: $context->car,
-                terminalLabel: 'مدل‌ها',
             ),
             'title' => $title,
             'description' => $description,
@@ -199,9 +210,14 @@ class VehicleCatalogService
      *     filters: array{q: ?string, category: ?int},
      * }
      */
-    public function getPartsIndexData(Request $request): array
+    public function getPartsIndexData(Request $request, ?string $company = null, ?string $car = null, ?string $model = null): array
     {
-        $context = VehicleCatalogContext::fromRequest($request);
+        $context = VehicleCatalogContext::fromRequest($request, $company ?? null, $car ?? null, $model ?? null);
+
+        if(($model && !$context->model) || ($car && !$context->car) || ($company && !$context->company)) {
+            throw (new ModelNotFoundException());
+        }
+
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,
@@ -210,7 +226,7 @@ class VehicleCatalogService
 
         $partsQuery = Part::query()
             ->with('partsCategory')
-            ->orderBy('name');
+            ->orderBy('category_description');
 
         if ($filters['q']) {
             $partsQuery->where('name', 'like', '%'.$filters['q'].'%');
@@ -229,11 +245,11 @@ class VehicleCatalogService
         });
 
         $title = match (true) {
-            $context->company !== null && $context->car !== null && $context->model !== null => 'قطعات '
+            $context->company !== null && $context->car !== null && $context->model !== null => 'لوازم یدکی '
                 .$context->company->name.' '
                 .$context->car->name.' '
                 .CarModelLabel::display($context->model),
-            default => 'قطعات خودرو',
+            default => 'لوازم یدکی خودرو',
         };
 
         $description = match (true) {
@@ -248,7 +264,9 @@ class VehicleCatalogService
             'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
-                terminalLabel: 'قطعات',
+                company: $context->company,
+                car: $context->car,
+                model: $context->model,
             ),
             'title' => $title,
             'description' => $description,
