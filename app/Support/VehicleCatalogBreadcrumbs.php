@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
+use App\Models\Part;
 
 class VehicleCatalogBreadcrumbs
 {
@@ -15,6 +16,7 @@ class VehicleCatalogBreadcrumbs
         ?Company $company = null,
         ?Car $car = null,
         ?CarModel $model = null,
+        ?Part $part = null,
         ?string $terminalLabel = null,
         bool $terminalActive = true,
         ?string $terminalUrl = null,
@@ -25,34 +27,54 @@ class VehicleCatalogBreadcrumbs
         ];
 
         if ($company !== null) {
-            $items[] = [
+            $array_item = [
                 'label' => $company->name,
-                'url' => route('cars.index', ['company' => $company->slug]),
-                'emphasized' => $terminalLabel === null && $car === null,
             ];
+            if($terminalLabel === null && $car === null)
+                $array_item['emphasized'] = true;
+            else
+                $array_item['url'] = route('cars.index', [
+                    'company' => $company->slug,
+                ]);
+            $items[] = $array_item;
         }
 
         if ($company !== null && $car !== null) {
-            $items[] = [
+            $array_item = [
                 'label' => $car->name,
-                'url' => route('models.index', [
+            ];
+            if($terminalLabel === null && $model === null)
+                $array_item['emphasized'] = true;
+            else
+                $array_item['url'] = route('models.index', [
                     'company' => $company->slug,
                     'car' => $car->slug,
-                ]),
-                'emphasized' => $terminalLabel === null && $model === null,
-            ];
+                ]);
+
+            $items[] = $array_item;
         }
 
         if ($company !== null && $car !== null && $model !== null) {
-            $items[] = [
+            $array_item = [
                 'label' => CarModelLabel::display($model),
-                'url' => route('car.parts', [
+            ];
+            if($terminalLabel === null && $part === null)
+                $array_item['emphasized'] = true;
+            else
+
+                $array_item['url'] = route('car.parts', [
                     'company' => $company->slug,
                     'car' => $car->slug,
                     'model' => $model->slug,
-                ]),
-                'emphasized' => $terminalLabel === null,
+                ]);
+            $items[] = $array_item;
+        }
+
+        if ($company !== null && $car !== null && $model !== null && $part !== null) {
+            $array_item = [
+                'label' => "",
             ];
+            $items[] = $array_item;
         }
 
         if ($terminalLabel !== null) {

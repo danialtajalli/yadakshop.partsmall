@@ -15,19 +15,21 @@ class VehicleCatalogContext
         public readonly ?CarModel $model = null,
     ) {}
 
-    public static function fromRequest(Request $request): self
+    public static function fromRequest(Request $request, ?string $company_data = null, ?string $car_data = null, ?string $model_data = null): self
     {
         $company = null;
         $car = null;
         $model = null;
-
         $companySlug = $request->string('company')->trim()->toString();
+
+        $companySlug = !empty($companySlug) ? ($request->string('company')->trim()->toString()) : $company_data;
 
         if ($companySlug !== '') {
             $company = Company::query()->where('slug', $companySlug)->first();
         }
 
         $carSlug = $request->string('car')->trim()->toString();
+        $carSlug = !empty($carSlug) ? $carSlug : $car_data;
 
         if ($company !== null && $carSlug !== '') {
             $car = Car::query()
@@ -37,6 +39,7 @@ class VehicleCatalogContext
         }
 
         $modelSlug = $request->string('model')->trim()->toString();
+        $modelSlug = !empty($modelSlug) ? $modelSlug : $model_data;
 
         if ($car !== null && $modelSlug !== '') {
             $model = CarModel::query()
