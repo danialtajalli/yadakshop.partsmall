@@ -108,7 +108,7 @@
             class="mb-6"
             title="قطعات خودرو"
             description="فهرست کامل قطعات — برای جزئیات و خودروهای مرتبط روی هر قطعه کلیک کنید"
-            :more-url="route('parts.index')"
+            :more-url="route('car.parts')"
             more-label="مشاهده همه قطعات"
         />
 
