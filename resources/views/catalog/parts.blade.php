@@ -61,22 +61,14 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label for="parts-model-filter" class="mb-2 block text-sm font-medium text-ink">مدل</label>
-                <select
-                    id="parts-model-filter"
-                    data-catalog-field="model"
-                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                >
-                    <option value="">همه مدل‌ها</option>
-                    @foreach ($models as $entry)
-                        <option value="{{ $entry['model']->slug }}" @selected($context->model?->slug === $entry['model']->slug)>
-                            {{ $entry['label'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
         </div>
+
+        <x-catalog.model-category-selects
+            :groups="$modelCategoryGroups"
+            :selected-model-slug="$context->model?->slug"
+            category-field-id="parts-model-category-filter"
+            model-field-id="parts-model-filter"
+        />
 
         <div class="relative">
             <label for="parts-search" class="sr-only">جستجوی قطعه</label>

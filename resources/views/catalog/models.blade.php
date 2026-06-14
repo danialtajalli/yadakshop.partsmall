@@ -64,20 +64,11 @@
         </div>
     </x-catalog.filter-card>
 
-    @if ($models->isEmpty())
+    @if ($modelCategoryGroups->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
             <p class="text-sm text-ink-muted">مدلی با این فیلتر یافت نشد.</p>
         </div>
     @else
-        <div class="flex flex-wrap gap-2">
-            @foreach ($models as $entry)
-                <a
-                    href="{{ $entry['url'] }}"
-                    class="rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink shadow-card transition hover:border-brand/30 hover:bg-brand-soft hover:text-brand"
-                >
-                    {{ $entry['label'] }}
-                </a>
-            @endforeach
-        </div>
+        <x-catalog.model-category-explorer :groups="$modelCategoryGroups" />
     @endif
 @endsection
