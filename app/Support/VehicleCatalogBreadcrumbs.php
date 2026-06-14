@@ -6,6 +6,7 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\Part;
+use App\Support\CatalogUrls;
 
 class VehicleCatalogBreadcrumbs
 {
@@ -33,9 +34,7 @@ class VehicleCatalogBreadcrumbs
             if($terminalLabel === null && $car === null)
                 $array_item['emphasized'] = true;
             else
-                $array_item['url'] = route('cars.index', [
-                    'company' => $company->slug,
-                ]);
+                $array_item['url'] = CatalogUrls::cars($company->slug);
             $items[] = $array_item;
         }
 
@@ -46,10 +45,7 @@ class VehicleCatalogBreadcrumbs
             if($terminalLabel === null && $model === null)
                 $array_item['emphasized'] = true;
             else
-                $array_item['url'] = route('models.index', [
-                    'company' => $company->slug,
-                    'car' => $car->slug,
-                ]);
+                $array_item['url'] = CatalogUrls::models($company->slug, $car->slug);
 
             $items[] = $array_item;
         }
@@ -61,12 +57,7 @@ class VehicleCatalogBreadcrumbs
             if($terminalLabel === null && $part === null)
                 $array_item['emphasized'] = true;
             else
-
-                $array_item['url'] = route('car.parts', [
-                    'company' => $company->slug,
-                    'car' => $car->slug,
-                    'model' => $model->slug,
-                ]);
+                $array_item['url'] = CatalogUrls::parts($company->slug, $car->slug, $model->slug);
             $items[] = $array_item;
         }
 
@@ -91,20 +82,5 @@ class VehicleCatalogBreadcrumbs
         }
 
         return $items;
-    }
-
-    /**
-     * @return list<array{label: string, url?: string, active?: bool, emphasized?: bool}>
-     */
-    public static function forPartsIndex(?Company $company, ?Car $car, ?CarModel $model): array
-    {
-        return self::build(
-            company: $company,
-            car: $car,
-            model: $model,
-            terminalLabel: 'قطعات',
-            terminalActive: true,
-            terminalUrl: route('parts.index', (new VehicleCatalogContext($company, $car, $model))->queryParams()),
-        );
     }
 }
