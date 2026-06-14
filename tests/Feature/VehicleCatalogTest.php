@@ -33,7 +33,7 @@ class VehicleCatalogTest extends TestCase
             ->assertOk()
             ->assertViewIs('catalog.cars')
             ->assertSee('سانتافه', false)
-            ->assertSee('models?company=hyundai&amp;car=santafe', false);
+            ->assertSee('car/hyundai', false);
     }
 
     public function test_models_index_filters_by_car(): void
@@ -55,7 +55,7 @@ class VehicleCatalogTest extends TestCase
     {
         $this->seedGraph();
 
-        $response = $this->get(route('parts.index', [
+        $response = $this->get(route('car.parts', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'new',
@@ -75,7 +75,7 @@ class VehicleCatalogTest extends TestCase
     {
         $this->seedGraph();
 
-        $this->get(route('parts.index'))
+        $this->get(route('car.parts'))
             ->assertOk()
             ->assertSee(route('part.show', 'arm'), false);
     }
