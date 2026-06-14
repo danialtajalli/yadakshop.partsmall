@@ -108,7 +108,7 @@ class HomePageService
                                         return [
                                             'slug' => $model->slug,
                                             'name' => $modelName,
-                                            'url' => route('car.parts', [
+                                            'url' => route('car.parts.vehicle', [
                                                 'company' => $company->slug,
                                                 'car' => $car->slug,
                                                 'model' => $model->slug,
