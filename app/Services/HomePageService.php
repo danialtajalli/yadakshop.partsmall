@@ -63,7 +63,7 @@ class HomePageService
     {
         $companies = Company::query()
             ->with(['images', 'cars.models.category'])
-            ->orderBy('name')
+            ->orderBy('id')
             ->get();
 
         $companies->each(function (Company $company): void {
