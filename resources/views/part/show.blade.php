@@ -7,9 +7,8 @@
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
             <x-site.breadcrumb :items="[
                 ['label' => 'خانه', 'url' => route('home')],
-                ['label' => 'برندها', 'url' => route('companies.index')],
                 ['label' => 'قطعات', 'url' => route('car.parts')],
-                ['label' => $part->name, 'active' => true, 'url' => route('part.show', $part->slug)],
+                ['label' => $part->name],
             ]" />
 
             <x-ui.section-heading
