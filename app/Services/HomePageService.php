@@ -8,6 +8,8 @@ use App\Models\Part;
 use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
+use App\Support\CarModelLabel;
+use App\Support\ModelCategoryLabel;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
 
@@ -27,7 +29,11 @@ class HomePageService
      *         cars: list<array{
      *             slug: string,
      *             name: string,
-     *             models: list<array{slug: string, name: string, url: string}>,
+     *             modelCategories: list<array{
+     *                 slug: string,
+     *                 label: string,
+     *                 models: list<array{slug: string, name: string, url: string}>,
+     *             }>,
      *         }>,
      *     }>,
      *     representations: Collection<int, Representation>,
@@ -56,7 +62,7 @@ class HomePageService
     private function featuredCompanies(): Collection
     {
         $companies = Company::query()
-            ->with(['images', 'cars.models'])
+            ->with(['images', 'cars.models.category'])
             ->orderBy('name')
             ->get();
 
@@ -80,7 +86,11 @@ class HomePageService
      *     cars: list<array{
      *         slug: string,
      *         name: string,
-     *         models: list<array{slug: string, name: string, url: string}>,
+     *         modelCategories: list<array{
+     *             slug: string,
+     *             label: string,
+     *             models: list<array{slug: string, name: string, url: string}>,
+     *         }>,
      *     }>,
      * }>
      */
@@ -99,26 +109,37 @@ class HomePageService
                             return [
                                 'slug' => $car->slug,
                                 'name' => $car->name,
-                                'models' => $car->models
+                                'modelCategories' => $car->models
                                     ->sortBy('name')
-                                    ->values()
-                                    ->map(function ($model) use ($company, $car): array {
-                                        $modelName = is_numeric($model->slug) ? 'سال '.$model->name : $model->name;
+                                    ->groupBy(fn ($model) => (string) ($model->category_id ?? 0))
+                                    ->map(function ($models, $categoryId) use ($company, $car): array {
+                                        $category = $models->first()->category;
 
                                         return [
-                                            'slug' => $model->slug,
-                                            'name' => $modelName,
-                                            'url' => route('car.parts.vehicle', [
-                                                'company' => $company->slug,
-                                                'car' => $car->slug,
-                                                'model' => $model->slug,
-                                            ]),
+                                            'slug' => ModelCategoryLabel::slug($category),
+                                            'label' => ModelCategoryLabel::display($category),
+                                            'models' => $models
+                                                ->map(function ($model) use ($company, $car): array {
+                                                    return [
+                                                        'slug' => $model->slug,
+                                                        'name' => CarModelLabel::display($model),
+                                                        'url' => route('car.parts.vehicle', [
+                                                            'company' => $company->slug,
+                                                            'car' => $car->slug,
+                                                            'model' => $model->slug,
+                                                        ]),
+                                                    ];
+                                                })
+                                                ->values()
+                                                ->all(),
                                         ];
                                     })
+                                    ->sortBy('label')
+                                    ->values()
                                     ->all(),
                             ];
                         })
-                        ->filter(fn (array $car) => $car['models'] !== [])
+                        ->filter(fn (array $car) => $car['modelCategories'] !== [])
                         ->values()
                         ->all(),
                 ];
