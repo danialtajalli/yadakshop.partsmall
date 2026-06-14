@@ -7,6 +7,7 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Company;
+use App\Models\ModelCategory;
 use App\Models\Part;
 use App\Models\PartsCategory;
 use App\Models\Representation;
@@ -90,7 +91,8 @@ class HomePageTest extends TestCase
     {
         $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai', 'wage_strike' => 2.5]);
         $car = Car::create(['name' => 'سانتافه', 'slug' => 'santafe', 'company_id' => $company->id]);
-        $model = CarModel::create(['name' => 'نیو', 'slug' => 'new']);
+        $category = ModelCategory::query()->where('slug', 'term')->firstOrFail();
+        $model = CarModel::create(['name' => 'نیو', 'slug' => 'new', 'category_id' => $category->id]);
         $car->models()->attach($model);
 
         $response = $this->get(route('home'));
@@ -99,14 +101,19 @@ class HomePageTest extends TestCase
         $response->assertSee('home-company-picker-modal', false);
         $response->assertSee('data-company-picker-trigger', false);
         $response->assertViewHas('companyPicker', function (array $picker): bool {
-            return collect($picker)->contains(
-                fn (array $company) => $company['slug'] === 'hyundai'
-                    && $company['cars'][0]['models'][0]['url'] === route('car.parts.vehicle', [
-                        'company' => 'hyundai',
-                        'car' => 'santafe',
-                        'model' => 'new',
-                    ]),
-            );
+            return collect($picker)->contains(function (array $company): bool {
+                if ($company['slug'] !== 'hyundai') {
+                    return false;
+                }
+
+                $modelUrl = $company['cars'][0]['modelCategories'][0]['models'][0]['url'] ?? null;
+
+                return $modelUrl === route('car.parts.vehicle', [
+                    'company' => 'hyundai',
+                    'car' => 'santafe',
+                    'model' => 'new',
+                ]);
+            });
         });
     }
 }

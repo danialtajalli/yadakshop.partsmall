@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
+use App\Models\ModelCategory;
 use App\Models\Part;
 use App\Models\PartsCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,6 +44,7 @@ class VehicleCatalogTest extends TestCase
         $this->get(route('models.index', ['company' => 'hyundai', 'car' => 'santafe']))
             ->assertOk()
             ->assertViewIs('catalog.models')
+            ->assertSee('لفظ', false)
             ->assertSee('نیو', false)
             ->assertSee(route('car.parts.vehicle', [
                 'company' => 'hyundai',
@@ -109,9 +111,12 @@ class VehicleCatalogTest extends TestCase
             'company_id' => $company->id,
         ]);
 
+        $category = ModelCategory::query()->where('slug', 'term')->firstOrFail();
+
         $model = CarModel::create([
             'name' => 'نیو',
             'slug' => 'new',
+            'category_id' => $category->id,
         ]);
         $car->models()->attach($model);
 
