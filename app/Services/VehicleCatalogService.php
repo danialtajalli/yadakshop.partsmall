@@ -6,9 +6,11 @@ use App\Enums\ImageType;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
+use App\Models\ModelCategory;
 use App\Models\Part;
 use App\Support\CarModelLabel;
 use App\Support\CatalogUrls;
+use App\Support\ModelCategoryLabel;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
@@ -106,7 +108,13 @@ class VehicleCatalogService
 
     /**
      * @return array{
-     *     models: Collection<int, array{model: CarModel, url: string}>,
+     *     models: Collection<int, array{model: CarModel, label: string, url: string}>,
+     *     modelCategoryGroups: Collection<int, array{
+     *         category: ?ModelCategory,
+     *         label: string,
+     *         slug: string,
+     *         models: Collection<int, array{model: CarModel, label: string, url: string}>,
+     *     }>,
      *     cars: Collection<int, Car>,
      *     companies: Collection<int, Company>,
      *     context: VehicleCatalogContext,
@@ -130,7 +138,7 @@ class VehicleCatalogService
         $cars = $carsQuery->get();
 
         $modelsQuery = CarModel::query()
-            ->with(['cars.company'])
+            ->with(['cars.company', 'category'])
             ->orderBy('name');
 
         if ($context->car !== null) {
@@ -139,20 +147,8 @@ class VehicleCatalogService
             $modelsQuery->whereHas('cars', fn ($query) => $query->where('company_id', $context->company->id));
         }
 
-        $models = $modelsQuery->get()->map(function (CarModel $model) use ($context): array {
-            $car = $context->car ?? $model->cars->sortBy('name')->first();
-            $company = $context->company ?? $car?->company;
-
-            return [
-                'model' => $model,
-                'label' => $company && $car
-                    ? trim($company->name.' '.$car->name.' '.CarModelLabel::display($model))
-                    : CarModelLabel::display($model),
-                'url' => $company && $car
-                    ? CatalogUrls::parts($company->slug, $car->slug, $model->slug)
-                    : CatalogUrls::models($company?->slug, $car?->slug),
-            ];
-        })->values();
+        $models = $this->buildModelEntries($modelsQuery->get(), $context);
+        $modelCategoryGroups = $this->groupModelEntriesByCategory($models);
 
         $title = match (true) {
             $context->company !== null && $context->car !== null => 'مدل‌های '.$context->company->name.' '.$context->car->name,
@@ -168,6 +164,7 @@ class VehicleCatalogService
 
         return [
             'models' => $models,
+            'modelCategoryGroups' => $modelCategoryGroups,
             'cars' => $cars,
             'companies' => $companies,
             'context' => $context,
@@ -187,6 +184,12 @@ class VehicleCatalogService
      *     companies: Collection<int, Company>,
      *     cars: Collection<int, Car>,
      *     models: Collection<int, array{model: CarModel, label: string}>,
+     *     modelCategoryGroups: Collection<int, array{
+     *         category: ?ModelCategory,
+     *         label: string,
+     *         slug: string,
+     *         models: Collection<int, array{model: CarModel, label: string}>,
+     *     }>,
      *     context: VehicleCatalogContext,
      *     breadcrumbs: list<array<string, mixed>>,
      *     title: string,
@@ -213,7 +216,7 @@ class VehicleCatalogService
         $cars = $carsQuery->get();
 
         $modelsQuery = CarModel::query()
-            ->with(['cars.company'])
+            ->with(['cars.company', 'category'])
             ->orderBy('name');
 
         if ($context->car !== null) {
@@ -222,17 +225,8 @@ class VehicleCatalogService
             $modelsQuery->whereHas('cars', fn ($query) => $query->where('company_id', $context->company->id));
         }
 
-        $models = $modelsQuery->get()->map(function (CarModel $modelItem) use ($context): array {
-            $carItem = $context->car ?? $modelItem->cars->sortBy('name')->first();
-            $companyItem = $context->company ?? $carItem?->company;
-
-            return [
-                'model' => $modelItem,
-                'label' => $companyItem && $carItem
-                    ? trim($companyItem->name.' '.$carItem->name.' '.CarModelLabel::display($modelItem))
-                    : CarModelLabel::display($modelItem),
-            ];
-        })->values();
+        $models = $this->buildModelEntries($modelsQuery->get(), $context, includeUrl: false);
+        $modelCategoryGroups = $this->groupModelEntriesByCategory($models);
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,
@@ -280,6 +274,7 @@ class VehicleCatalogService
             'companies' => $companies,
             'cars' => $cars,
             'models' => $models,
+            'modelCategoryGroups' => $modelCategoryGroups,
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
@@ -304,5 +299,59 @@ class VehicleCatalogService
         }
 
         return route('part.show', $part->slug);
+    }
+
+    /**
+     * @param  Collection<int, CarModel>  $models
+     * @return Collection<int, array{model: CarModel, label: string, url?: string}>
+     */
+    private function buildModelEntries(Collection $models, VehicleCatalogContext $context, bool $includeUrl = true): Collection
+    {
+        return $models->map(function (CarModel $model) use ($context, $includeUrl): array {
+            $car = $context->car ?? $model->cars->sortBy('name')->first();
+            $company = $context->company ?? $car?->company;
+
+            $entry = [
+                'model' => $model,
+                'label' => $company && $car
+                    ? trim($company->name.' '.$car->name.' '.CarModelLabel::display($model))
+                    : CarModelLabel::display($model),
+            ];
+
+            if ($includeUrl) {
+                $entry['url'] = $company && $car
+                    ? CatalogUrls::parts($company->slug, $car->slug, $model->slug)
+                    : CatalogUrls::models($company?->slug, $car?->slug);
+            }
+
+            return $entry;
+        })->values();
+    }
+
+    /**
+     * @param  Collection<int, array{model: CarModel, label: string, url?: string}>  $entries
+     * @return Collection<int, array{
+     *     category: ?ModelCategory,
+     *     label: string,
+     *     slug: string,
+     *     models: Collection<int, array{model: CarModel, label: string, url?: string}>,
+     * }>
+     */
+    private function groupModelEntriesByCategory(Collection $entries): Collection
+    {
+        return $entries
+            ->groupBy(fn (array $entry): string => (string) ($entry['model']->category_id ?? 0))
+            ->map(function (Collection $group): array {
+                $category = $group->first()['model']->category;
+
+                return [
+                    'category' => $category,
+                    'label' => ModelCategoryLabel::display($category),
+                    'slug' => ModelCategoryLabel::slug($category),
+                    'models' => $group->values(),
+                ];
+            })
+            ->sortBy('label')
+            ->values();
     }
 }
