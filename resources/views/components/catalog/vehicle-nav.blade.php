@@ -6,17 +6,17 @@
 
 <nav class="flex flex-wrap gap-2 text-sm" aria-label="مرور خودرو و قطعات">
     <a
-        href="{{ route('companies.index', $params) }}"
+        href="{{ route('companies.index') }}"
         @class([
             'rounded-lg px-3 py-1.5 transition',
             'bg-brand text-white' => $active === 'companies',
             'text-ink-muted hover:bg-surface hover:text-ink' => $active !== 'companies',
         ])
     >
-        برندها
+        کمپانی ها
     </a>
     <a
-        href="{{ route('cars.index', $params) }}"
+        href="{{ route('cars.index') }}"
         @class([
             'rounded-lg px-3 py-1.5 transition',
             'bg-brand text-white' => $active === 'cars',
@@ -26,7 +26,7 @@
         خودروها
     </a>
     <a
-        href="{{ route('models.index', $params) }}"
+        href="{{ route('models.index') }}"
         @class([
             'rounded-lg px-3 py-1.5 transition',
             'bg-brand text-white' => $active === 'models',
@@ -36,7 +36,7 @@
         مدل‌ها
     </a>
     <a
-        href="{{ route('parts.index', $params) }}"
+        href="{{ route('car.parts') }}"
         @class([
             'rounded-lg px-3 py-1.5 transition',
             'bg-brand text-white' => $active === 'parts',

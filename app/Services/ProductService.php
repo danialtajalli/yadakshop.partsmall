@@ -62,14 +62,7 @@ class ProductService
                 company: $company,
                 car: $car,
                 model: $model,
-                terminalLabel: $part->name,
-                terminalActive: true,
-                terminalUrl: route('product.show', [
-                    'company' => $company->slug,
-                    'car' => $car->slug,
-                    'model' => $model->slug,
-                    'part' => $part->slug,
-                ]),
+                part: $part,
             ),
             'repairLocator' => $this->buildRepairLocatorContext($part, $car),
         ];
