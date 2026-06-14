@@ -26,7 +26,9 @@ Route::get('representation/{representation_slug}', [RepresentationController::cl
 
 Route::get('part/{part}', [PartController::class, 'show'])->name('part.show');
 
-Route::get('part/{company?}/{car?}/{model?}', [PartSelectionController::class, 'show'])
+Route::get('part/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
+    ->name('car.parts.vehicle');
+Route::get('part', [PartSelectionController::class, 'show'])
     ->name('car.parts');
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
