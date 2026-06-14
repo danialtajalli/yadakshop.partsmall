@@ -17,6 +17,9 @@ class LegacyDataImporter
     /** @var array<int, string> */
     private array $partsCategoryNames = [];
 
+    /** @var array<string, int> */
+    private array $modelCategoryIds = [];
+
     public function __construct(
         private readonly LegacyInsertParser $parser,
     ) {}
@@ -27,6 +30,7 @@ class LegacyDataImporter
             $this->seedStates();
             $this->seedCities();
             $this->seedCompanies();
+            $this->seedModelCategories();
             $this->seedModels();
             $this->seedCars();
             $this->seedPartsCategories();
@@ -79,6 +83,7 @@ class LegacyDataImporter
             'repair_categories',
             'wages',
             'cars',
+            'model_categories',
             'models',
             'companies',
             'repair_shops',
@@ -165,6 +170,34 @@ class LegacyDataImporter
         }
     }
 
+    private function seedModelCategories(): void
+    {
+        $legacyCats = [];
+
+        foreach ($this->parser->rows('model') as $row) {
+            $legacyCats[trim((string) ($row['cat'] ?? ''))] = true;
+        }
+
+        $now = now();
+        $rows = [];
+
+        foreach (array_keys($legacyCats) as $legacyCat) {
+            $id = count($rows) + 1;
+
+            $rows[] = [
+                'id' => $id,
+                'name' => $legacyCat,
+                'slug' => ModelCategoryDefinitions::slugFor($legacyCat),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+
+            $this->modelCategoryIds[$legacyCat] = $id;
+        }
+
+        DB::table('model_categories')->insert($rows);
+    }
+
     private function seedModels(): void
     {
         $rows = array_map(fn (array $row): array => [
@@ -172,6 +205,7 @@ class LegacyDataImporter
             'name' => $row['name'],
             'description' => $row['des'] ?: null,
             'slug' => $row['latin'],
+            'category_id' => $this->modelCategoryIds[trim((string) ($row['cat'] ?? ''))] ?? null,
             'created_at' => now(),
             'updated_at' => now(),
         ], $this->parser->rows('model'));
