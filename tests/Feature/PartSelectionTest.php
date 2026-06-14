@@ -18,7 +18,7 @@ class PartSelectionTest extends TestCase
     {
         $this->seedSelectionGraph();
 
-        $response = $this->get(route('car.parts', [
+        $response = $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'new',
@@ -41,7 +41,7 @@ class PartSelectionTest extends TestCase
     {
         $this->seedSelectionGraph();
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'unknown',
             'car' => 'santafe',
             'model' => 'new',
@@ -57,7 +57,7 @@ class PartSelectionTest extends TestCase
             'slug' => 'old',
         ]);
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'old',

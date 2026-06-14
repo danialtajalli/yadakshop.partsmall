@@ -44,7 +44,7 @@ class VehicleCatalogTest extends TestCase
             ->assertOk()
             ->assertViewIs('catalog.models')
             ->assertSee('نیو', false)
-            ->assertSee(route('car.parts', [
+            ->assertSee(route('car.parts.vehicle', [
                 'company' => 'hyundai',
                 'car' => 'santafe',
                 'model' => 'new',
@@ -55,7 +55,7 @@ class VehicleCatalogTest extends TestCase
     {
         $this->seedGraph();
 
-        $response = $this->get(route('car.parts', [
+        $response = $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'new',
@@ -84,7 +84,7 @@ class VehicleCatalogTest extends TestCase
     {
         $this->seedGraph();
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'new',

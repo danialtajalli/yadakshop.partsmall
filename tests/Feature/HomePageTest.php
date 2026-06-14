@@ -101,7 +101,7 @@ class HomePageTest extends TestCase
         $response->assertViewHas('companyPicker', function (array $picker): bool {
             return collect($picker)->contains(
                 fn (array $company) => $company['slug'] === 'hyundai'
-                    && $company['cars'][0]['models'][0]['url'] === route('car.parts', [
+                    && $company['cars'][0]['models'][0]['url'] === route('car.parts.vehicle', [
                         'company' => 'hyundai',
                         'car' => 'santafe',
                         'model' => 'new',

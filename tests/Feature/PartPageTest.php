@@ -77,7 +77,7 @@ class PartPageTest extends TestCase
     {
         [, , $model, $part] = $this->seedGraph();
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => $model->slug,
