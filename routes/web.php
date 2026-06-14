@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('companies', [VehicleCatalogController::class, 'companies'])->name('companies.index');
-Route::get('cars', [VehicleCatalogController::class, 'cars'])->name('cars.index');
-Route::get('models', [VehicleCatalogController::class, 'models'])->name('models.index');
-Route::get('parts', [PartController::class, 'index'])->name('parts.index');
+Route::get('company', [VehicleCatalogController::class, 'companies'])->name('companies.index');
+Route::get('car/{company?}', [VehicleCatalogController::class, 'cars'])->name('cars.index');
+Route::get('model/{company?}/{car?}', [VehicleCatalogController::class, 'models'])->name('models.index');
 
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
@@ -27,7 +26,7 @@ Route::get('representation/{representation_slug}', [RepresentationController::cl
 
 Route::get('part/{part}', [PartController::class, 'show'])->name('part.show');
 
-Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
+Route::get('part/{company?}/{car?}/{model?}', [PartSelectionController::class, 'show'])
     ->name('car.parts');
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
