@@ -29,7 +29,7 @@
         data-catalog-cars-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
         :clear-url="$context->company ? route('cars.index') : null"
     >
-        <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر برند</label>
+        <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر کمپانی</label>
         <select
             id="company-filter"
             data-catalog-field="company"

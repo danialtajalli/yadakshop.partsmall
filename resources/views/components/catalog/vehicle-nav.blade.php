@@ -13,7 +13,7 @@
             'text-ink-muted hover:bg-surface hover:text-ink' => $active !== 'companies',
         ])
     >
-        برندها
+        کمپانی ها
     </a>
     <a
         href="{{ CatalogUrls::cars($context->company?->slug) }}"

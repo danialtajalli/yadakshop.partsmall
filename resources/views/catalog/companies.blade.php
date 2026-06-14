@@ -10,19 +10,19 @@
             <x-ui.section-heading
                 label="خودرو"
                 :title="$title"
-                description="برند خودروی خود را انتخاب کنید تا خودروها و مدل‌های آن را ببینید"
+                description="کمپانی خودروی خود را انتخاب کنید تا خودروها و مدل‌های آن را ببینید"
                 heading="h1"
             />
         </div>
     </div>
 
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">{{ number_format($companies->count()) }} برند</p>
+        <p class="text-sm text-ink-muted">{{ number_format($companies->count()) }} کمپانی</p>
         <x-catalog.vehicle-nav :context="$context" active="companies" />
     </div>
 
     <div class="ps-card mb-6 p-5 sm:p-6">
-        <label for="company-search" class="mb-2 block text-sm font-medium text-ink">جستجوی برند</label>
+        <label for="company-search" class="mb-2 block text-sm font-medium text-ink">جستجوی کمپانی</label>
         <div class="relative">
             <svg class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -30,17 +30,17 @@
             <input
                 id="company-search"
                 type="search"
-                placeholder="جستجوی نام برند..."
+                placeholder="جستجوی نام کمپانی..."
                 autocomplete="off"
                 class="w-full rounded-xl border border-line bg-white py-3 pe-4 ps-12 text-sm text-ink outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
             >
         </div>
-        <p id="company-search-empty" class="mt-3 hidden text-sm text-ink-muted">برندی با این نام یافت نشد.</p>
+        <p id="company-search-empty" class="mt-3 hidden text-sm text-ink-muted">کمپانیی با این نام یافت نشد.</p>
     </div>
 
     @if ($companies->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">برندی برای نمایش ثبت نشده است.</p>
+            <p class="text-sm text-ink-muted">کمپانیی برای نمایش ثبت نشده است.</p>
         </div>
     @else
         <div id="companies-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

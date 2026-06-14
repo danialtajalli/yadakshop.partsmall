@@ -32,13 +32,13 @@
     >
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
-                <label for="models-company-filter" class="mb-2 block text-sm font-medium text-ink">برند</label>
+                <label for="models-company-filter" class="mb-2 block text-sm font-medium text-ink">کمپانی</label>
                 <select
                     id="models-company-filter"
                     data-catalog-field="company"
                     class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
                 >
-                    <option value="">همه برندها</option>
+                    <option value="">همه کمپانی ها</option>
                     @foreach ($companies as $company)
                         <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
                             {{ $company->name }}
