@@ -8,6 +8,7 @@ use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\Part;
 use App\Support\CarModelLabel;
+use App\Support\CatalogUrls;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
@@ -68,16 +69,7 @@ class VehicleCatalogService
      */
     public function getCarsIndexData(Request $request, ?string $companySlug = null): array
     {
-        $context = VehicleCatalogContext::fromRequest($request, $companySlug ?? null);
-
-        if($companySlug !== null) {
-            $company = $companySlug;
-            $company = Company::query()->where('slug', $company)->first();
-
-            $title = 'خودروهای '.$company->name;
-
-            $description = 'خودروی '.$company->name.' را انتخاب کنید تا مدل‌های آن را ببینید.';
-        }
+        $context = VehicleCatalogContext::fromRequest($request, $companySlug);
 
         $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
 
@@ -85,9 +77,6 @@ class VehicleCatalogService
             ->with('company')
             ->withCount('models')
             ->orderBy('name');
-        if($companySlug !== null) {
-            $carsQuery->whereRelation('company', 'slug', $companySlug);
-        }
 
         if ($context->company !== null) {
             $carsQuery->where('company_id', $context->company->id);
@@ -160,16 +149,8 @@ class VehicleCatalogService
                     ? trim($company->name.' '.$car->name.' '.CarModelLabel::display($model))
                     : CarModelLabel::display($model),
                 'url' => $company && $car
-                    ? route('car.parts', [
-                        'company' => $company->slug,
-                        'car' => $car->slug,
-                        'model' => $model->slug,
-                    ])
-                    : route('models.index', [
-                        'company' => $company?->slug,
-                        'car' => $car?->slug,
-                        'model' => $model->slug,
-                    ]),
+                    ? CatalogUrls::parts($company->slug, $car->slug, $model->slug)
+                    : CatalogUrls::models($company?->slug, $car?->slug),
             ];
         })->values();
 
@@ -203,6 +184,9 @@ class VehicleCatalogService
      * @return array{
      *     parts: LengthAwarePaginator,
      *     categories: Collection<int, \App\Models\PartsCategory>,
+     *     companies: Collection<int, Company>,
+     *     cars: Collection<int, Car>,
+     *     models: Collection<int, array{model: CarModel, label: string}>,
      *     context: VehicleCatalogContext,
      *     breadcrumbs: list<array<string, mixed>>,
      *     title: string,
@@ -214,10 +198,41 @@ class VehicleCatalogService
     {
         $context = VehicleCatalogContext::fromRequest($request, $company ?? null, $car ?? null, $model ?? null);
 
-        if(($model && !$context->model) || ($car && !$context->car) || ($company && !$context->company)) {
-            throw (new ModelNotFoundException());
+        if (($model && ! $context->model) || ($car && ! $context->car) || ($company && ! $context->company)) {
+            throw (new ModelNotFoundException);
         }
 
+        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+
+        $carsQuery = Car::query()->with('company')->orderBy('name');
+
+        if ($context->company !== null) {
+            $carsQuery->where('company_id', $context->company->id);
+        }
+
+        $cars = $carsQuery->get();
+
+        $modelsQuery = CarModel::query()
+            ->with(['cars.company'])
+            ->orderBy('name');
+
+        if ($context->car !== null) {
+            $modelsQuery->whereHas('cars', fn ($query) => $query->where('cars.id', $context->car->id));
+        } elseif ($context->company !== null) {
+            $modelsQuery->whereHas('cars', fn ($query) => $query->where('company_id', $context->company->id));
+        }
+
+        $models = $modelsQuery->get()->map(function (CarModel $modelItem) use ($context): array {
+            $carItem = $context->car ?? $modelItem->cars->sortBy('name')->first();
+            $companyItem = $context->company ?? $carItem?->company;
+
+            return [
+                'model' => $modelItem,
+                'label' => $companyItem && $carItem
+                    ? trim($companyItem->name.' '.$carItem->name.' '.CarModelLabel::display($modelItem))
+                    : CarModelLabel::display($modelItem),
+            ];
+        })->values();
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,
@@ -262,6 +277,9 @@ class VehicleCatalogService
         return [
             'parts' => $parts,
             'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
+            'companies' => $companies,
+            'cars' => $cars,
+            'models' => $models,
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
