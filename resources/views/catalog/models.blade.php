@@ -16,11 +16,6 @@
         </div>
     </div>
 
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">{{ number_format($models->count()) }} مدل</p>
-        <x-catalog.vehicle-nav :context="$context" active="models" />
-    </div>
-
     <x-catalog.search-bar
         id="model-search"
         placeholder="جستجوی نام مدل..."

@@ -16,11 +16,6 @@
         </div>
     </div>
 
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">{{ number_format($cars->count()) }} خودرو</p>
-        <x-catalog.vehicle-nav :context="$context" active="cars" />
-    </div>
-
     <x-catalog.search-bar
         id="car-search"
         placeholder="جستجوی نام خودرو..."
