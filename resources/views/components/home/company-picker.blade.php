@@ -26,7 +26,7 @@
                 <ul id="company-picker-cars-list" class="divide-y divide-line overflow-hidden rounded-xl border border-line"></ul>
             </div>
 
-            <div id="company-picker-categories-step" class="hidden">
+            <div id="company-picker-models-step" class="hidden">
                 <button
                     type="button"
                     class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-dark"
@@ -35,21 +35,8 @@
                     <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
                     بازگشت به لیست خودروها
                 </button>
-                <p id="company-picker-car-label" class="mb-4 text-sm text-ink-muted"></p>
-                <div id="company-picker-categories-list" class="flex flex-wrap gap-2"></div>
-            </div>
-
-            <div id="company-picker-models-step" class="hidden">
-                <button
-                    type="button"
-                    class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand transition hover:text-brand-dark"
-                    data-company-picker-back-categories
-                >
-                    <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-                    بازگشت به دسته‌ها
-                </button>
-                <p id="company-picker-category-label" class="mb-4 text-sm text-ink-muted"></p>
-                <div id="company-picker-models-list" class="flex flex-wrap gap-2"></div>
+                <p id="company-picker-car-label" class="mb-3 text-sm text-ink-muted"></p>
+                <div id="company-picker-models-list" class="grid gap-3 sm:grid-cols-2"></div>
             </div>
         </div>
     </dialog>
@@ -66,74 +53,53 @@
 
                 const title = document.getElementById('company-picker-title');
                 const carsStep = document.getElementById('company-picker-cars-step');
-                const categoriesStep = document.getElementById('company-picker-categories-step');
                 const modelsStep = document.getElementById('company-picker-models-step');
                 const carsList = document.getElementById('company-picker-cars-list');
-                const categoriesList = document.getElementById('company-picker-categories-list');
                 const modelsList = document.getElementById('company-picker-models-list');
                 const carLabel = document.getElementById('company-picker-car-label');
-                const categoryLabel = document.getElementById('company-picker-category-label');
                 const backToCarsButton = document.querySelector('[data-company-picker-back-cars]');
-                const backToCategoriesButton = document.querySelector('[data-company-picker-back-categories]');
                 const closeButton = document.querySelector('[data-company-picker-close]');
-
-                let activeCompany = null;
-                let activeCar = null;
-
-                const countCarModels = function (car) {
-                    return car.modelCategories.reduce(function (total, category) {
-                        return total + category.models.length;
-                    }, 0);
-                };
 
                 const showCarsStep = function () {
                     carsStep.classList.remove('hidden');
-                    categoriesStep.classList.add('hidden');
                     modelsStep.classList.add('hidden');
-                    activeCar = null;
                 };
 
-                const showCategoriesStep = function (car) {
-                    activeCar = car;
-                    carsStep.classList.add('hidden');
-                    categoriesStep.classList.remove('hidden');
-                    modelsStep.classList.add('hidden');
-                    carLabel.textContent = 'دسته مدل ' + car.name + ' را انتخاب کنید:';
-                    categoriesList.innerHTML = '';
+                const modelChipClass = 'inline-flex max-w-full items-center rounded-lg border border-line bg-white px-2.5 py-1 text-xs font-medium text-ink transition hover:border-brand/40 hover:bg-brand-soft/50 sm:px-3 sm:py-1.5 sm:text-sm';
 
-                    car.modelCategories.forEach(function (category) {
-                        const button = document.createElement('button');
-                        button.type = 'button';
-                        button.className = 'inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft hover:text-brand';
-                        button.innerHTML = '<span>' + category.label + '</span>'
-                            + '<span class="rounded-full bg-white px-2 py-0.5 text-xs text-ink-muted">'
-                            + category.models.length
-                            + '</span>';
-                        button.addEventListener('click', function () {
-                            showModelsStep(category);
-                        });
-                        categoriesList.appendChild(button);
-                    });
-                };
-
-                const showModelsStep = function (category) {
+                const showModelsForCar = function (car) {
                     carsStep.classList.add('hidden');
-                    categoriesStep.classList.add('hidden');
                     modelsStep.classList.remove('hidden');
-                    categoryLabel.textContent = 'مدل‌های دسته «' + category.label + '» را انتخاب کنید:';
+                    carLabel.textContent = 'مدل ' + car.name + ' را انتخاب کنید:';
                     modelsList.innerHTML = '';
 
-                    category.models.forEach(function (model) {
-                        const link = document.createElement('a');
-                        link.href = model.url;
-                        link.className = 'rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft hover:text-brand';
-                        link.textContent = model.name;
-                        modelsList.appendChild(link);
+                    car.modelCategories.forEach(function (category) {
+                        const section = document.createElement('section');
+                        section.className = 'rounded-xl border border-line bg-surface/40 p-3';
+
+                        const heading = document.createElement('h3');
+                        heading.className = 'mb-2 text-xs font-bold text-brand';
+                        heading.textContent = category.label;
+                        section.appendChild(heading);
+
+                        const chips = document.createElement('div');
+                        chips.className = 'flex flex-wrap gap-1.5';
+
+                        category.models.forEach(function (model) {
+                            const link = document.createElement('a');
+                            link.href = model.url;
+                            link.className = modelChipClass;
+                            link.textContent = model.name;
+                            chips.appendChild(link);
+                        });
+
+                        section.appendChild(chips);
+                        modelsList.appendChild(section);
                     });
                 };
 
                 const openCompany = function (companySlug) {
-                    activeCompany = pickerData.find(function (company) {
+                    const activeCompany = pickerData.find(function (company) {
                         return company.slug === companySlug;
                     });
 
@@ -151,11 +117,10 @@
                         button.className = 'flex w-full items-center justify-between gap-3 px-4 py-3.5 text-start text-sm transition hover:bg-brand-soft/40';
                         button.innerHTML = '<span class="font-medium text-ink">' + car.name + '</span>'
                             + '<span class="inline-flex items-center gap-1 text-xs text-ink-muted">'
-                            + countCarModels(car) + ' مدل '
                             + '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>'
                             + '</span>';
                         button.addEventListener('click', function () {
-                            showCategoriesStep(car);
+                            showModelsForCar(car);
                         });
                         item.appendChild(button);
                         carsList.appendChild(item);
@@ -172,11 +137,6 @@
                 });
 
                 backToCarsButton?.addEventListener('click', showCarsStep);
-                backToCategoriesButton?.addEventListener('click', function () {
-                    if (activeCar) {
-                        showCategoriesStep(activeCar);
-                    }
-                });
 
                 closeButton?.addEventListener('click', function () {
                     modal.close();

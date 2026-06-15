@@ -187,13 +187,6 @@ class VehicleCatalogService
      *     categories: Collection<int, \App\Models\PartsCategory>,
      *     companies: Collection<int, Company>,
      *     cars: Collection<int, Car>,
-     *     models: Collection<int, array{model: CarModel, label: string}>,
-     *     modelCategoryGroups: Collection<int, array{
-     *         category: ?ModelCategory,
-     *         label: string,
-     *         slug: string,
-     *         models: Collection<int, array{model: CarModel, label: string}>,
-     *     }>,
      *     context: VehicleCatalogContext,
      *     breadcrumbs: list<array<string, mixed>>,
      *     title: string,
@@ -218,19 +211,6 @@ class VehicleCatalogService
         }
 
         $cars = $carsQuery->get();
-
-        $modelsQuery = CarModel::query()
-            ->with(['cars.company', 'category'])
-            ->orderBy('name');
-
-        if ($context->car !== null) {
-            $modelsQuery->whereHas('cars', fn ($query) => $query->where('cars.id', $context->car->id));
-        } elseif ($context->company !== null) {
-            $modelsQuery->whereHas('cars', fn ($query) => $query->where('company_id', $context->company->id));
-        }
-
-        $models = $this->buildModelEntries($modelsQuery->get(), $context, includeUrl: false);
-        $modelCategoryGroups = $this->groupModelEntriesByCategory($models);
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,
@@ -277,8 +257,6 @@ class VehicleCatalogService
             'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
             'companies' => $companies,
             'cars' => $cars,
-            'models' => $models,
-            'modelCategoryGroups' => $modelCategoryGroups,
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $context->company,
@@ -355,7 +333,7 @@ class VehicleCatalogService
                     'models' => $group->values(),
                 ];
             })
-            ->sortBy('label')
+            ->sortByDesc(fn (array $group): int => $group['models']->count())
             ->values();
     }
 }

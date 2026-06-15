@@ -63,13 +63,6 @@
             </div>
         </div>
 
-        <x-catalog.model-category-selects
-            :groups="$modelCategoryGroups"
-            :selected-model-slug="$context->model?->slug"
-            category-field-id="parts-model-category-filter"
-            model-field-id="parts-model-filter"
-        />
-
         <div class="relative">
             <label for="parts-search" class="sr-only">جستجوی قطعه</label>
             <svg class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">

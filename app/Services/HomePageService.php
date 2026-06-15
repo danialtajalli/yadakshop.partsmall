@@ -134,7 +134,7 @@ class HomePageService
                                                 ->all(),
                                         ];
                                     })
-                                    ->sortBy('label')
+                                    ->sortByDesc(fn (array $category): int => count($category['models']))
                                     ->values()
                                     ->all(),
                             ];

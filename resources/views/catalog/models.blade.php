@@ -69,6 +69,6 @@
             <p class="text-sm text-ink-muted">مدلی با این فیلتر یافت نشد.</p>
         </div>
     @else
-        <x-catalog.model-category-explorer :groups="$modelCategoryGroups" />
+        <x-catalog.model-category-list :groups="$modelCategoryGroups" />
     @endif
 @endsection
