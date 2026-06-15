@@ -56,7 +56,7 @@
     </div>
 
     @if ($vehicleApplications->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center mb-6">
+        <div class="mb-6 rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
             <p class="text-sm text-ink-muted">
                 @if ($filters['q'] ?? null)
                     خودرویی با این نام یافت نشد.
@@ -66,27 +66,29 @@
             </p>
         </div>
     @else
-        <div class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-card mb-6">
+        <div
+            class="mb-6 columns-2 gap-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"
+            role="list"
+            aria-label="خودروها و مدل‌های مرتبط"
+        >
             @foreach ($vehicleApplications as $application)
                 <a
                     href="{{ $application['url'] }}"
-                    class="flex items-center justify-between gap-4 px-5 py-4 text-sm transition hover:bg-brand-soft/40 sm:px-6"
+                    role="listitem"
+                    title="{{ $application['label'] }}"
+                    class="mb-2 inline-flex w-full break-inside-avoid items-center rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium leading-snug text-ink transition hover:border-brand/40 hover:bg-brand-soft/50 sm:px-3 sm:py-2 sm:text-sm"
                 >
-                    <span class="font-medium text-ink">{{ $application['label'] }}</span>
-                    <span class="inline-flex shrink-0 items-center gap-1.5 text-brand">
-                        مشاهده
-                        <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>
-                    </span>
+                    {{ $application['short_label'] }}
                 </a>
             @endforeach
         </div>
 
-
         <div class="mt-10">
             {{ $vehicleApplications->withQueryString()->links() }}
         </div>
-        @endif
-        @if ($part->description || $part->category_description)
+    @endif
+
+    @if ($part->description || $part->category_description)
         <div class="mb-8 space-y-6">
             @if ($part->description)
                 <section class="ps-card px-5 py-6 sm:px-6">
@@ -112,5 +114,5 @@
                 </section>
             @endif
         </div>
-        @endif
+    @endif
 @endsection

@@ -48,7 +48,7 @@ class PartPageServiceTest extends TestCase
         $this->assertSame(1, $filtered['vehicleApplications']->total());
         $this->assertSame('طبق هیوندای سانتافه نیو', $filtered['vehicleApplications']->first()['label']);
 
-        foreach (range(1, 21) as $index) {
+        foreach (range(1, 61) as $index) {
             $car = Car::create([
                 'name' => "خودرو {$index}",
                 'slug' => "car-{$index}",
@@ -62,7 +62,7 @@ class PartPageServiceTest extends TestCase
         }
 
         $paginated = $this->service->getPartPageData('arm', Request::create('/part/arm', 'GET', ['page' => 2]));
-        $this->assertSame(23, $paginated['vehicleApplications']->total());
+        $this->assertSame(63, $paginated['vehicleApplications']->total());
         $this->assertCount(3, $paginated['vehicleApplications']->items());
     }
 
