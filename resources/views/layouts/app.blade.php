@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ $title??config('app.name') }}</title>
     <link rel="icon" type="image/png" href="https://partsmall.ir/img/favicon.webp">
     <link rel="apple-touch-icon" sizes="180x180" href="https://partsmall.ir/img/favicon.webp">
     <link rel="icon" type="image/png" sizes="32x32" href="https://partsmall.ir/img/favicon.webp">
