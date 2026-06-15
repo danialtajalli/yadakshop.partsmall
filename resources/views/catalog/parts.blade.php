@@ -16,11 +16,6 @@
         </div>
     </div>
 
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">{{ number_format($parts->total()) }} قطعه</p>
-        <x-catalog.vehicle-nav :context="$context" active="parts" />
-    </div>
-
     <form method="GET" action="{{ url()->current() }}" id="parts-search-form">
         <x-catalog.search-bar
             id="parts-search"
