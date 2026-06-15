@@ -31,9 +31,9 @@
             <p class="text-sm text-ink-muted">قطعه‌ای با این فیلتر یافت نشد.</p>
         </div>
     @else
-        <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
             @foreach ($parts as $part)
-                <x-ui.part-card :part="$part" :url="$part->catalog_url" />
+                <x-ui.part-card :context="$context" :part="$part" :url="$part->catalog_url" />
             @endforeach
         </div>
 
