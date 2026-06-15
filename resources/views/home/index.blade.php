@@ -134,20 +134,20 @@
                 <p id="home-part-search-empty" class="mt-3 hidden text-sm text-ink-muted">قطعه‌ای با این نام یافت نشد.</p>
             </div>
 
-            <div id="home-parts-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div id="home-parts-grid" class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 @foreach ($parts as $part)
                     <a
                         href="{{ route('part.show', $part->slug) }}"
-                        class="home-part-card ps-card-interactive flex flex-col p-5"
+                        class="home-part-card ps-card-interactive flex items-center gap-2.5 p-3"
                         data-part-name="{{ $part->name }}"
                     >
-                        <div class="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand-soft text-brand">
-                            <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                        <x-ui.part-icon :part="$part" class="size-8 shrink-0 rounded-lg" />
+                        <div class="min-w-0 flex-1">
+                            <h3 class="truncate text-sm font-semibold leading-5 text-ink">{{ $part->name }}</h3>
+                            @if ($part->partsCategory)
+                                <p class="mt-0.5 truncate text-[11px] font-medium text-brand">{{ $part->partsCategory->name }}</p>
+                            @endif
                         </div>
-                        <h3 class="text-base font-semibold text-ink">{{ $part->name }}</h3>
-                        @if ($part->partsCategory)
-                            <p class="mt-1 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
-                        @endif
                     </a>
                 @endforeach
             </div>
