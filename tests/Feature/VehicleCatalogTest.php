@@ -65,6 +65,8 @@ class VehicleCatalogTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('catalog.parts');
+        $response->assertSee('<svg', false);
+        $response->assertDontSee('fa-gear', false);
         $response->assertSee(route('product.show', [
             'company' => 'hyundai',
             'car' => 'santafe',

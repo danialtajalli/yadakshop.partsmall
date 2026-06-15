@@ -111,17 +111,9 @@
             <p class="text-sm text-ink-muted">قطعه‌ای با این فیلتر یافت نشد.</p>
         </div>
     @else
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             @foreach ($parts as $part)
-                <a href="{{ $part->catalog_url }}" class="ps-card-interactive flex flex-col p-5">
-                    <div class="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand-soft text-brand">
-                        <i class="fa-solid fa-gear" aria-hidden="true"></i>
-                    </div>
-                    <h2 class="text-base font-semibold text-ink">{{ $part->name }}</h2>
-                    @if ($part->partsCategory)
-                        <p class="mt-1 text-xs font-medium text-brand">{{ $part->partsCategory->name }}</p>
-                    @endif
-                </a>
+                <x-ui.part-card :part="$part" :url="$part->catalog_url" />
             @endforeach
         </div>
 
