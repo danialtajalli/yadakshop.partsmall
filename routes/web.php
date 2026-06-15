@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartController;
@@ -34,5 +35,6 @@ Route::get('part', [PartSelectionController::class, 'show'])
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');
 
+Route::get('page/contact', [ContactController::class, 'show']);
 Route::get('page/{slug}', [PageController::class, 'show'])
     ->name('page.show');
