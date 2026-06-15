@@ -21,39 +21,23 @@
         <x-catalog.vehicle-nav :context="$context" active="cars" />
     </div>
 
-    <x-catalog.context-summary :context="$context" :clear-url="route('companies.index')" />
-
-    <x-catalog.filter-card
-        data-catalog-type="cars"
-        data-catalog-cars-base="{{ route('companies.index') }}"
-        data-catalog-cars-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
-        :clear-url="$context->company ? route('companies.index') : null"
-    >
-        <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر کمپانی</label>
-        <select
-            id="company-filter"
-            data-catalog-field="company"
-            class="min-w-[12rem] rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-        >
-            <option value="">همه برندها</option>
-            @foreach ($companies as $company)
-                <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
-                    {{ $company->name }}
-                </option>
-            @endforeach
-        </select>
-    </x-catalog.filter-card>
+    <x-catalog.search-bar
+        id="car-search"
+        placeholder="جستجوی نام خودرو..."
+        empty-message="خودرویی با این نام یافت نشد."
+    />
 
     @if ($cars->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">خودرویی با این فیلتر یافت نشد.</p>
+            <p class="text-sm text-ink-muted">خودرویی برای نمایش ثبت نشده است.</p>
         </div>
     @else
         <div class="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-card">
             @foreach ($cars as $car)
                 <a
                     href="{{ route('models.index', ['company' => $car->company->slug, 'car' => $car->slug]) }}"
-                    class="flex items-center justify-between gap-4 px-5 py-4 text-sm transition hover:bg-brand-soft/40 sm:px-6"
+                    class="catalog-car-row flex items-center justify-between gap-4 px-5 py-4 text-sm transition hover:bg-brand-soft/40 sm:px-6"
+                    data-search-text="{{ $car->name }} {{ $car->company->name }}"
                 >
                     <span>
                         <span class="block font-medium text-ink">{{ $car->name }}</span>
@@ -69,4 +53,10 @@
             @endforeach
         </div>
     @endif
+
+    <x-catalog.client-search
+        input-id="car-search"
+        empty-id="car-search-empty"
+        item-selector=".catalog-car-row"
+    />
 @endsection

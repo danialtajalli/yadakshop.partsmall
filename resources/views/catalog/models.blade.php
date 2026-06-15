@@ -21,48 +21,11 @@
         <x-catalog.vehicle-nav :context="$context" active="models" />
     </div>
 
-    <x-catalog.context-summary :context="$context" :clear-url="$context->company ? route('cars.index', ['company' => $context->company->slug]) : route('companies.index')" />
-
-    <x-catalog.filter-card
-        data-catalog-type="models"
-        data-catalog-models-base="{{ route('companies.index') }}"
-        data-catalog-models-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
-        data-catalog-models-car-template="{{ route('models.index', ['company' => '__COMPANY__', 'car' => '__CAR__']) }}"
-        :clear-url="$context->company && $context->car ? route('cars.index', ['company' => $context->company->slug]) : ($context->company ? route('companies.index') : null)"
-    >
-        <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-                <label for="models-company-filter" class="mb-2 block text-sm font-medium text-ink">کمپانی</label>
-                <select
-                    id="models-company-filter"
-                    data-catalog-field="company"
-                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                >
-                    <option value="">همه کمپانی ها</option>
-                    @foreach ($companies as $company)
-                        <option value="{{ $company->slug }}" @selected($context->company?->slug === $company->slug)>
-                            {{ $company->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div>
-                <label for="models-car-filter" class="mb-2 block text-sm font-medium text-ink">خودرو</label>
-                <select
-                    id="models-car-filter"
-                    data-catalog-field="car"
-                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                >
-                    <option value="">همه خودروها</option>
-                    @foreach ($cars as $car)
-                        <option value="{{ $car->slug }}" @selected($context->car?->slug === $car->slug)>
-                            {{ $context->company ? $car->name : $car->company->name.' '.$car->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    </x-catalog.filter-card>
+    <x-catalog.search-bar
+        id="model-search"
+        placeholder="جستجوی نام مدل..."
+        empty-message="مدلی با این نام یافت نشد."
+    />
 
     @if ($modelCategoryGroups->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -71,4 +34,11 @@
     @else
         <x-catalog.model-category-list :groups="$modelCategoryGroups" />
     @endif
+
+    <x-catalog.client-search
+        input-id="model-search"
+        empty-id="model-search-empty"
+        item-selector="[data-search-text]"
+        section-selector=".model-category-section"
+    />
 @endsection

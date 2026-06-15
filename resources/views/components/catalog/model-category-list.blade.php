@@ -47,7 +47,7 @@
 
         <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             @foreach ($groups as $group)
-                <section class="rounded-xl border border-line bg-surface/40 p-3">
+                <section class="model-category-section rounded-xl border border-line bg-surface/40 p-3" data-search-section>
                     <h3 class="mb-2 text-xs font-bold text-brand">{{ $group['label'] }}</h3>
                     <div class="flex flex-wrap gap-1.5">
                         @foreach ($group['models'] as $entry)
@@ -64,7 +64,11 @@
                                     {{ $entry['label'] }}
                                 </button>
                             @else
-                                <a href="{{ $entry['url'] }}" class="{{ $chipClass }}">
+                                <a
+                                    href="{{ $entry['url'] }}"
+                                    class="{{ $chipClass }}"
+                                    data-search-text="{{ $entry['label'] }}"
+                                >
                                     {{ $entry['label'] }}
                                 </a>
                             @endif
