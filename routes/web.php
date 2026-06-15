@@ -15,8 +15,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('company', [VehicleCatalogController::class, 'companies'])->name('companies.index');
-Route::get('car/{company?}', [VehicleCatalogController::class, 'cars'])->name('cars.index');
-Route::get('model/{company?}/{car?}', [VehicleCatalogController::class, 'models'])->name('models.index');
+Route::get('company/{company}', [VehicleCatalogController::class, 'cars'])->name('cars.index');
+
+Route::get('car/{company}/{car}', [VehicleCatalogController::class, 'models'])->name('models.index');
+Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
+    ->name('car.parts.vehicle');
 
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
@@ -25,12 +28,8 @@ Route::get('repair_profile/{repair_shop_slug}', [RepairShopController::class, 's
 Route::get('representations', [RepresentationController::class, 'index'])->name('representations.index');
 Route::get('representation/{representation_slug}', [RepresentationController::class, 'show'])->name('representation.profile');
 
+Route::get('part', [PartSelectionController::class, 'show'])->name('car.parts');
 Route::get('part/{part}', [PartController::class, 'show'])->name('part.show');
-
-Route::get('part/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
-    ->name('car.parts.vehicle');
-Route::get('part', [PartSelectionController::class, 'show'])
-    ->name('car.parts');
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');

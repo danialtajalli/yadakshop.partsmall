@@ -21,13 +21,13 @@
         <x-catalog.vehicle-nav :context="$context" active="cars" />
     </div>
 
-    <x-catalog.context-summary :context="$context" :clear-url="route('cars.index')" />
+    <x-catalog.context-summary :context="$context" :clear-url="route('companies.index')" />
 
     <x-catalog.filter-card
         data-catalog-type="cars"
-        data-catalog-cars-base="{{ route('cars.index') }}"
+        data-catalog-cars-base="{{ route('companies.index') }}"
         data-catalog-cars-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
-        :clear-url="$context->company ? route('cars.index') : null"
+        :clear-url="$context->company ? route('companies.index') : null"
     >
         <label for="company-filter" class="mb-2 block text-sm font-medium text-ink">فیلتر کمپانی</label>
         <select

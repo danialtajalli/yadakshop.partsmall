@@ -23,7 +23,7 @@ class VehicleCatalogTest extends TestCase
             ->assertOk()
             ->assertViewIs('catalog.companies')
             ->assertSee('هیوندای', false)
-            ->assertSee(route('cars.index', ['company' => 'hyundai']), false);
+            ->assertSee('company/hyundai', false);
     }
 
     public function test_cars_index_filters_by_company(): void
@@ -34,7 +34,7 @@ class VehicleCatalogTest extends TestCase
             ->assertOk()
             ->assertViewIs('catalog.cars')
             ->assertSee('سانتافه', false)
-            ->assertSee('car/hyundai', false);
+            ->assertSee('company/hyundai', false);
     }
 
     public function test_models_index_filters_by_car(): void

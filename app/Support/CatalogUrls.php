@@ -11,14 +11,27 @@ class CatalogUrls
 
     public static function cars(?string $companySlug): string
     {
+        if ($companySlug === null || $companySlug === '') {
+            return route('companies.index');
+        }
+
         return route('cars.index', ['company' => $companySlug]);
     }
 
     public static function models(?string $companySlug = null, ?string $carSlug = null): string
     {
-        $params = ['company' => $companySlug, 'car' => $carSlug];
+        if ($companySlug && $carSlug) {
+            return route('models.index', [
+                'company' => $companySlug,
+                'car' => $carSlug,
+            ]);
+        }
 
-        return route('models.index', $params);
+        if ($companySlug) {
+            return route('cars.index', ['company' => $companySlug]);
+        }
+
+        return route('companies.index');
     }
 
     /**
@@ -27,13 +40,11 @@ class CatalogUrls
     public static function parts(?string $companySlug = null, ?string $carSlug = null, ?string $modelSlug = null, array $query = []): string
     {
         if ($companySlug && $carSlug && $modelSlug) {
-            $url = route('car.parts.vehicle', [
+            return route('car.parts.vehicle', [
                 'company' => $companySlug,
                 'car' => $carSlug,
                 'model' => $modelSlug,
             ]);
-
-            return $url;
         }
 
         $query = array_filter(array_merge([
@@ -44,6 +55,10 @@ class CatalogUrls
 
         $url = route('car.parts');
 
-        return $url;
+        if ($query === []) {
+            return $url;
+        }
+
+        return $url.'?'.http_build_query($query);
     }
 }

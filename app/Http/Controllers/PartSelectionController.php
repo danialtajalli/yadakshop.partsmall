@@ -17,6 +17,11 @@ class PartSelectionController extends Controller
 
     public function show(Request $request, ?string $company = null, ?string $car = null, ?string $model = null): View
     {
-        return view('catalog.parts', $this->vehicleCatalogService->getPartsIndexData($request, $company ?? null, $car ?? null, $model ?? null));
+        return view('catalog.parts', $this->vehicleCatalogService->getPartsIndexData(
+            $request,
+            $company,
+            $car,
+            $model,
+        ));
     }
 }

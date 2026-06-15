@@ -21,14 +21,14 @@
         <x-catalog.vehicle-nav :context="$context" active="models" />
     </div>
 
-    <x-catalog.context-summary :context="$context" :clear-url="route('models.index')" />
+    <x-catalog.context-summary :context="$context" :clear-url="$context->company ? route('cars.index', ['company' => $context->company->slug]) : route('companies.index')" />
 
     <x-catalog.filter-card
         data-catalog-type="models"
-        data-catalog-models-base="{{ route('models.index') }}"
-        data-catalog-models-company-template="{{ route('models.index', ['company' => '__COMPANY__']) }}"
+        data-catalog-models-base="{{ route('companies.index') }}"
+        data-catalog-models-company-template="{{ route('cars.index', ['company' => '__COMPANY__']) }}"
         data-catalog-models-car-template="{{ route('models.index', ['company' => '__COMPANY__', 'car' => '__CAR__']) }}"
-        :clear-url="($context->company || $context->car) ? route('models.index') : null"
+        :clear-url="$context->company && $context->car ? route('cars.index', ['company' => $context->company->slug]) : ($context->company ? route('companies.index') : null)"
     >
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
