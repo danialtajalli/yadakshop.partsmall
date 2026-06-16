@@ -15,7 +15,7 @@
                     href="{{ $link->link_type->actionUrl($link->name) }}"
                     target="_blank"
                     rel="noopener"
-                    class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
+                    class="flex mt-2 items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
                 >
                     <span class="font-medium text-ink">{{ $link->link_type->label() }}</span>
                     <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base text-brand">
