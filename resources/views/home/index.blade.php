@@ -84,13 +84,11 @@
                         data-company-name="{{ $company->name }}"
                         @disabled($company->cars->flatMap->models->isEmpty())
                     >
-                        <div class="mb-3 flex size-11 items-center justify-center overflow-hidden rounded-xl bg-brand-soft text-brand">
-                            @if ($company->logo_url)
-                                <img src="{{ $company->logo_url }}" alt="{{ $company->name }}" class="size-full object-cover">
-                            @else
-                                {{ mb_substr($company->name, 0, 1) }}
-                            @endif
-                        </div>
+                        <x-ui.company-logo
+                            :name="$company->name"
+                            :logo-url="$company->logo_url"
+                            size="lg"
+                        />
                         <h3 class="text-base font-semibold text-ink">{{ $company->name }}</h3>
                         @if ($company->cars->flatMap->models->isEmpty())
                             <p class="mt-1 text-xs text-ink-muted">خودرویی ثبت نشده است</p>

@@ -34,13 +34,10 @@
                     class="catalog-company-card ps-card-interactive flex flex-col p-5"
                     data-search-text="{{ $company->name }}"
                 >
-                    <div class="mb-3 flex size-11 items-center justify-center overflow-hidden rounded-xl bg-brand-soft text-brand">
-                        @if ($company->logo_url ?? null)
-                            <img src="{{ $company->logo_url }}" alt="{{ $company->name }}" class="size-full object-cover">
-                        @else
-                            {{ mb_substr($company->name, 0, 1) }}
-                        @endif
-                    </div>
+                    <x-ui.company-logo
+                        :name="$company->name"
+                        :logo-url="$company->logo_url ?? null"
+                    />
                     <h2 class="text-base font-semibold text-ink">{{ $company->name }}</h2>
                     <p class="mt-1 text-xs text-ink-muted">{{ $company->cars_count }} خودرو</p>
                 </a>
