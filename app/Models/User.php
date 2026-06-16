@@ -18,6 +18,7 @@ class User extends Authenticatable
         'email',
         'topic',
         'message',
+        'password',
     ];
 
     protected function casts(): array
