@@ -8,35 +8,26 @@ class PartIcon
 {
     public static function type(Part $part): string
     {
-        $haystack = mb_strtolower(trim(
-            ($part->partsCategory?->name ?? '').' '.$part->name.' '.($part->category_description ?? ''),
-        ));
+        $name = mb_strtolower(trim($part->name));
 
-        return match (true) {
-            self::contains($haystack, ['موتور', 'شمع', 'پیستون', 'میل لنگ', 'سرسیلندر']) => 'engine',
-            self::contains($haystack, ['ترمز', 'لنت', 'دیسک']) => 'brake',
-            self::contains($haystack, ['جلوبندی', 'تعلیق', 'فنر', 'طبق', 'کمک', 'میل فرمان', 'سیبک']) => 'suspension',
-            self::contains($haystack, ['برق', 'الکتری', 'باتری', 'دینام', 'سیم', 'سنسور']) => 'electric',
-            self::contains($haystack, ['فیلتر', 'روغن']) => 'filter',
-            self::contains($haystack, ['گیربکس', 'کلاچ', 'دیسک و صفحه']) => 'gearbox',
-            self::contains($haystack, ['بدنه', 'شیشه', 'آینه', 'درب', 'سپر', 'گلگیر']) => 'body',
-            self::contains($haystack, ['لاستیک', 'تایر', 'رینگ']) => 'tire',
-            self::contains($haystack, ['رادیاتور', 'کولر', 'بخاری', 'تهویه']) => 'cooling',
-            default => 'part',
-        };
-    }
-
-    /**
-     * @param  list<string>  $needles
-     */
-    private static function contains(string $haystack, array $needles): bool
-    {
-        foreach ($needles as $needle) {
-            if (str_contains($haystack, $needle)) {
-                return true;
+        foreach (PartIconDefinitions::nameRules() as $rule) {
+            foreach ($rule['patterns'] as $pattern) {
+                if (str_contains($name, mb_strtolower($pattern))) {
+                    return $rule['icon'];
+                }
             }
         }
 
-        return false;
+        $categoryName = $part->partsCategory?->name;
+
+        if ($categoryName !== null) {
+            $categoryIcons = PartIconDefinitions::categoryIcons();
+
+            if (isset($categoryIcons[$categoryName])) {
+                return $categoryIcons[$categoryName];
+            }
+        }
+
+        return 'part';
     }
 }
