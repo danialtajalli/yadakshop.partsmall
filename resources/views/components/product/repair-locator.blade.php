@@ -1,7 +1,7 @@
 @props(['repairLocator'])
 
 <div class="overflow-hidden rounded-2xl border-2 border-brand/35 bg-gradient-to-l from-brand-soft via-white to-white shadow-card ring-1 ring-brand/10">
-    <div class="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+    <div class="flex flex-col gap-5 p-5 sm:flex-col sm:items-center sm:justify-center sm:gap-6 sm:p-6">
         <div class="flex min-w-0 items-start gap-4">
             <span class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand text-white shadow-sm">
                 <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
