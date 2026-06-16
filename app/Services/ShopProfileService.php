@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Enums\LinkType;
 use App\Models\Company;
 use App\Models\Phone;
 use App\Models\Shop;
@@ -40,6 +41,10 @@ class ShopProfileService
         if ($shop === null) {
             throw (new ModelNotFoundException)->setModel(Shop::class, [$slug]);
         }
+
+        $shop->website_show = $shop->links->firstWhere('link_type', LinkType::Website);
+        $shop->links = $shop->links->where('link_type', '!=', LinkType::Website);
+
 
         ShopImageUrlBuilder::attachShopMedia($shop);
         $shop->description = $this->sanitizeDescription($shop->description);

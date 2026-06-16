@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Models\Company;
 use App\Models\Part;
 use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
+use App\Support\CarModelLabel;
+use App\Support\ModelCategoryLabel;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
 
@@ -18,6 +21,21 @@ class HomePageService
      * @return array{
      *     shops: Collection<int, Shop>,
      *     repairShops: Collection<int, RepairShop>,
+     *     companies: Collection<int, Company>,
+     *     companyPicker: list<array{
+     *         slug: string,
+     *         name: string,
+     *         logo_url: ?string,
+     *         cars: list<array{
+     *             slug: string,
+     *             name: string,
+     *             modelCategories: list<array{
+     *                 slug: string,
+     *                 label: string,
+     *                 models: list<array{slug: string, name: string, url: string}>,
+     *             }>,
+     *         }>,
+     *     }>,
      *     representations: Collection<int, Representation>,
      *     parts: Collection<int, Part>,
      *     title: string,
@@ -25,13 +43,110 @@ class HomePageService
      */
     public function getHomePageData(): array
     {
+        $companies = $this->featuredCompanies();
+
         return [
             'shops' => $this->featuredShops(),
             'repairShops' => $this->featuredRepairShops(),
+            'companies' => $companies,
+            'companyPicker' => $this->buildCompanyPicker($companies),
             'representations' => $this->featuredRepresentations(),
             'parts' => $this->allParts(),
-            'title' => config('app.name', 'پارتس‌مال'),
+            'title' => "پارتس‌مال",
         ];
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    private function featuredCompanies(): Collection
+    {
+        $companies = Company::query()
+            ->with(['images', 'cars.models.category'])
+            ->orderBy('id')
+            ->get();
+
+        $companies->each(function (Company $company): void {
+            $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+            $company->logo_url = $logo
+                ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                : null;
+        });
+
+        return $companies;
+    }
+
+    /**
+     * @param  Collection<int, Company>  $companies
+     * @return list<array{
+     *     slug: string,
+     *     name: string,
+     *     logo_url: ?string,
+     *     cars: list<array{
+     *         slug: string,
+     *         name: string,
+     *         modelCategories: list<array{
+     *             slug: string,
+     *             label: string,
+     *             models: list<array{slug: string, name: string, url: string}>,
+     *         }>,
+     *     }>,
+     * }>
+     */
+    private function buildCompanyPicker(Collection $companies): array
+    {
+        return $companies
+            ->map(function (Company $company): array {
+                return [
+                    'slug' => $company->slug,
+                    'name' => $company->name,
+                    'logo_url' => $company->logo_url,
+                    'cars' => $company->cars
+                        ->sortBy('name')
+                        ->values()
+                        ->map(function ($car) use ($company): array {
+                            return [
+                                'slug' => $car->slug,
+                                'name' => $car->name,
+                                'modelCategories' => $car->models
+                                    ->sortBy('name')
+                                    ->groupBy(fn ($model) => (string) ($model->category_id ?? 0))
+                                    ->map(function ($models, $categoryId) use ($company, $car): array {
+                                        $category = $models->first()->category;
+
+                                        return [
+                                            'slug' => ModelCategoryLabel::slug($category),
+                                            'label' => ModelCategoryLabel::display($category),
+                                            'models' => $models
+                                                ->map(function ($model) use ($company, $car): array {
+                                                    return [
+                                                        'slug' => $model->slug,
+                                                        'name' => CarModelLabel::display($model),
+                                                        'url' => route('car.parts.vehicle', [
+                                                            'company' => $company->slug,
+                                                            'car' => $car->slug,
+                                                            'model' => $model->slug,
+                                                        ]),
+                                                    ];
+                                                })
+                                                ->values()
+                                                ->all(),
+                                        ];
+                                    })
+                                    ->sortByDesc(fn (array $category): int => count($category['models']))
+                                    ->values()
+                                    ->all(),
+                            ];
+                        })
+                        ->filter(fn (array $car) => $car['modelCategories'] !== [])
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->filter(fn (array $company) => $company['cars'] !== [])
+            ->values()
+            ->all();
     }
 
     /**

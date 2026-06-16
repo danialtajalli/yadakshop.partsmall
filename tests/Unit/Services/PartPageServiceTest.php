@@ -31,13 +31,13 @@ class PartPageServiceTest extends TestCase
         $part = Part::create([
             'name' => 'طبق',
             'slug' => 'arm',
-            'description' => 'ظظظ و ططط',
+            'description' => 'یکی از قطعات xxx می باشد.',
             'parts_category_id' => $category->id,
         ]);
 
         $data = $this->service->getPartPageData('arm', Request::create('/part/arm'));
 
-        $this->assertSame('طبق و جلوبندی', $data['part']->description);
+        $this->assertSame('یکی از قطعات جلوبندی می باشد.', $data['part']->description);
     }
 
     public function test_it_filters_and_paginates_vehicle_applications(): void
@@ -46,9 +46,11 @@ class PartPageServiceTest extends TestCase
 
         $filtered = $this->service->getPartPageData('arm', Request::create('/part/arm', 'GET', ['q' => 'سانتافه']));
         $this->assertSame(1, $filtered['vehicleApplications']->total());
-        $this->assertSame('طبق هیوندای سانتافه نیو', $filtered['vehicleApplications']->first()['label']);
+        $this->assertTrue(
+            $filtered['vehicleApplications']->contains(fn (array $application): bool => $application['label'] === 'طبق هیوندای سانتافه نیو'),
+        );
 
-        foreach (range(1, 21) as $index) {
+        foreach (range(1, 61) as $index) {
             $car = Car::create([
                 'name' => "خودرو {$index}",
                 'slug' => "car-{$index}",
@@ -62,7 +64,7 @@ class PartPageServiceTest extends TestCase
         }
 
         $paginated = $this->service->getPartPageData('arm', Request::create('/part/arm', 'GET', ['page' => 2]));
-        $this->assertSame(23, $paginated['vehicleApplications']->total());
+        $this->assertSame(63, $paginated['vehicleApplications']->total());
         $this->assertCount(3, $paginated['vehicleApplications']->items());
     }
 

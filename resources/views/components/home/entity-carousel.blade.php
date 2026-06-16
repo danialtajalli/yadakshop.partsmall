@@ -26,23 +26,24 @@
             <p class="text-sm text-ink-muted">{{ $emptyMessage }}</p>
         </div>
     @else
-        <div class="ps-carousel group" data-carousel>
+        <div class="ps-carousel group" data-entity-carousel>
             <button
                 type="button"
                 class="ps-carousel-nav ps-carousel-nav--prev"
-                data-carousel-prev
+                data-entity-carousel-prev
                 aria-label="اسلاید قبلی"
             >
                 <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
             </button>
 
-            <div class="ps-carousel-viewport px-2 sm:px-4" data-carousel-viewport dir="ltr" tabindex="0">
-                <div class="ps-carousel-track" data-carousel-track>
+            <div class="ps-carousel-viewport px-2 sm:px-4" data-entity-carousel-viewport dir="ltr" tabindex="0">
+                <div class="ps-carousel-track" data-entity-carousel-track>
                     @foreach ($items as $item)
                         <article class="ps-carousel-slide">
                             <a
                                 href="{{ route($profileRoute, $item->slug) }}"
                                 class="ps-card-interactive flex h-full flex-col items-center gap-3 p-4 text-center"
+                                draggable="false"
                             >
                                 <div class="flex size-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line sm:size-20">
                                     @if ($item->logo ?? null)
@@ -51,6 +52,7 @@
                                             alt="{{ $item->name }}"
                                             class="size-full object-cover"
                                             loading="lazy"
+                                            draggable="false"
                                         >
                                     @else
                                         {{ mb_substr($item->name, 0, 1) }}
@@ -68,7 +70,7 @@
             <button
                 type="button"
                 class="ps-carousel-nav ps-carousel-nav--next"
-                data-carousel-next
+                data-entity-carousel-next
                 aria-label="اسلاید بعدی"
             >
                 <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
@@ -76,3 +78,92 @@
         </div>
     @endif
 </section>
+
+@once
+    @push('scripts')
+        @unless (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+            <script src="https://unpkg.com/embla-carousel@8/embla-carousel.umd.js"></script>
+            <script src="https://unpkg.com/embla-carousel-autoplay@8/embla-carousel-autoplay.umd.js"></script>
+            <script>
+            (function () {
+                const AUTO_PLAY_DELAY = 3000;
+
+                const initEntityCarousels = function (root) {
+                    if (typeof EmblaCarousel === 'undefined') {
+                        return;
+                    }
+
+                    root.querySelectorAll('[data-entity-carousel]').forEach(function (carouselRoot) {
+                        if (carouselRoot.dataset.entityCarouselReady === 'true') {
+                            return;
+                        }
+
+                        const viewport = carouselRoot.querySelector('[data-entity-carousel-viewport]');
+
+                        if (!viewport) {
+                            return;
+                        }
+
+                        const prevButton = carouselRoot.querySelector('[data-entity-carousel-prev]');
+                        const nextButton = carouselRoot.querySelector('[data-entity-carousel-next]');
+                        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        const plugins = [];
+                        let autoplay = null;
+
+                        if (!prefersReducedMotion && typeof EmblaCarouselAutoplay !== 'undefined') {
+                            autoplay = EmblaCarouselAutoplay({
+                                delay: AUTO_PLAY_DELAY,
+                                stopOnInteraction: true,
+                            });
+                            plugins.push(autoplay);
+                        }
+
+                        const embla = EmblaCarousel(viewport, {
+                            loop: true,
+                            align: 'start',
+                            direction: 'ltr',
+                            dragFree: false,
+                            containScroll: 'trimSnaps',
+                        }, plugins);
+
+                        carouselRoot.dataset.entityCarouselReady = 'true';
+
+                        prevButton?.addEventListener('click', function () {
+                            embla.scrollPrev();
+                        });
+
+                        nextButton?.addEventListener('click', function () {
+                            embla.scrollNext();
+                        });
+
+                        if (autoplay) {
+                            carouselRoot.addEventListener('mouseenter', autoplay.stop);
+                            carouselRoot.addEventListener('mouseleave', autoplay.play);
+                        }
+
+                        embla.on('pointerDown', function () {
+                            viewport.classList.add('is-dragging');
+                        });
+
+                        embla.on('pointerUp', function () {
+                            viewport.classList.remove('is-dragging');
+                        });
+                    });
+                };
+
+                const boot = function () {
+                    initEntityCarousels(document);
+                };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', boot);
+                } else {
+                    boot();
+                }
+
+                window.initEntityCarousels = initEntityCarousels;
+            })();
+        </script>
+        @endunless
+    @endpush
+@endonce

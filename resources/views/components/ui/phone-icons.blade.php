@@ -20,7 +20,7 @@
                     aria-label="{{ $phone->type->label() }}"
                 >
                 <span class="text-sm font-medium text-ink">{{ $phone->type->label() }}</span>
-                    <i class="{{ $phone->type->icon() }}" aria-hidden="true"></i>
+                <p>{{ $phone->phone_number }}</p>
                 </a>
             </li>
         @endforeach

@@ -1,0 +1,134 @@
+@extends('layouts.app')
+
+@section('title', $title)
+
+@push('head')
+    <style>
+        .contact-survey-embed {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .contact-survey-embed .porsline_embed,
+        .contact-survey-embed [id^="OrZ"] {
+            position: relative;
+            width: 100%;
+            min-height: 28rem;
+        }
+
+        .contact-survey-embed .porsline_embed > span {
+            display: none !important;
+        }
+
+        .contact-survey-embed .porsline_embed iframe,
+        .contact-survey-embed iframe {
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            display: block;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 32rem !important;
+            min-height: 28rem;
+            border: 0;
+        }
+    </style>
+@endpush
+
+@section('content')
+    <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
+            <x-site.breadcrumb :items="$breadcrumbs" />
+
+            <x-ui.section-heading
+                :title="$page->title ?? 'تماس با ما'"
+                heading="h1"
+            />
+
+            <p class="mt-4 max-w-3xl text-sm leading-7 text-ink-muted">
+                تیم {{ config('app.name', 'پارتس‌مال') }} همواره آماده پاسخگویی به سوالات، راهنمایی و پشتیبانی شماست.
+                اگر نیاز به اطلاعات بیشتر یا پیگیری درخواست دارید، از راه‌های زیر با ما در ارتباط باشید.
+            </p>
+        </div>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div class="space-y-6">
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="ps-card flex gap-4 p-5">
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-ink">آدرس</h2>
+                        <p class="mt-1 text-sm leading-6 text-ink-muted">{{ $contact['address'] }}</p>
+                    </div>
+                </div>
+
+                <div class="ps-card flex gap-4 p-5">
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
+                        <i class="fa-solid fa-clock" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-ink">ساعت کاری</h2>
+                        <p class="mt-1 text-sm leading-6 text-ink-muted">{{ $contact['hours'] }}</p>
+                    </div>
+                </div>
+
+                <div class="ps-card flex gap-4 p-5">
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
+                        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-ink">تلفن</h2>
+                        <a href="tel:{{ preg_replace('/\s+/', '', $contact['phone']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
+                            {{ $contact['phone'] }}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ps-card flex gap-4 p-5">
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
+                        <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-ink">موبایل</h2>
+                        <a href="tel:{{ preg_replace('/\s+/', '', $contact['mobile']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
+                            {{ $contact['mobile'] }}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="ps-card flex gap-4 p-5 sm:col-span-2">
+                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-ink">ایمیل</h2>
+                        <a href="mailto:{{ $contact['email'] }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
+                            {{ $contact['email'] }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @if (filled($page->content))
+                <div class="ps-card overflow-hidden p-4 sm:p-5">
+                    <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
+                    <div class="contact-survey-embed">
+                        {!! $page->content !!}
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card lg:sticky lg:top-24">
+            <img
+                src="{{ $contact['image_url'] }}"
+                alt="تماس با {{ config('app.name', 'پارتس‌مال') }}"
+                class="block w-full object-cover"
+                loading="lazy"
+            >
+        </div>
+    </div>
+@endsection

@@ -3,7 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', config('app.name', 'پارتس‌مال'))</title>
+    <title>{{ $title??config('app.name') }}</title>
+    <link rel="icon" type="image/png" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="manifest" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="mask-icon" href="https://partsmall.ir/img/favicon.webp" color="#0d9488">
+    <link rel="shortcut icon" href="https://partsmall.ir/img/favicon.webp">
+    <meta name="msapplication-TileColor" content="#0d9488">
+    <meta name="msapplication-config" content="https://partsmall.ir/img/favicon.webp">
+    <meta name="theme-color" content="#0d9488">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -73,10 +84,10 @@
                 .ps-shops-jump.is-scrolling .ps-shops-jump-chevron { animation: ps-shops-jump-chevron-scroll 0.55s ease-in-out infinite; }
                 .ps-shops-section--highlight { animation: ps-shops-section-reveal 0.9s ease-out; }
                 .ps-carousel { @apply relative; }
-                .ps-carousel-viewport { @apply w-full snap-x snap-mandatory overflow-x-auto scroll-smooth; direction: ltr; scrollbar-width: none; -ms-overflow-style: none; }
-                .ps-carousel-viewport::-webkit-scrollbar { display: none; }
-                .ps-carousel-track { @apply flex flex-nowrap gap-4; direction: ltr; }
-                .ps-carousel-slide { @apply w-[9.5rem] shrink-0 snap-start sm:w-[11rem]; direction: rtl; }
+                .ps-carousel-viewport { @apply w-full overflow-hidden; direction: ltr; cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; }
+                .ps-carousel-viewport.is-dragging { cursor: grabbing; }
+                .ps-carousel-track { @apply flex; direction: ltr; margin-left: -1rem; }
+                .ps-carousel-slide { @apply min-w-0 shrink-0 grow-0 basis-[9.5rem] pl-4 sm:basis-[11rem]; direction: rtl; }
                 .ps-carousel-nav { @apply absolute top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-white text-sm text-ink shadow-card transition hover:border-brand/30 hover:bg-brand-soft hover:text-brand; }
                 .ps-carousel-nav--prev { @apply -end-3 sm:-end-4; }
                 .ps-carousel-nav--next { @apply -start-3 sm:-start-4; }

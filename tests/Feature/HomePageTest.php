@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Enums\ImageType;
+use App\Models\Car;
+use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Company;
+use App\Models\ModelCategory;
 use App\Models\Part;
 use App\Models\PartsCategory;
 use App\Models\Representation;
@@ -80,5 +83,37 @@ class HomePageTest extends TestCase
         $response->assertSee(route('representations.index'), false);
         $response->assertSee(route('shop.profile', 'yadak-shop'), false);
         $response->assertSee(route('part.show', 'spark-plug'), false);
+        $response->assertSee('data-entity-carousel', false);
+        $response->assertSee('embla-carousel', false);
+    }
+
+    public function test_home_page_includes_company_picker_modal_data(): void
+    {
+        $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai', 'wage_strike' => 2.5]);
+        $car = Car::create(['name' => 'سانتافه', 'slug' => 'santafe', 'company_id' => $company->id]);
+        $category = ModelCategory::query()->where('slug', 'term')->firstOrFail();
+        $model = CarModel::create(['name' => 'نیو', 'slug' => 'new', 'category_id' => $category->id]);
+        $car->models()->attach($model);
+
+        $response = $this->get(route('home'));
+
+        $response->assertOk();
+        $response->assertSee('home-company-picker-modal', false);
+        $response->assertSee('data-company-picker-trigger', false);
+        $response->assertViewHas('companyPicker', function (array $picker): bool {
+            return collect($picker)->contains(function (array $company): bool {
+                if ($company['slug'] !== 'hyundai') {
+                    return false;
+                }
+
+                $modelUrl = $company['cars'][0]['modelCategories'][0]['models'][0]['url'] ?? null;
+
+                return $modelUrl === route('car.parts.vehicle', [
+                    'company' => 'hyundai',
+                    'car' => 'santafe',
+                    'model' => 'new',
+                ]);
+            });
+        });
     }
 }

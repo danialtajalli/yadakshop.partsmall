@@ -8,9 +8,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
+
 class PartPageService
 {
-    private const PER_PAGE = 20;
+    private const PER_PAGE = 60;
 
     /**
      * @return array{
@@ -51,16 +52,19 @@ class PartPageService
     }
 
     /**
-     * @return LengthAwarePaginator<int, array{label: string, url: string}>
+     * @return LengthAwarePaginator<int, array{label: string, short_label: string, url: string}>
      */
     private function paginateVehicleApplications(Part $part, ?string $query, int $page): LengthAwarePaginator
     {
-        $applications = collect($this->buildVehicleApplications($part));
+        $applications = collect($this->buildVehicleApplications($part))
+            ->sortBy(fn (array $application): int => crc32($part->slug.'|'.$application['url']))
+            ->values();
 
         if ($query) {
             $needle = mb_strtolower($query);
             $applications = $applications->filter(
-                fn (array $application) => str_contains(mb_strtolower($application['label']), $needle),
+                fn (array $application) => str_contains(mb_strtolower($application['short_label']), $needle)
+                    || str_contains(mb_strtolower($application['label']), $needle),
             )->values();
         }
 
@@ -82,7 +86,7 @@ class PartPageService
     }
 
     /**
-     * @return list<array{label: string, url: string}>
+     * @return list<array{label: string, short_label: string, url: string}>
      */
     private function buildVehicleApplications(Part $part): array
     {
@@ -97,10 +101,12 @@ class PartPageService
             foreach ($company->cars->sortBy('name') as $car) {
                 foreach ($car->models->sortBy('name') as $model) {
                     $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
-                    $label = $part->name . ' ' . trim($company->name.' '.$car->name.' '.$modelName);
+                    $shortLabel = $part->name.' '. trim($company->name.' '.$car->name.' '.$modelName);
+                    $label = $shortLabel;
 
                     $applications[] = [
                         'label' => $label,
+                        'short_label' => $shortLabel,
                         'url' => route('product.show', [
                             'company' => $company->slug,
                             'car' => $car->slug,
@@ -122,8 +128,8 @@ class PartPageService
         }
 
         return str_replace(
-            ['ظظظ', 'rn', 'ططط'],
-            [$part->name, '', $part->partsCategory?->name ?? $part->name],
+            ['rn', 'xxx', 'ططط', 'ظظظ'],
+            ['', $part->partsCategory?->name ?? '', ''],
             $description,
         );
     }

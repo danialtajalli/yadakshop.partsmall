@@ -154,23 +154,25 @@
     }
 
     .ps-carousel-viewport {
-        @apply w-full snap-x snap-mandatory overflow-x-auto scroll-smooth;
+        @apply w-full overflow-hidden;
         direction: ltr;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        cursor: grab;
+        touch-action: pan-y pinch-zoom;
+        user-select: none;
     }
 
-    .ps-carousel-viewport::-webkit-scrollbar {
-        display: none;
+    .ps-carousel-viewport.is-dragging {
+        cursor: grabbing;
     }
 
     .ps-carousel-track {
-        @apply flex flex-nowrap gap-4;
+        @apply flex;
         direction: ltr;
+        margin-left: -1rem;
     }
 
     .ps-carousel-slide {
-        @apply w-[9.5rem] shrink-0 snap-start sm:w-[11rem];
+        @apply min-w-0 shrink-0 grow-0 basis-[9.5rem] pl-4 sm:basis-[11rem];
         direction: rtl;
     }
 

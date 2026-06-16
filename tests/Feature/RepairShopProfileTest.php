@@ -30,6 +30,9 @@ class RepairShopProfileTest extends TestCase
         $response->assertSee('02144556677', false);
         $response->assertSee('telegram', false);
         $response->assertSee('علی رضایی', false);
+        $response->assertSee('موقعیت روی نقشه', false);
+        $response->assertSee('data-location-map', false);
+        $response->assertSee('leaflet@1.9.4', false);
     }
 
     public function test_repair_shop_profile_returns_not_found_for_unknown_slug(): void

@@ -18,14 +18,14 @@ class PartSelectionTest extends TestCase
     {
         $this->seedSelectionGraph();
 
-        $response = $this->get(route('car.parts', [
+        $response = $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'new',
         ]));
 
         $response->assertOk();
-        $response->assertViewIs('car.parts');
+        $response->assertViewIs('catalog.parts');
         $response->assertViewHas('title', 'لوازم یدکی هیوندای سانتافه نیو');
         $response->assertSee('جستجوی نام قطعه', false);
         $response->assertSee('طبق', false);
@@ -41,7 +41,7 @@ class PartSelectionTest extends TestCase
     {
         $this->seedSelectionGraph();
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'unknown',
             'car' => 'santafe',
             'model' => 'new',
@@ -57,7 +57,7 @@ class PartSelectionTest extends TestCase
             'slug' => 'old',
         ]);
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => 'old',

@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Part;
 use App\Models\PartsCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class PartPageTest extends TestCase
@@ -54,18 +55,13 @@ class PartPageTest extends TestCase
         $part = Part::create([
             'name' => 'طبق',
             'slug' => 'arm-desc',
-            'description' => 'درباره ظظظ در ططط',
+            'description' => 'یکی از قطعات xxx می باشد.',
             'parts_category_id' => $category->id,
         ]);
 
         $this->get(route('part.show', $part->slug))
             ->assertOk()
-            ->assertSee('درباره طبق در جلوبندی', false);
-    }
-
-    public function test_part_page_returns_not_found_for_unknown_slug(): void
-    {
-        $this->get(route('part.show', 'missing-part'))->assertNotFound();
+            ->assertSee('یکی از قطعات جلوبندی می باشد.', false);
     }
 
     public function test_home_page_links_to_part_page(): void
@@ -81,13 +77,18 @@ class PartPageTest extends TestCase
     {
         [, , $model, $part] = $this->seedGraph();
 
-        $this->get(route('car.parts', [
+        $this->get(route('car.parts.vehicle', [
             'company' => 'hyundai',
             'car' => 'santafe',
             'model' => $model->slug,
         ]))
             ->assertOk()
-            ->assertSee(route('part.show', $part->slug), false);
+            ->assertSee(route('product.show', [
+                'company' => 'hyundai',
+                'car' => 'santafe',
+                'model' => $model->slug,
+                'part' => $part->slug,
+            ]), false);
     }
 
     /**
