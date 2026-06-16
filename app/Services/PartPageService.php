@@ -101,8 +101,8 @@ class PartPageService
             foreach ($company->cars->sortBy('name') as $car) {
                 foreach ($car->models->sortBy('name') as $model) {
                     $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
-                    $shortLabel = trim($company->name.' '.$car->name.' '.$modelName);
-                    $label = $part->name.' '.$shortLabel;
+                    $shortLabel = $part->name.' '. trim($company->name.' '.$car->name.' '.$modelName);
+                    $label = $shortLabel;
 
                     $applications[] = [
                         'label' => $label,
