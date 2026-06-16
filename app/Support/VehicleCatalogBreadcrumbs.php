@@ -61,13 +61,6 @@ class VehicleCatalogBreadcrumbs
             $items[] = $array_item;
         }
 
-        if ($company !== null && $car !== null && $model !== null && $part !== null) {
-            $array_item = [
-                'label' => "",
-            ];
-            $items[] = $array_item;
-        }
-
         if ($terminalLabel !== null) {
             $item = [
                 'label' => $terminalLabel,

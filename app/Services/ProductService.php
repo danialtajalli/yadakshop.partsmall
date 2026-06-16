@@ -50,6 +50,8 @@ class ProductService
             $this->loadImagesForShops($shop);
         });
 
+        $title = $this->buildTitle($part, $company, $car, $model);
+
         return [
             'company' => $company,
             'car' => $car,
@@ -57,12 +59,13 @@ class ProductService
             'part' => $part,
             'repairCards' => $repairCards,
             'shops' => $shops,
-            'title' => $this->buildTitle($part, $company, $car, $model),
+            'title' => $title,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $company,
                 car: $car,
                 model: $model,
                 part: $part,
+                terminalLabel: $title,
             ),
             'repairLocator' => $this->buildRepairLocatorContext($part, $car),
         ];
