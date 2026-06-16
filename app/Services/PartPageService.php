@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
+
 class PartPageService
 {
     private const PER_PAGE = 60;
@@ -62,7 +63,8 @@ class PartPageService
         if ($query) {
             $needle = mb_strtolower($query);
             $applications = $applications->filter(
-                fn (array $application) => str_contains(mb_strtolower($application['label']), $needle),
+                fn (array $application) => str_contains(mb_strtolower($application['short_label']), $needle)
+                    || str_contains(mb_strtolower($application['label']), $needle),
             )->values();
         }
 

@@ -16,11 +16,14 @@
         </div>
     </div>
 
-    <x-catalog.search-bar
-        id="model-search"
-        placeholder="جستجوی نام مدل..."
-        empty-message="مدلی با این نام یافت نشد."
-    />
+    <form id="model-search-form" class="mb-6">
+        <x-catalog.search-bar
+            id="model-search"
+            placeholder="جستجوی نام مدل..."
+            empty-message="مدلی با این نام یافت نشد."
+            class="mb-0"
+        />
+    </form>
 
     @if ($modelCategoryGroups->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -31,6 +34,7 @@
     @endif
 
     <x-catalog.client-search
+        form-id="model-search-form"
         input-id="model-search"
         empty-id="model-search-empty"
         item-selector="[data-search-text]"

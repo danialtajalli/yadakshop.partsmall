@@ -1,21 +1,25 @@
 @props([
+    'formId',
     'inputId',
     'emptyId' => null,
     'itemSelector',
     'sectionSelector' => null,
     'textAttribute' => 'searchText',
+    'showClear' => true,
 ])
 
 @push('scripts')
     <script>
         (function () {
+            const form = document.getElementById(@json($formId));
             const searchInput = document.getElementById(@json($inputId));
             const emptyMessage = @json($emptyId) ? document.getElementById(@json($emptyId)) : null;
             const itemSelector = @json($itemSelector);
             const sectionSelector = @json($sectionSelector);
             const textAttribute = @json($textAttribute);
+            const showClear = @json($showClear);
 
-            if (!searchInput) {
+            if (!form || !searchInput) {
                 return;
             }
 
@@ -55,7 +59,22 @@
                 }
             };
 
-            searchInput.addEventListener('input', filterItems);
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                filterItems();
+            });
+
+            if (showClear) {
+                const clearButton = form.querySelector('[data-catalog-search-clear]');
+
+                if (clearButton) {
+                    clearButton.addEventListener('click', function () {
+                        searchInput.value = '';
+                        filterItems();
+                        searchInput.focus();
+                    });
+                }
+            }
         })();
     </script>
 @endpush

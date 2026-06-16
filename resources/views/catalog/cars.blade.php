@@ -16,11 +16,14 @@
         </div>
     </div>
 
-    <x-catalog.search-bar
-        id="car-search"
-        placeholder="جستجوی نام خودرو..."
-        empty-message="خودرویی با این نام یافت نشد."
-    />
+    <form id="car-search-form" class="mb-6">
+        <x-catalog.search-bar
+            id="car-search"
+            placeholder="جستجوی نام خودرو..."
+            empty-message="خودرویی با این نام یافت نشد."
+            class="mb-0"
+        />
+    </form>
 
     @if ($cars->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -50,6 +53,7 @@
     @endif
 
     <x-catalog.client-search
+        form-id="car-search-form"
         input-id="car-search"
         empty-id="car-search-empty"
         item-selector=".catalog-car-row"

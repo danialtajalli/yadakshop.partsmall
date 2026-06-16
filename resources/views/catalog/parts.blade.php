@@ -16,13 +16,14 @@
         </div>
     </div>
 
-    <form method="GET" action="{{ url()->current() }}" id="parts-search-form">
+    <form method="GET" action="{{ url()->current() }}" id="parts-search-form" class="mb-6">
         <x-catalog.search-bar
             id="parts-search"
             name="q"
             :value="$filters['q'] ?? ''"
             placeholder="جستجوی نام قطعه..."
-            class="mb-6"
+            :clear-url="request()->url()"
+            class="mb-0"
         />
     </form>
 
@@ -42,25 +43,3 @@
         </div>
     @endif
 @endsection
-
-@push('scripts')
-    <script>
-        (function () {
-            const form = document.getElementById('parts-search-form');
-            const searchInput = document.getElementById('parts-search');
-
-            if (!form || !searchInput) {
-                return;
-            }
-
-            let timeoutId = null;
-
-            searchInput.addEventListener('input', function () {
-                window.clearTimeout(timeoutId);
-                timeoutId = window.setTimeout(function () {
-                    form.submit();
-                }, 400);
-            });
-        })();
-    </script>
-@endpush

@@ -46,7 +46,9 @@ class PartPageServiceTest extends TestCase
 
         $filtered = $this->service->getPartPageData('arm', Request::create('/part/arm', 'GET', ['q' => 'سانتافه']));
         $this->assertSame(1, $filtered['vehicleApplications']->total());
-        $this->assertSame('طبق هیوندای سانتافه نیو', $filtered['vehicleApplications']->first()['label']);
+        $this->assertTrue(
+            $filtered['vehicleApplications']->contains(fn (array $application): bool => $application['label'] === 'طبق هیوندای سانتافه نیو'),
+        );
 
         foreach (range(1, 61) as $index) {
             $car = Car::create([
