@@ -7,5 +7,6 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateCar extends CreateRecord
 {
+    protected static ?string $title = 'ایجاد ماشین جدید';
     protected static string $resource = CarResource::class;
 }

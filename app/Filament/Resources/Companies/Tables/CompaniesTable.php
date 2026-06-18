@@ -18,15 +18,17 @@ class CompaniesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('نام شرکت')
                     ->searchable(),
-                TextColumn::make('slug')
+                TextColumn::make('slug')->label('نام لاتین شرکت')
                     ->searchable(),
-                TextColumn::make('country')
+                TextColumn::make('country')->label('کشور')
                     ->searchable(),
                 TextColumn::make('wage_strike')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('links.name')->label('لینک‌ تلگرام')
+                    ->numeric(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

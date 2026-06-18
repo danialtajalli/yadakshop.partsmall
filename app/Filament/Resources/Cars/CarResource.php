@@ -5,10 +5,9 @@ namespace App\Filament\Resources\Cars;
 use App\Filament\Resources\Cars\Pages\CreateCar;
 use App\Filament\Resources\Cars\Pages\EditCar;
 use App\Filament\Resources\Cars\Pages\ListCars;
-use App\Filament\Resources\Cars\Pages\ViewCar;
 use App\Filament\Resources\Cars\Schemas\CarForm;
-use App\Filament\Resources\Cars\Schemas\CarInfolist;
 use App\Filament\Resources\Cars\Tables\CarsTable;
+use App\Filament\Resources\Cars\RelationManagers\ModelsRelationManager;
 use App\Models\Car;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,6 +17,8 @@ use Filament\Tables\Table;
 
 class CarResource extends Resource
 {
+    protected static ?string $navigationLabel = 'ماشین ها';
+    protected static ?int $navigationSort = 2;
     protected static ?string $model = Car::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
@@ -29,11 +30,6 @@ class CarResource extends Resource
         return CarForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return CarInfolist::configure($schema);
-    }
-
     public static function table(Table $table): Table
     {
         return CarsTable::configure($table);
@@ -42,6 +38,7 @@ class CarResource extends Resource
     public static function getRelations(): array
     {
         return [
+            ModelsRelationManager::class,
         ];
     }
 
@@ -50,7 +47,6 @@ class CarResource extends Resource
         return [
             'index' => ListCars::route('/'),
             'create' => CreateCar::route('/create'),
-            'view' => ViewCar::route('/{record}'),
             'edit' => EditCar::route('/{record}/edit'),
         ];
     }

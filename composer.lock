@@ -4,8 +4,67 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b86276d4a3288caf8113a9653779c59a",
+    "content-hash": "e2dc921916da5f90a2dbf2f3b9056af2",
     "packages": [
+        {
+            "name": "amidesfahani/filament-tinyeditor",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amidesfahani/filament-tinyeditor.git",
+                "reference": "4ea24b3e928aecd7dfa39f005b72f43671f0e1c7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amidesfahani/filament-tinyeditor/zipball/4ea24b3e928aecd7dfa39f005b72f43671f0e1c7",
+                "reference": "4ea24b3e928aecd7dfa39f005b72f43671f0e1c7",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^5.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.92.7",
+                "tinymce/tinymce": "^8.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.24"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AmidEsfahani\\FilamentTinyEditor\\TinyeditorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AmidEsfahani\\FilamentTinyEditor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amid Esfahani",
+                    "email": "amid.esfahani@gmail.com"
+                }
+            ],
+            "description": "Filament TinyMce Editor",
+            "keywords": [
+                "filament",
+                "laravel",
+                "tinyeditor",
+                "tinymce"
+            ],
+            "support": {
+                "issues": "https://github.com/amidesfahani/filament-tinyeditor/issues",
+                "source": "https://github.com/amidesfahani/filament-tinyeditor/tree/v5.0.0"
+            },
+            "time": "2026-05-22T00:48:35+00:00"
+        },
         {
             "name": "blade-ui-kit/blade-heroicons",
             "version": "2.7.0",
@@ -8003,6 +8062,65 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.4.0"
             },
             "time": "2025-12-02T11:56:42+00:00"
+        },
+        {
+            "name": "tinymce/tinymce",
+            "version": "8.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tinymce/tinymce-dist.git",
+                "reference": "4ec295845c55ee20abd551c98bc42f1079c43c83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/4ec295845c55ee20abd551c98bc42f1079c43c83",
+                "reference": "4ec295845c55ee20abd551c98bc42f1079c43c83",
+                "shasum": ""
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "files": [
+                        "tinymce.min.js",
+                        "plugins/*/plugin.min.js",
+                        "themes/*/theme.min.js",
+                        "models/*/model.min.js",
+                        "skins/**",
+                        "icons/*/icons.min.js"
+                    ],
+                    "scripts": [
+                        "tinymce.js",
+                        "plugins/*/plugin.js",
+                        "themes/*/theme.js",
+                        "models/*/model.js",
+                        "icons/*/icons.js"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "SEE LICENSE IN license.md"
+            ],
+            "description": "Web based JavaScript HTML WYSIWYG editor control.",
+            "homepage": "https://www.tiny.cloud/",
+            "keywords": [
+                "contenteditable",
+                "editing",
+                "html",
+                "javascript",
+                "rich editor",
+                "rich text",
+                "rich text editor",
+                "richtext",
+                "rte",
+                "text",
+                "tinymce",
+                "wysiwyg"
+            ],
+            "support": {
+                "source": "https://github.com/tinymce/tinymce-dist/tree/8.6.0"
+            },
+            "time": "2026-06-03T03:28:15+00:00"
         },
         {
             "name": "ueberdosis/tiptap-php",

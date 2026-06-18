@@ -8,12 +8,13 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListCars extends ListRecords
 {
+    protected static ?string $title = 'ماشین ها';
     protected static string $resource = CarResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('ایجاد ماشین جدید'),
         ];
     }
 }
