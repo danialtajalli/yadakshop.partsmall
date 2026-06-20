@@ -245,7 +245,8 @@ class VehicleCatalogService
             {
                 $part->setAttribute('title', $this->buildTitle($part, $context->company, $context->car, $context->model));
             }
-            else {
+            else
+            {
                 $part->setAttribute('title', $part->name);
             }
             return $part;
