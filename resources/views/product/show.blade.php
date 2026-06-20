@@ -43,7 +43,7 @@
                                     {{ $part->partsCategory->name }}
                                 </span>
                             @endif
-                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $part->name . ' ' . $company->name . ' ' . $car->name . ' ' . $model->name }}</h1>
+                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $title }}</h1>
                         </div>
                     </div>
 

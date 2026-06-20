@@ -229,14 +229,6 @@ class VehicleCatalogService
             $partsQuery->where('parts_category_id', $filters['category']);
         }
 
-        $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
-
-        $parts->getCollection()->transform(function (Part $part) use ($context): Part {
-            $part->setAttribute('catalog_url', $this->partUrl($part, $context));
-
-            return $part;
-        });
-
         $title = match (true) {
             $context->company !== null && $context->car !== null && $context->model !== null => 'لوازم یدکی '
                 .$context->company->name.' '
@@ -244,6 +236,20 @@ class VehicleCatalogService
                 .CarModelLabel::display($context->model),
             default => 'لوازم یدکی خودرو',
         };
+
+        $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
+
+        $parts->getCollection()->transform(function (Part $part) use ($context): Part {
+            $part->setAttribute('catalog_url', $this->partUrl($part, $context));
+            if($context->company !== null && $context->car !== null && $context->model !== null)
+            {
+                $part->setAttribute('title', $this->buildTitle($part, $context->company, $context->car, $context->model));
+            }
+            else {
+                $part->setAttribute('title', $part->name);
+            }
+            return $part;
+        });
 
         $description = match (true) {
             $context->model !== null => 'قطعات موجود برای این خودرو — برای مشاهده فروشگاه‌ها و قیمت کلیک کنید.',
@@ -267,6 +273,13 @@ class VehicleCatalogService
             'description' => $description,
             'filters' => $filters,
         ];
+    }
+
+    private function buildTitle(Part $part, Company $company, Car $car, CarModel $model): string
+    {
+        $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
+
+        return $part->name.' '.$company->name.' '.$car->name.' '.$modelName;
     }
 
     public function partUrl(Part $part, VehicleCatalogContext $context): string
