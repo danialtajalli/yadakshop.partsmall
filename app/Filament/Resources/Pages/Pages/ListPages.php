@@ -8,12 +8,13 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListPages extends ListRecords
 {
+    protected static ?string $title = 'لیست صفحات';
     protected static string $resource = PageResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('افزودن صفحه'),
         ];
     }
 }

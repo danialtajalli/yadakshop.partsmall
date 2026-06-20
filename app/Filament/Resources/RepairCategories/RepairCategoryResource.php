@@ -7,6 +7,8 @@ use App\Filament\Resources\RepairCategories\Pages\EditRepairCategory;
 use App\Filament\Resources\RepairCategories\Pages\ListRepairCategories;
 use App\Filament\Resources\RepairCategories\Schemas\RepairCategoryForm;
 use App\Filament\Resources\RepairCategories\Tables\RepairCategoriesTable;
+use App\Filament\Resources\RepairCategories\RelationManagers\RepairShopsRelationManager;
+use App\Filament\Resources\RepairCategories\RelationManagers\PartsRelationManager;
 use App\Models\RepairCategory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -37,7 +39,8 @@ class RepairCategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RepairShopsRelationManager::class,
+            PartsRelationManager::class,
         ];
     }
 

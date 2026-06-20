@@ -7,5 +7,6 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateRepairShop extends CreateRecord
 {
+    protected static ?string $title = 'افزودن موقعیت سفارشی سازی';
     protected static string $resource = RepairShopResource::class;
 }

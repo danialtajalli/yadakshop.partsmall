@@ -20,7 +20,7 @@ class CarModelForm
                 TextInput::make('slug')
                     ->required()->label('نام لاتین'),
                 Select::make('category_id')
-                    ->relationship('category', 'name'),
+                    ->relationship('category', 'name')->searchable()->preload()->label('دسته بندی'),
             ]);
     }
 }

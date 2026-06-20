@@ -3,7 +3,8 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Filament\Resources\Links\LinkResource;
-use Filament\Actions\AssociateAction;
+use Filament\Actions\AttachAction;
+use Filament\Actions\DetachAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Table;
 
 class LinksRelationManager extends RelationManager
 {
+    protected static ?string $title = 'لینک ها';
     protected static string $relationship = 'links';
 
     protected static ?string $relatedResource = LinkResource::class;
@@ -21,15 +23,15 @@ class LinksRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make(),
-                AssociateAction::make(),
+                CreateAction::make()->label('افزودن لینک'),
+                AttachAction::make()->label('اضافه کردن لینک'),
             ])
-            ->recordActions([
-                DissociateAction::make(),
+            ->actions([
+                DetachAction::make()->label('حذف لینک'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
+                    DissociateBulkAction::make()->label('حذف لینک'),
                 ]),
             ]);
     }

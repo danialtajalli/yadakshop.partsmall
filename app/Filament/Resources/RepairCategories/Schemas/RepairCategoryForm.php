@@ -11,7 +11,7 @@ class RepairCategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
+                TextInput::make('name')->label('عنوان')
                     ->required(),
             ]);
     }

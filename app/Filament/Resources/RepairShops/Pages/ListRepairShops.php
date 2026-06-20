@@ -8,12 +8,13 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListRepairShops extends ListRecords
 {
+    protected static ?string $title = 'لیست موقعیت های سفارشی سازی';
     protected static string $resource = RepairShopResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('افزودن موقعیت سفارشی سازی'),
         ];
     }
 }

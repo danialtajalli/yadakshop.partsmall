@@ -5,14 +5,13 @@ namespace App\Filament\Resources\Companies\RelationManagers;
 use App\Filament\Resources\Cars\CarResource;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\CreateAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 
 class CarsRelationManager extends RelationManager
 {
+    protected static ?string $title = 'ماشین ها';
     protected static string $relationship = 'cars';
 
     protected static ?string $relatedResource = CarResource::class;
@@ -21,16 +20,11 @@ class CarsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make(),
-                AssociateAction::make(),
+                CreateAction::make()->label('افزودن ماشین'),
+                AssociateAction::make()->label('اضافه کردن ماشین'),
             ])
-        ->recordActions([
-                DissociateAction::make(),
-            ])
-        ->toolbarActions([
-            BulkActionGroup::make([
-                DissociateBulkAction::make(),
-            ]),
-        ]);
+            ->actions([
+                DissociateAction::make()->label('حذف ماشین'),
+            ]);
     }
 }

@@ -18,12 +18,12 @@ class ImageForm
                     ->required()->label('نوع'),
                 TextInput::make('path')
                     ->required()->label('آدرس'),
-                Select::make('company_id')
-                    ->relationship('company', 'name')->label('شناسه شرکت'),
                 Select::make('repair_shop_id')
-                    ->relationship('repairShop', 'name')->label('شناسه فروشگاه'),
-                TextInput::make('shop_id')
-                    ->numeric()->label('شناسه فروشگاه'),
+                    ->relationship('repairShop', 'name')->label('شناسه تعمیرگاه')->searchable()->preload(),
+                Select::make('shop_id')
+                    ->relationship('shop', 'name')->label('شناسه فروشگاه')->searchable()->preload(),
+                Select::make('company_id')
+                    ->relationship('company', 'name')->label('شناسه شرکت')->searchable()->preload(),
             ]);
     }
 }

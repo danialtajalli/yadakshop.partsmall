@@ -21,7 +21,7 @@ class ImagesTable
                 TextColumn::make('company.name')
                     ->searchable()->label('نام شرکت')->sortable(),
                 TextColumn::make('repairShop.name')
-                    ->searchable()->label('نام فروشگاه')->sortable(),
+                    ->searchable()->label('نام تعمیرگاه')->sortable(),
                 TextColumn::make('shop.name')
                     ->searchable()->label('نام فروشگاه')->sortable(),
                 TextColumn::make('created_at')

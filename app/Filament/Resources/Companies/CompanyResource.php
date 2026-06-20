@@ -7,8 +7,10 @@ use App\Filament\Resources\Companies\Pages\EditCompany;
 use App\Filament\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Resources\Companies\RelationManagers\CarsRelationManager;
 use App\Filament\Resources\Companies\RelationManagers\LinksRelationManager;
+use App\Filament\Resources\Companies\RelationManagers\ImagesRelationManager;
+use App\Filament\Resources\Companies\RelationManagers\ShopsRelationManager;
+use App\Filament\Resources\Companies\RelationManagers\RepresentationsRelationManager;
 use App\Filament\Resources\Companies\Schemas\CompanyForm;
-use App\Filament\Resources\Companies\Schemas\CompanyInfolist;
 use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Models\Company;
 use BackedEnum;
@@ -40,6 +42,9 @@ class CompanyResource extends Resource
         return [
             CarsRelationManager::class,
             LinksRelationManager::class,
+            ShopsRelationManager::class,
+            ImagesRelationManager::class,
+            RepresentationsRelationManager::class,
         ];
     }
 

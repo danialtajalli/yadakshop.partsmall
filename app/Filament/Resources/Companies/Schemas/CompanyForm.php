@@ -13,13 +13,17 @@ class CompanyForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->label('نام'),
                 Textarea::make('description')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->label('توضیحات'),
                 TextInput::make('slug')
+                    ->label('نام لاتین')
                     ->required(),
-                TextInput::make('country'),
-                TextInput::make('wage_strike')
+                TextInput::make('country')
+                    ->label('کشور'),
+                TextInput::make('wage_strike')->label('ضریب اجرت')
                     ->required()
                     ->numeric()
                     ->default(1),

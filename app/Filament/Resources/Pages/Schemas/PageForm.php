@@ -13,9 +13,9 @@ class PageForm
     {
         return $schema
             ->components([
-                TextInput::make('title'),
-                TextInput::make('slug'),
-                TinyEditor::make('content')
+                TextInput::make('title')->label('عنوان'),
+                TextInput::make('slug')->label('نام لاتین'),
+                TinyEditor::make('content')->label('محتوا')
                     ->columnSpanFull(),
             ]);
     }

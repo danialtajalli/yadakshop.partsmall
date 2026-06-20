@@ -62,7 +62,7 @@ class Shop extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(Image::class);
+        return $this->hasMany(Image::class, 'shop_id');
     }
 
     public function phones(): HasMany

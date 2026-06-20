@@ -9,13 +9,14 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditCompany extends EditRecord
 {
+    protected static ?string $title = 'ویرایش کمپانی';
     protected static string $resource = CompanyResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            ViewAction::make()->label('مشاهده کمپانی'),
+            DeleteAction::make()->label('حذف کمپانی'),
         ];
     }
 }

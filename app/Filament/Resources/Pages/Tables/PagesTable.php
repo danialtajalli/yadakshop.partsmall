@@ -14,15 +14,15 @@ class PagesTable
     {
         return $table
             ->columns([
-                TextColumn::make('title')
+                TextColumn::make('title')->label('عنوان')
                     ->searchable(),
-                TextColumn::make('slug')
+                TextColumn::make('slug')->label('نام لاتین')
                     ->searchable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -31,11 +31,11 @@ class PagesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('ویرایش'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

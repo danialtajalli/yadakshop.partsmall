@@ -8,12 +8,13 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditRepairShop extends EditRecord
 {
+    protected static ?string $title = 'ویرایش موقعیت سفارشی سازی';
     protected static string $resource = RepairShopResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->label('حذف'),
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RepairShops\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -14,27 +15,27 @@ class RepairShopsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('عنوان')
                     ->searchable(),
-                TextColumn::make('slug')
+                TextColumn::make('slug')->label('نام لاتین')
                     ->searchable(),
-                TextColumn::make('responsible_person_name')
+                TextColumn::make('responsible_person_name')->label('نام مسئول')
                     ->searchable(),
-                TextColumn::make('state.name')
+                TextColumn::make('state.name')->label('استان')
                     ->searchable(),
-                TextColumn::make('address')
+                TextColumn::make('address')->label('آدرس')
                     ->searchable(),
-                TextColumn::make('latitude')
+                TextColumn::make('latitude')->label('عرض جغرافیایی')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('longitude')
+                TextColumn::make('longitude')->label('طول جغرافیایی')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -43,11 +44,11 @@ class RepairShopsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('ویرایش'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

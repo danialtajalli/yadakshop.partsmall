@@ -15,22 +15,22 @@ class CommentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('fullname')
+                TextColumn::make('fullname')->label('نام و نام خانوادگی')
                     ->searchable(),
-                TextColumn::make('shop.name')
+                TextColumn::make('shop.name')->label('فروشگاه')
                     ->searchable(),
-                TextColumn::make('mobile')
+                TextColumn::make('mobile')->label('شماره تلفن')
                     ->searchable(),
-                TextColumn::make('rating')
+                TextColumn::make('rating')->label('امتیاز')
                     ->numeric()
                     ->sortable(),
-                IconColumn::make('confirmed')
+                IconColumn::make('confirmed')->label('تایید شده')
                     ->boolean(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -39,11 +39,11 @@ class CommentsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('ویرایش'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

@@ -31,4 +31,9 @@ class Image extends Model
     {
         return $this->belongsTo(RepairShop::class);
     }
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
+    }
 }

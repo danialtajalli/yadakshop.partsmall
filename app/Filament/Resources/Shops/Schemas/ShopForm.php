@@ -36,8 +36,6 @@ class ShopForm
                     ->numeric()->label('طول جغرافیایی'),
                 TextInput::make('longitude')
                     ->numeric()->label('عرض جغرافیایی'),
-                Select::make('state_id')
-                    ->relationship('state', 'name')->label('استان') ,
                 TextInput::make('address')->label('آدرس'),
                 TimePicker::make('open_time')
                     ->required()->label('ساعت شروع کار'),
