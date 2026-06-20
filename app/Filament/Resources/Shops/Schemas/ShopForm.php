@@ -49,6 +49,9 @@ class ShopForm
                 TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز جمعه'),
                 Toggle::make('off')
                     ->required()->label('غیر فعال'),
+                Select::make('state')
+                    ->relationship('state', 'name')
+                    ->searchable()->preload()->label('استان'),
             ]);
     }
 }
