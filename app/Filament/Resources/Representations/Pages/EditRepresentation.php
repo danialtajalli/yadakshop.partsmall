@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Representations\Pages;
 use App\Filament\Resources\Representations\RepresentationResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditRepresentation extends EditRecord
 {
@@ -16,5 +17,12 @@ class EditRepresentation extends EditRecord
         return [
             DeleteAction::make()->label('حذف نماینده'),
         ];
+    }
+
+    #[On('location-updated')]
+    public function updateLocation($latitude, $longitude): void
+    {
+        $this->data['latitude'] = $latitude;
+        $this->data['longitude'] = $longitude;
     }
 }

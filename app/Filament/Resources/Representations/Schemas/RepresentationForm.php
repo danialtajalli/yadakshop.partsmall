@@ -6,6 +6,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
 class RepresentationForm
@@ -63,6 +64,7 @@ class RepresentationForm
                     ->default(0),
                 Toggle::make('show_under_product')->label('نمایش در محصول')
                     ->required(),
+                View::make('components.view-product')->columnSpanFull(),
             ]);
     }
 }

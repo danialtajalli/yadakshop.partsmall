@@ -6,6 +6,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\View;
 
 class RepairShopForm
 {
@@ -29,6 +30,7 @@ class RepairShopForm
                     ->numeric(),
                 Textarea::make('description')
                     ->columnSpanFull()->label('توضیحات'),
+                View::make('components.view-product')->columnSpanFull(),
             ]);
     }
 }
