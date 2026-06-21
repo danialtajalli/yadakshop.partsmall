@@ -8,12 +8,13 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListPartCategories extends ListRecords
 {
+    protected static ?string $title = 'لیست دسته بندی قطعات';
     protected static string $resource = PartCategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('ایجاد دسته بندی قطعات جدید'),
         ];
     }
 }

@@ -8,12 +8,13 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListRepresentations extends ListRecords
 {
+    protected static ?string $title = 'لیست نمایندگان';
     protected static string $resource = RepresentationResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()->label('ایجاد نماینده جدید'),
         ];
     }
 }

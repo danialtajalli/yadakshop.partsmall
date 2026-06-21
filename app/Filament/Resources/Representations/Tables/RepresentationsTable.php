@@ -15,71 +15,71 @@ class RepresentationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('نام')
                     ->searchable(),
-                TextColumn::make('slug')
+                TextColumn::make('slug')->label('نام لاتین')
                     ->searchable(),
-                TextColumn::make('responsible_person_name')
+                TextColumn::make('responsible_person_name')->label('نام و نام خانوادگی نماینده')
                     ->searchable(),
-                TextColumn::make('work_fields')
+                TextColumn::make('work_fields')->label('حوزه های کاری نماینده')
                     ->searchable(),
-                TextColumn::make('mobile')
+                TextColumn::make('mobile')->label('شماره تلفن همراه')
                     ->searchable(),
-                TextColumn::make('telephone')
+                TextColumn::make('telephone')->label('تلفن')
                     ->searchable(),
-                TextColumn::make('company.name')
+                TextColumn::make('company.name')->label('نام شرکت')
                     ->searchable(),
-                TextColumn::make('service_type')
+                TextColumn::make('service_type')->label('نوع خدمات')
                     ->searchable(),
-                TextColumn::make('website')
+                TextColumn::make('website')->label('وبسایت')
                     ->searchable(),
-                TextColumn::make('website_name')
+                TextColumn::make('website_name')->label('نام وبسایت')
                     ->searchable(),
-                TextColumn::make('whatsapp')
+                TextColumn::make('whatsapp')->label('واتساپ')
                     ->searchable(),
-                TextColumn::make('whatsapp_phone')
+                TextColumn::make('whatsapp_phone')->label('شماره واتساپ')
                     ->searchable(),
-                TextColumn::make('telegram')
+                TextColumn::make('telegram')->label('تلگرام')
                     ->searchable(),
-                TextColumn::make('telegram_phone')
+                TextColumn::make('telegram_phone')->label('شماره تلگرام')
                     ->searchable(),
-                TextColumn::make('instagram')
+                TextColumn::make('instagram')->label('اینستاگرام')
                     ->searchable(),
-                TextColumn::make('state.name')
+                TextColumn::make('state.name')->label('استان')
                     ->searchable(),
-                TextColumn::make('city.name')
+                TextColumn::make('city.name')->label('شهر')
                     ->searchable(),
-                TextColumn::make('address')
+                TextColumn::make('address')->label('آدرس')
                     ->searchable(),
-                TextColumn::make('latitude')
+                TextColumn::make('latitude')->label('عرض جغرافیایی')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('longitude')
+                TextColumn::make('longitude')->label('طول جغرافیایی')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('logo')
+                TextColumn::make('logo')->label('لوگو')
                     ->searchable(),
-                TextColumn::make('nearby_railway')
+                TextColumn::make('nearby_railway')->label('راه آهن')
                     ->searchable(),
-                TextColumn::make('nearby_bus')
+                TextColumn::make('nearby_bus')->label('اتوبوس')
                     ->searchable(),
-                TextColumn::make('nearby_railway_name')
+                TextColumn::make('nearby_railway_name')->label('نام راه آهن')
                     ->searchable(),
-                TextColumn::make('nearby_bus_name')
+                TextColumn::make('nearby_bus_name')->label('نام اتوبوس')
                     ->searchable(),
-                TextColumn::make('nearby_railway_distance')
+                TextColumn::make('nearby_railway_distance')->label('فاصله راه آهن')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('nearby_bus_distance')
+                TextColumn::make('nearby_bus_distance')->label('فاصله اتوبوس')
                     ->numeric()
                     ->sortable(),
-                IconColumn::make('show_under_product')
+                IconColumn::make('show_under_product')->label('نمایش در محصول')
                     ->boolean(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -88,11 +88,11 @@ class RepresentationsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('ویرایش'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

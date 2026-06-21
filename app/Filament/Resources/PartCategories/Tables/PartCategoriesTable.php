@@ -15,13 +15,13 @@ class PartCategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('نام')
                     ->searchable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -30,12 +30,12 @@ class PartCategoriesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()->label('ویرایش'),
+                DeleteAction::make()->label('حذف'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('حذف'),
                 ]),
             ]);
     }

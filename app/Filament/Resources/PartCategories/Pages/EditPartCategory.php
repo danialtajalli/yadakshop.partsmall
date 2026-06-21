@@ -8,12 +8,13 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditPartCategory extends EditRecord
 {
+    protected static ?string $title = 'ویرایش دسته بندی قطعات';
     protected static string $resource = PartCategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->label('حذف دسته بندی قطعات'),
         ];
     }
 }

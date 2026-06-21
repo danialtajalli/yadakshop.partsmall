@@ -8,12 +8,13 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditComment extends EditRecord
 {
+    protected static ?string $title = 'ویرایش نظر';
     protected static string $resource = CommentResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->label('حذف نظر'),
         ];
     }
 }

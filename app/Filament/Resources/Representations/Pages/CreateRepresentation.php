@@ -7,5 +7,6 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateRepresentation extends CreateRecord
 {
+    protected static ?string $title = 'ایجاد نماینده جدید';
     protected static string $resource = RepresentationResource::class;
 }

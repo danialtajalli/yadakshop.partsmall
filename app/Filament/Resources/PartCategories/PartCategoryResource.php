@@ -7,6 +7,7 @@ use App\Filament\Resources\PartCategories\Pages\EditPartCategory;
 use App\Filament\Resources\PartCategories\Pages\ListPartCategories;
 use App\Filament\Resources\PartCategories\Schemas\PartCategoryForm;
 use App\Filament\Resources\PartCategories\Tables\PartCategoriesTable;
+use App\Filament\Resources\PartCategories\RelationManagers\PartsRelationManager;
 use App\Models\PartsCategory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -37,7 +38,7 @@ class PartCategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PartsRelationManager::class,
         ];
     }
 

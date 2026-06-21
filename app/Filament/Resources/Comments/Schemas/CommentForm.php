@@ -14,16 +14,16 @@ class CommentForm
     {
         return $schema
             ->components([
-                TextInput::make('fullname'),
-                Select::make('shop_id')
-                    ->relationship('shop', 'name')
-                    ->required(),
-                TextInput::make('mobile'),
+                TextInput::make('fullname')->label('نام و نام خانوادگی'),
+                TextInput::make('mobile')->label('شماره تلفن'),
                 Textarea::make('body')
                     ->columnSpanFull(),
-                TextInput::make('rating')
+                TextInput::make('rating')->label('امتیاز')
                     ->numeric(),
-                Toggle::make('confirmed'),
+                Toggle::make('confirmed')->label('تایید شده'),
+                Select::make('shop_id')->label('فروشگاه')
+                    ->relationship('shop', 'name')
+                    ->required()->searchable()->preload(),
             ]);
     }
 }
