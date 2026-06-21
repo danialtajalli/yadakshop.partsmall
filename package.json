@@ -14,6 +14,7 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "@neshan-maps-platform/mapbox-gl": "^1.1.7",
         "embla-carousel": "^8.6.0",
         "embla-carousel-autoplay": "^8.6.0"
     }
