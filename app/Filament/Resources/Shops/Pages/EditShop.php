@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Shops\Pages;
 use App\Filament\Resources\Shops\ShopResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Livewire\Attributes\On;
 
 class EditShop extends EditRecord
 {
@@ -16,5 +17,12 @@ class EditShop extends EditRecord
         return [
             DeleteAction::make()->label('حذف فروشگاه'),
         ];
+    }
+
+    #[On('location-updated')]
+    public function updateLocation($latitude, $longitude): void
+    {
+        $this->data['latitude'] = $latitude;
+        $this->data['longitude'] = $longitude;
     }
 }

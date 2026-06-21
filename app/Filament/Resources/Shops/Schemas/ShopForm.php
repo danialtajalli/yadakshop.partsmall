@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
 class ShopForm
@@ -50,6 +51,7 @@ class ShopForm
                 Select::make('state')
                     ->relationship('state', 'name')
                     ->searchable()->preload()->label('استان'),
+                View::make('components.view-product')->columnSpanFull(),
             ]);
     }
 }
