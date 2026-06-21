@@ -31,6 +31,7 @@ new class extends Component
                     position: 'bottom-left'
                 }
             });
+
             let longitude = {{ $get('longitude') }};
             let latitude = {{ $get('latitude') }};
             let marker;
