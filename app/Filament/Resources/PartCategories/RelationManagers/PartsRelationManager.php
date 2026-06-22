@@ -20,8 +20,7 @@ class PartsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('ایجاد قطعه جدید'),
-                AssociateAction::make()->label('اختصاص قطعه به دسته بندی'),
+                AssociateAction::make()->label('اضافه کردن قطعه'),
             ])
             ->actions([
                 DissociateAction::make()->label('حذف قطعه'),

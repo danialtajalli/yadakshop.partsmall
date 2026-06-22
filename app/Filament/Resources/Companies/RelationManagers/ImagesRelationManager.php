@@ -22,7 +22,10 @@ class ImagesRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن تصویر'),
+                CreateAction::make()->label('ساخت تصویر جدید')
+                ->url(fn () => ImageResource::getUrl('create', [
+                    'company_id' => $this->getOwnerRecord()->id,
+                ])),
                 AssociateAction::make()->label('اضافه کردن تصویر'),
             ])
             ->actions([

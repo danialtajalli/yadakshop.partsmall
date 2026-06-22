@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Filament\Resources\Shops\ShopResource;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\AttachAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -20,7 +19,6 @@ class ShopsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن فروشگاه'),
                 AttachAction::make()->label('اضافه کردن فروشگاه'),
             ])
             ->actions([

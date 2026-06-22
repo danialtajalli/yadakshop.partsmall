@@ -35,6 +35,7 @@ new class extends Component
             let longitude = {{ $get('longitude') }};
             let latitude = {{ $get('latitude') }};
             let marker;
+            map.setCenter([longitude, latitude]);
 
             marker = new nmp_mapboxgl.Marker()
                 .setLngLat([longitude, latitude])
@@ -53,6 +54,7 @@ new class extends Component
                 } else {
                     marker.setLngLat([lng, lat]);
                 }
+
                 Livewire.dispatch('location-updated', {
                     latitude: lat,
                     longitude: lng

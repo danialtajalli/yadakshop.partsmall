@@ -30,6 +30,7 @@ class RepairShopForm
                     ->numeric(),
                 Textarea::make('description')
                     ->columnSpanFull()->label('توضیحات'),
+                Select::make('repair_categories_id')->relationship('repairCategories', 'name')->label('دسته بندی های نوع مکانیک')->searchable()->preload()->multiple(),
                 View::make('components.view-product')->columnSpanFull(),
             ]);
     }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Filament\Resources\Representations\RepresentationResource;
-use Filament\Actions\CreateAction;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
@@ -22,7 +21,6 @@ class RepresentationsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن نمایندگی'),
                 AssociateAction::make()->label('اضافه کردن نمایندگی'),
             ])
             ->actions([

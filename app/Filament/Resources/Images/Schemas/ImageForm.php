@@ -20,11 +20,11 @@ class ImageForm
                     FileUpload::make('path')->openable()
                     ->required()->label('تصویر')->image(),
                 Select::make('repair_shop_id')
-                    ->relationship('repairShop', 'name')->label('شناسه تعمیرگاه')->searchable()->preload(),
+                    ->relationship('repairShop', 'name')->label('تعمیرگاه')->searchable()->preload()->default(fn () => request('repair_shop_id')),
                 Select::make('shop_id')
-                    ->relationship('shop', 'name')->label('شناسه فروشگاه')->searchable()->preload(),
+                    ->relationship('shop', 'name')->label('فروشگاه')->searchable()->preload()->default(fn () => request('shop_id')),
                 Select::make('company_id')
-                    ->relationship('company', 'name')->label('شناسه شرکت')->searchable()->preload(),
+                    ->relationship('company', 'name')->label('کمپانی')->searchable()->preload()->default(fn () => request('company_id')),
             ]);
     }
 }

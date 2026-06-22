@@ -23,7 +23,7 @@ class CommentForm
                 Toggle::make('confirmed')->label('تایید شده'),
                 Select::make('shop_id')->label('فروشگاه')
                     ->relationship('shop', 'name')
-                    ->required()->searchable()->preload(),
+                    ->required()->searchable()->preload()->default(fn () => request('shop_id')),
             ]);
     }
 }

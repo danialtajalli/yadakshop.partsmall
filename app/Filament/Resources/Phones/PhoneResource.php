@@ -17,14 +17,13 @@ use UnitEnum;
 
 class PhoneResource extends Resource
 {
-    protected static ?string $navigationLabel = 'شماره تلفن';
+    protected static ?string $navigationLabel = 'تلفن ها';
+    protected static UnitEnum|string|null $navigationGroup = 'قسمت های جدید';
     protected static ?string $model = Phone::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'phone_number';
-    protected static UnitEnum|string|null $navigationGroup = 'قسمت های جدید';
-    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {

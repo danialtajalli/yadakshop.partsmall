@@ -21,7 +21,10 @@ class CommentsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن نظر'),
+                CreateAction::make()->label('افزودن نظر')
+                ->url(fn () => CommentResource::getUrl('create', [
+                    'shop_id' => $this->getOwnerRecord()->id,
+                ])),
                 AssociateAction::make()->label('اضافه کردن نظر'),
             ])
             ->actions([

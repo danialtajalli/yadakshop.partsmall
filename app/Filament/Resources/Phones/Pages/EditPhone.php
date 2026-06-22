@@ -8,12 +8,13 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditPhone extends EditRecord
 {
+    protected static ?string $title = 'ویرایش تلفن';
     protected static string $resource = PhoneResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->label('حذف تلفن'),
         ];
     }
 }

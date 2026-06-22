@@ -8,7 +8,6 @@ use App\Filament\Resources\CarModels\Pages\ListCarModels;
 use App\Filament\Resources\CarModels\Schemas\CarModelForm;
 use App\Filament\Resources\CarModels\Tables\CarModelsTable;
 use App\Models\CarModel;
-use App\Filament\Resources\CarModels\RelationManagers\CarsRelationManager;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -38,7 +37,6 @@ class CarModelResource extends Resource
     public static function getRelations(): array
     {
         return [
-            CarsRelationManager::class,
         ];
     }
 

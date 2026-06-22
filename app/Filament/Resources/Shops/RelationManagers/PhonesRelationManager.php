@@ -20,7 +20,10 @@ class PhonesRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن تلفن'),
+                CreateAction::make()->label('افزودن تلفن')
+                ->url(fn () => PhoneResource::getUrl('create', [
+                    'shop_id' => $this->getOwnerRecord()->id,
+                ])),
                 AssociateAction::make()->label('اضافه کردن تلفن'),
             ])
             ->actions([

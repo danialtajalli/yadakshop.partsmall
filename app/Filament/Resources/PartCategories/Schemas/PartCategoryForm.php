@@ -16,7 +16,8 @@ class PartCategoryForm
                     ->required()->label('نام')
                     ->maxLength(255),
                 Select::make('shops')
-                    ->relationship('shops', 'name')->label('فروشگاه ها')->searchable()->preload()->multiple(),
+                    ->relationship('shops', 'name')->label('فروشگاه ها')->searchable()->preload()->multiple()
+                    ->default(fn () => request('shop_id')),
             ]);
     }
 }

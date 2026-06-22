@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ModelCategories;
 use App\Filament\Resources\ModelCategories\Pages\CreateModelCategory;
 use App\Filament\Resources\ModelCategories\Pages\EditModelCategory;
 use App\Filament\Resources\ModelCategories\Pages\ListModelCategories;
+use App\Filament\Resources\ModelCategories\RelationManagers\ModelsRelationManager;
 use App\Filament\Resources\ModelCategories\Schemas\ModelCategoryForm;
 use App\Filament\Resources\ModelCategories\Tables\ModelCategoriesTable;
 use App\Models\ModelCategory;
@@ -39,7 +40,7 @@ class ModelCategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ModelsRelationManager::class
         ];
     }
 

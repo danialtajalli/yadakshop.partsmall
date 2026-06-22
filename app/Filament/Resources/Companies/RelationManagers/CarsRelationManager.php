@@ -20,7 +20,10 @@ class CarsRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن ماشین'),
+                CreateAction::make()->label('ساخت ماشین جدید')
+                ->url(fn () => CarResource::getUrl('create', [
+                    'company_id' => $this->getOwnerRecord()->id,
+                ])),
                 AssociateAction::make()->label('اضافه کردن ماشین'),
             ])
             ->actions([

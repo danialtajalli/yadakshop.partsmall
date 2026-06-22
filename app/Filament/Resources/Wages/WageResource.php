@@ -7,7 +7,6 @@ use App\Filament\Resources\Wages\Pages\EditWage;
 use App\Filament\Resources\Wages\Pages\ListWages;
 use App\Filament\Resources\Wages\Schemas\WageForm;
 use App\Filament\Resources\Wages\Tables\WagesTable;
-use App\Filament\Resources\Wages\RelationManagers\PartsRelationManager;
 use App\Models\Wage;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -38,7 +37,6 @@ class WageResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PartsRelationManager::class,
         ];
     }
 

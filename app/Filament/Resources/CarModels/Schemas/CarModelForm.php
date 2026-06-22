@@ -20,7 +20,8 @@ class CarModelForm
                 TextInput::make('slug')
                     ->required()->label('نام لاتین'),
                 Select::make('category_id')
-                    ->relationship('category', 'name')->searchable()->preload()->label('دسته بندی'),
+                    ->relationship('category', 'name')->searchable()->preload()->label('دسته بندی')->default(fn () => request('shop_id')),
+                Select::make('cars_id')->relationship('cars', 'name')->label('ماشین ها')->searchable()->preload()->multiple(),
             ]);
     }
 }

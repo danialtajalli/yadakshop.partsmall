@@ -8,7 +8,7 @@ use Filament\Resources\Pages\ListRecords;
 
 class ListPhones extends ListRecords
 {
-    protected static ?string $title = 'تلفن ها';
+    protected static ?string $title = 'لیست تلفن ها';
     protected static string $resource = PhoneResource::class;
 
     protected function getHeaderActions(): array

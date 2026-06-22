@@ -9,9 +9,6 @@ use App\Filament\Resources\Shops\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\Shops\RelationManagers\PhonesRelationManager;
 use App\Filament\Resources\Shops\RelationManagers\LinksRelationManager;
 use App\Filament\Resources\Shops\RelationManagers\CommentsRelationManager;
-use App\Filament\Resources\Shops\RelationManagers\PartCategoriesRelationManager;
-use App\Filament\Resources\Shops\RelationManagers\PartsRelationManager;
-use App\Filament\Resources\Shops\RelationManagers\CompaniesRelationManager;
 use App\Filament\Resources\Shops\Schemas\ShopForm;
 use App\Filament\Resources\Shops\Tables\ShopsTable;
 use App\Models\Shop;
@@ -48,9 +45,6 @@ class ShopResource extends Resource
             PhonesRelationManager::class,
             LinksRelationManager::class,
             CommentsRelationManager::class,
-            PartCategoriesRelationManager::class,
-            PartsRelationManager::class,
-            CompaniesRelationManager::class,
         ];
     }
 

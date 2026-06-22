@@ -14,40 +14,41 @@ class PhonesTable
     {
         return $table
             ->columns([
-                TextColumn::make('shop.name')->label('فروشگاه')
-                    ->searchable(),
+                TextColumn::make('shop.name')
+                    ->searchable()
+                    ->label('فروشگاه'),
                 TextColumn::make('repairShop.name')
-                    ->label('تعمیرگاه')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('تعمیر گاه'),
                 TextColumn::make('user.name')
-                    ->label('کاربر')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('کاربر'),
                 TextColumn::make('phone_number')
-                    ->label('شماره تلفن')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('شماره تلفن'),
                 TextColumn::make('type')
-                    ->label('نوع')
-                    ->badge(),
+                    ->badge()
+                    ->label('نوع تلفن'),
                 TextColumn::make('created_at')
-                    ->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
+                    ->label('تاریخ ایجاد')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
+                    ->label('تاریخ بروزرسانی')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->recordActions([
-                EditAction::make()->label('ویرایش'),
+                EditAction::make()->label('ویرایش تلفن'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->label('حذف'),
+                    DeleteBulkAction::make()->label('حذف تلفن ها'),
                 ]),
             ]);
     }

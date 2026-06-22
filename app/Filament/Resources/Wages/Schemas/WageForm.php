@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Wages\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class WageForm
@@ -20,6 +21,7 @@ class WageForm
                     ->required()
                     ->numeric()
                     ->default(1),
+                Select::make('parts_id')->relationship('parts', 'name')->label('قطعات')->searchable()->preload()->multiple()->columnSpanFull(),
             ]);
     }
 }

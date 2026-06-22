@@ -21,7 +21,10 @@ class LinksRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن لینک'),
+                CreateAction::make()->label('افزودن لینک')
+                ->url(fn () => LinkResource::getUrl('create', [
+                    'shop_id' => $this->getOwnerRecord()->id,
+                ])),
                 AssociateAction::make()->label('اضافه کردن لینک'),
             ])
             ->actions([

@@ -25,7 +25,8 @@ class RepresentationForm
                 TextInput::make('telephone')
                     ->tel(),
                 Select::make('company_id')
-                    ->relationship('company', 'name')->label('نام شرکت')->searchable()->preload(),
+                    ->relationship('company', 'name')->label('نام شرکت')->searchable()->preload()
+                    ->default(fn () => request('company_id')),
                 TextInput::make('service_type')->label('نوع خدمات'),
                 TextInput::make('website')
                     ->url(),

@@ -16,7 +16,6 @@ use Filament\Tables\Table;
 use App\Filament\Resources\RepairShops\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\RepairShops\RelationManagers\PhonesRelationManager;
 use App\Filament\Resources\RepairShops\RelationManagers\LinksRelationManager;
-use App\Filament\Resources\RepairShops\RelationManagers\RepairCategoriesRelationManager;
 
 class RepairShopResource extends Resource
 {
@@ -44,7 +43,6 @@ class RepairShopResource extends Resource
             ImagesRelationManager::class,
             PhonesRelationManager::class,
             LinksRelationManager::class,
-            RepairCategoriesRelationManager::class,
         ];
     }
 

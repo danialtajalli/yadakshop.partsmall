@@ -5,9 +5,6 @@ namespace App\Filament\Resources\Parts;
 use App\Filament\Resources\Parts\Pages\CreatePart;
 use App\Filament\Resources\Parts\Pages\EditPart;
 use App\Filament\Resources\Parts\Pages\ListParts;
-use App\Filament\Resources\Parts\RelationManagers\RepairCategoriesRelationManager;
-use App\Filament\Resources\Parts\RelationManagers\ShopsRelationManager;
-use App\Filament\Resources\Parts\RelationManagers\WagesRelationManager;
 use App\Filament\Resources\Parts\Schemas\PartForm;
 use App\Filament\Resources\Parts\Tables\PartsTable;
 use App\Models\Part;
@@ -40,9 +37,6 @@ class PartResource extends Resource
     public static function getRelations(): array
     {
         return [
-            WagesRelationManager::class,
-            RepairCategoriesRelationManager::class,
-            ShopsRelationManager::class,
         ];
     }
 
