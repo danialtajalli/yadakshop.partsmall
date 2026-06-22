@@ -13,6 +13,7 @@ class Image extends Model
         'path',
         'company_id',
         'repair_shop_id',
+        'shop_id',
     ];
 
     protected function casts(): array

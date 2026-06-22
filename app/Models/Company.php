@@ -16,6 +16,13 @@ class Company extends Model
         'wage_strike',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'wage_strike' => 'float',
+        ];
+    }
+
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
