@@ -47,13 +47,13 @@
                         </div>
                     </div>
 
-                    @if ($repairLocator)
-                        <div class="mt-6 border-t border-line pt-6">
-                            <x-product.repair-locator :repair-locator="$repairLocator" />
-                        </div>
-                    @endif
                 </div>
             </div>
+            @if ($repairLocator)
+                <div class="mt-6 border-t border-line pt-6">
+                    <x-product.repair-locator :repair-locator="$repairLocator" />
+                </div>
+            @endif
             <section class="mt-8">
 
             <x-ui.section-heading
