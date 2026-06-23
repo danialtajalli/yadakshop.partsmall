@@ -65,7 +65,7 @@ class ProductService
                 part: $part,
                 terminalLabel: $title,
             ),
-            'repairLocator' => $this->buildRepairLocatorContext($part, $car),
+            'repairLocators' => $this->buildRepairLocatorContext($part, $car),
         ];
     }
 
@@ -81,22 +81,28 @@ class ProductService
      */
     private function buildRepairLocatorContext(Part $part, Car $car): ?array
     {
-        $category = $part->repairCategories->first();
+        $categories = $part->repairCategories;
 
-        if ($category === null) {
+        if ($categories === null || count($categories) <= 0) {
             return null;
         }
 
         $location = $this->locationFilterData();
 
-        return [
-            'category' => $category,
-            'carName' => $car->name,
-            'buttonLabel' => "مشاهده خدمات {$category->name} {$car->name} در محدوده شما",
-            'states' => $location['states'],
-            'citiesByState' => $location['citiesByState'],
-            'defaultStateId' => null,
-        ];
+
+        $repairLocators = [];
+        foreach ($categories as $category) {
+            $repairLocators[] = [
+                'category' => $category,
+                'carName' => $car->name,
+                'buttonLabel' => "مشاهده خدمات {$category->name} {$car->name} در محدوده شما",
+                'states' => $location['states'],
+                'citiesByState' => $location['citiesByState'],
+                'defaultStateId' => null,
+
+            ];
+        }
+        return $repairLocators;
     }
 
     /**

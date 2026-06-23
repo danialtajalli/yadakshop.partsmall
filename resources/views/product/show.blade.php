@@ -49,10 +49,12 @@
 
                 </div>
             </div>
-            @if ($repairLocator)
-                <div class="mt-6 border-t border-line pt-6">
+            @if ($repairLocators)
+            <div class="mt-6 border-t border-line pt-6">
+                @foreach ($repairLocators as $repairLocator)
                     <x-product.repair-locator :repair-locator="$repairLocator" />
-                </div>
+                @endforeach
+            </div>
             @endif
             <section class="mt-8">
 
