@@ -1,36 +1,17 @@
 @props(['repairLocator'])
 
-<div class="overflow-hidden rounded-2xl border-2 border-brand/35 bg-gradient-to-l from-brand-soft via-white to-white shadow-card ring-1 ring-brand/10">
-    <div class="flex flex-col gap-5 p-5 sm:flex-col sm:items-center sm:justify-center sm:gap-6 sm:p-6">
-        <div class="flex min-w-0 items-start gap-4">
-            <span class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand text-white shadow-sm">
-                <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.88m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336 4.5 4.5 0 0 0-6.336-4.486c-.072 1.172-.088 2.402.14 3.743Z" />
-                </svg>
-            </span>
-            <div class="min-w-0">
-                <p class="text-xs font-semibold uppercase tracking-wider text-brand">تعمیرگاه نزدیک شما</p>
-                <p class="mt-1 text-base font-bold text-ink sm:text-lg">
-                    تعمیرگاه‌های {{ $repairLocator['category']->name }} برای {{ $repairLocator['carName'] }}
-                </p>
-                <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
-                    استان و شهر خود را انتخاب کنید و نزدیک‌ترین تعمیرگاه‌های تخصصی را پیدا کنید.
-                </p>
-            </div>
-        </div>
-
-        <button
-            type="button"
-            class="group flex w-full shrink-0 items-center justify-center gap-2.5 rounded-xl bg-brand px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-brand-dark hover:shadow-lg active:scale-[0.98] sm:w-auto"
-            onclick="document.getElementById('product-repair-locator-modal').showModal()"
-        >
-            <svg class="size-5 shrink-0 transition group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            {{ $repairLocator['buttonLabel'] }}
-        </button>
-    </div>
+<div class="overflow-hidden rounded-2xl border-2 border-brand/35 ring-1 ring-brand/10 mb-1">
+    <button
+        type="button"
+        class="group flex w-full shrink-0 items-center justify-center gap-2.5 rounded-xl bg-brand px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-brand-dark hover:shadow-lg active:scale-[0.98] sm:w-auto"
+        onclick="document.getElementById('product-repair-locator-modal').showModal()"
+    >
+        <svg class="size-5 shrink-0 transition group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        {{ $repairLocator['buttonLabel'] }}
+    </button>
 </div>
 
 <dialog

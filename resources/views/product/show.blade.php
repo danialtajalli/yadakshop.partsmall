@@ -49,6 +49,11 @@
 
                 </div>
             </div>
+            <x-ui.section-heading
+                label="تعمیرگاه نزدیک شما"
+                title="تعمیرگاه‌های {{ $part->name }} برای {{ $company->name }} {{ $car->name }}"
+                description="استان و شهر خود را انتخاب کنید و نزدیک‌ترین تعمیرگاه‌های تخصصی را پیدا کنید."
+            />
             @if ($repairLocators)
             <div class="mt-6 border-t border-line pt-6">
                 @foreach ($repairLocators as $repairLocator)
