@@ -37,8 +37,6 @@ class ProductService
      * }
      */
     public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part,): array {
-
-
         $car->description = $this->sanitizeDescription($car->description, $company, $car);
         $part->description = $this->sanitizeDescription($part->description, $company, $car);
 
