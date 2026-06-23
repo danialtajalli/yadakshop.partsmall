@@ -1,5 +1,5 @@
 @props([
-    'signupUrl' => config('partsmall.signup_url'),
+    'signupUrl' => route('page.show', 'register'),
 ])
 
 <article {{ $attributes->merge(['class' => 'ps-card overflow-hidden']) }}>
