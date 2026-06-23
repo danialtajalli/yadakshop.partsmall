@@ -14,7 +14,7 @@
                         <a
                             href="#shops"
                             data-shops-jump
-                            class="ps-shops-jump mb-5 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99] lg:hidden"
+                            class="ps-shops-jump mb-5 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
                         >
                             <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
                                 <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
@@ -24,7 +24,7 @@
                                 </span>
                                 <span>
                                     <span class="block font-semibold text-brand-dark">{{ $shops->count() }} فروشگاه مرتبط</span>
-                                    <span class="block text-xs text-ink-muted">برای خرید {{ $part->name }} کلیک کنید</span>
+                                    <span class="block text-xs text-ink-muted">برای خرید {{ $title }} کلیک کنید</span>
                                 </span>
                             </span>
                             <span class="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand">
