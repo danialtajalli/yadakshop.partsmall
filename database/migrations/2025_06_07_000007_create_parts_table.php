@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('category_description')->nullable();
             $table->string('slug');
-            $table->foreignId('parts_category_id')->constrained('parts_categories')->cascadeOnDelete();
+            $table->foreignId('parts_category_id')->constrained('parts_categories')->cascadeOnDelete()->nullable();
             $table->timestamps();
         });
     }

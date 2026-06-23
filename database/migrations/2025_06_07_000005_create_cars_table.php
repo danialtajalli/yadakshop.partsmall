@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('slug');
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete()->nullable();
             $table->timestamps();
         });
     }
