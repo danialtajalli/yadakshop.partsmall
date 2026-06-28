@@ -82,9 +82,11 @@ class HomePageTest extends TestCase
         $response->assertSee(route('repair-shops.index'), false);
         $response->assertSee(route('representations.index'), false);
         $response->assertSee(route('shop.profile', 'yadak-shop'), false);
+        $response->assertSee(route('page.show', ['slug' => 'register']), false);
+        $response->assertSee('لوگوی شما اینجا', false);
         $response->assertSee(route('part.show', 'spark-plug'), false);
         $response->assertSee('data-entity-carousel', false);
-        $response->assertSee('embla-carousel', false);
+        $response->assertSee('data-entity-carousel-viewport', false);
     }
 
     public function test_home_page_includes_company_picker_modal_data(): void

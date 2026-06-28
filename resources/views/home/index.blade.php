@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <x-home.entity-carousel
+    <x-home.entity-grid
         title="فروشگاه‌های لوازم یدکی"
         description="فروشگاه‌های معتبر قطعات خودرو"
         :items="$shops"
@@ -72,7 +72,7 @@
                 <p id="home-company-search-empty" class="mt-3 hidden text-sm text-ink-muted">برند ماشینی با این نام یافت نشد.</p>
             </div>
 
-            <div id="home-companies-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div id="home-companies-grid" class="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 @foreach ($companies as $company)
                     <button
                         type="button"
@@ -80,18 +80,18 @@
                             data-company-picker-trigger
                             data-company-slug="{{ $company->slug }}"
                         @endif
-                        class="home-company-card ps-card-interactive flex w-full flex-col p-5 text-start disabled:cursor-not-allowed disabled:opacity-60"
+                        class="home-company-card ps-card-interactive flex w-full flex-col items-center p-2 text-center disabled:cursor-not-allowed disabled:opacity-60 sm:p-4"
                         data-company-name="{{ $company->name }}"
                         @disabled($company->cars->flatMap->models->isEmpty())
                     >
                         <x-ui.company-logo
                             :name="$company->name"
                             :logo-url="$company->logo_url"
-                            size="lg"
+                            size="sm"
                         />
-                        <h3 class="text-base font-semibold text-ink">{{ $company->name }}</h3>
+                        <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $company->name }}</h3>
                         @if ($company->cars->flatMap->models->isEmpty())
-                            <p class="mt-1 text-xs text-ink-muted">خودرویی ثبت نشده است</p>
+                            <p class="mt-1 text-[10px] leading-4 text-ink-muted sm:text-xs">خودرویی ثبت نشده است</p>
                         @endif
                     </button>
                 @endforeach
@@ -132,12 +132,12 @@
                 <p id="home-part-search-empty" class="mt-3 hidden text-sm text-ink-muted">قطعه‌ای با این نام یافت نشد.</p>
             </div>
 
-            <div id="home-parts-grid" class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            <div id="home-parts-grid" class="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 @foreach ($parts as $part)
                     <x-ui.part-card
                         :part="$part"
                         :url="route('part.show', $part->slug)"
-                        class="home-part-card"
+                        class="home-part-card flex-col items-center gap-1.5 p-2 text-center sm:flex-row sm:gap-2.5 sm:p-3 sm:text-start [&_h3]:whitespace-normal [&_h3]:text-center [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-start sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
                         data-part-name="{{ $part->title }}"
                     />
                 @endforeach
