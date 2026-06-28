@@ -33,6 +33,10 @@ class ProductShowTest extends TestCase
         $response->assertSee('طبق', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('سانتافه', false);
+        $response->assertSee('مشاهده پروفایل فروشگاه', false);
+        $response->assertSee('اطلاعات تماس', false);
+        $response->assertSee('فروشگاه شما اینجا', false);
+        $response->assertSee(route('page.show', ['slug' => 'register']), false);
     }
 
     public function test_product_show_displays_repair_locator_when_part_has_repair_category(): void

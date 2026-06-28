@@ -114,41 +114,43 @@
         />
 
         @if ($shops->isNotEmpty())
-            <div class="grid gap-5 sm:grid-cols-1 lg:grid-cols-1">
+            <div class="grid gap-2.5 sm:grid-cols-1 lg:grid-cols-1">
                 @foreach ($shops as $shop)
-                    <article class="ps-card-interactive relative flex flex-col p-5">
-                        <div class="mb-5 flex items-start gap-4">
-                            <div class="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
+                    <article class="ps-card-interactive relative flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-3.5">
+                        <div class="flex min-w-0 flex-1 items-center gap-3">
+                            <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-brand-soft to-accent-soft text-sm font-bold text-brand-dark ring-1 ring-line sm:size-11">
                                 @if ($shop->logo)
-                                    <img src="{{ $shop->logo }}" alt="{{ $shop->name }}" class="w-full h-full object-cover" />
+                                    <img src="{{ $shop->logo }}" alt="{{ $shop->name }}" class="size-full object-contain p-1" />
                                 @else
                                     {{ mb_substr($shop->name, 0, 1) }}
                                 @endif
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="truncate font-semibold text-ink">{{ $shop->name }}</h3>
-                                @if ($shop->secondary_name)
-                                    <p class="truncate text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
-                                @endif
-                                <div class="mt-2 inline-flex items-center gap-1 rounded-lg bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
-                                    @if ($shop->average_rating)
-                                        <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
-                                        <span>{{ number_format($shop->average_rating, 1) }}</span>
-                                    @else
-                                        <span class="text-ink-muted">بدون امتیاز</span>
-                                    @endif
+                                <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                                    <h3 class="truncate text-sm font-semibold text-ink">{{ $shop->name }}</h3>
+                                    <div class="inline-flex shrink-0 items-center gap-1 rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] font-medium text-accent">
+                                        @if ($shop->average_rating)
+                                            <svg class="size-3 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
+                                            <span>{{ number_format($shop->average_rating, 1) }}</span>
+                                        @else
+                                            <span class="text-ink-muted">بدون امتیاز</span>
+                                        @endif
+                                    </div>
                                 </div>
+                                @if ($shop->secondary_name)
+                                    <p class="truncate text-xs text-ink-muted">{{ $shop->secondary_name }}</p>
+                                @endif
                             </div>
                         </div>
 
-                        <div class="mt-auto flex gap-2.5">
-                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 text-center">مشاهده</a>
+                        <div class="flex gap-2 sm:w-auto sm:shrink-0">
+                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">مشاهده پروفایل فروشگاه</a>
                             <button
                                 type="button"
-                                class="ps-btn-secondary shrink-0 flex-1"
+                                class="ps-btn-secondary shrink-0 flex-1 px-2.5 py-1.5 text-xs sm:flex-none"
                                 onclick="document.getElementById('shop-modal-{{ $shop->id }}').showModal()"
                             >
-                                اطلاعات
+                                اطلاعات تماس
                             </button>
                         </div>
 
@@ -206,6 +208,32 @@
                         </dialog>
                     </article>
                 @endforeach
+
+                <article class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5">
+                    <div class="flex min-w-0 flex-1 items-center gap-3">
+                        <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-soft/20 text-brand sm:size-11">
+                            <svg class="size-6" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="6" y="7" width="20" height="18" rx="4" />
+                                <path d="M11 20h10" />
+                                <path d="M12 16l3-3 3 3 2-2 3 3" />
+                                <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="truncate text-sm font-semibold text-ink">فروشگاه شما اینجا</h3>
+                            <p class="truncate text-xs text-ink-muted">قطعات خود را در پارتس‌مال معرفی کنید.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 sm:w-auto sm:shrink-0">
+                        <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
+                            مشاهده پروفایل فروشگاه
+                        </a>
+                        <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-secondary flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
+                            اطلاعات تماس
+                        </a>
+                    </div>
+                </article>
             </div>
         @else
             <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
