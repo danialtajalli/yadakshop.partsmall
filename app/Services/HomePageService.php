@@ -44,6 +44,11 @@ class HomePageService
     public function getHomePageData(): array
     {
         $companies = $this->featuredCompanies();
+        $parts = $this->allParts();
+        $parts->transform(function (Part $part): Part {
+            $part->title = $part->name;
+            return $part;
+        });
 
         return [
             'shops' => $this->featuredShops(),
@@ -51,7 +56,7 @@ class HomePageService
             'companies' => $companies,
             'companyPicker' => $this->buildCompanyPicker($companies),
             'representations' => $this->featuredRepresentations(),
-            'parts' => $this->allParts(),
+            'parts' => $parts,
             'title' => "پارتس‌مال",
         ];
     }

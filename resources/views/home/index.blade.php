@@ -138,7 +138,7 @@
                         :part="$part"
                         :url="route('part.show', $part->slug)"
                         class="home-part-card"
-                        data-part-name="{{ $part->name }}"
+                        data-part-name="{{ $part->title }}"
                     />
                 @endforeach
             </div>
