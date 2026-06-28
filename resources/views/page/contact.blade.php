@@ -7,12 +7,17 @@
         .contact-survey-embed {
             overflow: hidden;
             width: 100%;
+            max-width: 100%;
         }
 
+        .contact-survey-embed *,
         .contact-survey-embed .porsline_embed,
         .contact-survey-embed [id^="OrZ"] {
+            box-sizing: border-box;
             position: relative;
             width: 100%;
+            max-width: 100% !important;
+            min-width: 0 !important;
             min-height: 28rem;
         }
 
@@ -28,6 +33,7 @@
             display: block;
             width: 100% !important;
             max-width: 100% !important;
+            min-width: 0 !important;
             height: 32rem !important;
             min-height: 28rem;
             border: 0;
@@ -52,34 +58,34 @@
         </div>
     </div>
 
-    <div class="grid gap-8 lg:grid-cols-2 lg:items-start">
-        <div class="space-y-6">
+    <div class="grid min-w-0 gap-8 lg:grid-cols-2 lg:items-start">
+        <div class="min-w-0 space-y-6">
             <div class="grid gap-4 sm:grid-cols-2">
-                <div class="ps-card flex gap-4 p-5">
+                <div class="ps-card flex min-w-0 gap-4 p-5">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
                         <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">آدرس</h2>
                         <p class="mt-1 text-sm leading-6 text-ink-muted">{{ $contact['address'] }}</p>
                     </div>
                 </div>
 
-                <div class="ps-card flex gap-4 p-5">
+                <div class="ps-card flex min-w-0 gap-4 p-5">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
                         <i class="fa-solid fa-clock" aria-hidden="true"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">ساعت کاری</h2>
                         <p class="mt-1 text-sm leading-6 text-ink-muted">{{ $contact['hours'] }}</p>
                     </div>
                 </div>
 
-                <div class="ps-card flex gap-4 p-5">
+                <div class="ps-card flex min-w-0 gap-4 p-5">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
                         <i class="fa-solid fa-phone" aria-hidden="true"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">تلفن</h2>
                         <a href="tel:{{ preg_replace('/\s+/', '', $contact['phone']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
                             {{ $contact['phone'] }}
@@ -87,11 +93,11 @@
                     </div>
                 </div>
 
-                <div class="ps-card flex gap-4 p-5">
+                <div class="ps-card flex min-w-0 gap-4 p-5">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
                         <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">موبایل</h2>
                         <a href="tel:{{ preg_replace('/\s+/', '', $contact['mobile']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
                             {{ $contact['mobile'] }}
@@ -99,13 +105,13 @@
                     </div>
                 </div>
 
-                <div class="ps-card flex gap-4 p-5 sm:col-span-2">
+                <div class="ps-card flex min-w-0 gap-4 p-5 sm:col-span-2">
                     <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
                         <i class="fa-solid fa-envelope" aria-hidden="true"></i>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">ایمیل</h2>
-                        <a href="mailto:{{ $contact['email'] }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
+                        <a href="mailto:{{ $contact['email'] }}" class="mt-1 block break-all text-sm text-brand transition hover:text-brand-dark">
                             {{ $contact['email'] }}
                         </a>
                     </div>
@@ -113,7 +119,7 @@
             </div>
 
             @if (filled($page->content))
-                <div class="ps-card overflow-hidden p-4 sm:p-5">
+                <div class="ps-card min-w-0 overflow-hidden p-4 sm:p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
                     <div class="contact-survey-embed">
                         {!! $page->content !!}

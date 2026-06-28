@@ -61,16 +61,14 @@
                 @endforeach
             </div>
             @endif
+        @if (count($repairCards) > 0)
             <section class="mt-8">
-
-            <x-ui.section-heading
-                class="mb-3"
-                label="راهنما"
-                title="برآورد اجرت"
-                description="هزینه تقریبی — برای انجام کار به تعمیرگاه مراجعه کنید"
-            />
-
-            @if (count($repairCards) > 0)
+                <x-ui.section-heading
+                    class="mb-3"
+                    label="راهنما"
+                    title="برآورد اجرت"
+                    description="هزینه تقریبی — برای انجام کار به تعمیرگاه مراجعه کنید"
+                />
                 <div class="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface/40">
                     @foreach ($repairCards as $card)
                         <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm sm:px-5">
@@ -93,12 +91,8 @@
                         </div>
                     @endforeach
                 </div>
-            @else
-                <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-                    <p class="text-sm text-ink-muted">اطلاعات تعمیر برای این قطعه ثبت نشده است.</p>
-                </div>
-            @endif
             </section>
+            @endif
         </div>
 
         <div class="mt-6 lg:col-span-4 lg:mt-0">

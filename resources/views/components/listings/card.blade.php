@@ -1,6 +1,6 @@
 @props(['listing', 'type' => 'shop'])
 
-<article {{ $attributes->merge(['class' => 'ps-card-interactive relative flex h-full flex-col p-5']) }}>
+<article {{ $attributes->merge(['class' => 'ps-card-interactive relative flex h-full min-w-0 flex-col overflow-hidden p-5']) }}>
     @if ($type === 'shop')
         <a href="{{ route('shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @elseif ($type === 'repair_shop')
@@ -8,7 +8,7 @@
     @elseif ($type === 'representation')
         <a href="{{ route('representation.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @endif
-    <div class="mb-4 flex items-start gap-4">
+    <div class="mb-4 flex min-w-0 items-start gap-4">
         <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
             @if ($listing->logo ?? null)
                 <img src="{{ $listing->logo }}" alt="{{ $listing->name }}" class="size-full object-cover">
@@ -42,9 +42,9 @@
     </div>
 
     @if ($type === 'repair_shop' && $listing->repairCategories?->isNotEmpty())
-        <ul class="mb-4 flex flex-wrap gap-2">
+        <ul class="mb-4 flex min-w-0 flex-wrap gap-2">
             @foreach ($listing->repairCategories->take(3) as $category)
-                <li class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
+                <li class="min-w-0 break-words rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
                     {{ $category->name }}
                 </li>
             @endforeach
@@ -52,10 +52,10 @@
     @endif
 
     @if ($type === 'representation' && $listing->service_type)
-        <ul class="mb-4 flex flex-wrap gap-2">
+        <ul class="mb-4 flex min-w-0 flex-wrap gap-2">
             @foreach (array_slice(preg_split('/\s*,\s*/', $listing->service_type) ?: [], 0, 3) as $service)
                 @if (trim($service) !== '')
-                    <li class="rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
+                    <li class="min-w-0 break-words rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-brand-dark">
                         {{ trim($service) }}
                     </li>
                 @endif
@@ -63,7 +63,7 @@
         </ul>
     @endif
 
-    <div class="mt-auto space-y-1 text-sm text-ink-muted">
+    <div class="mt-auto min-w-0 space-y-1 text-sm text-ink-muted">
         @if ($listing->state)
             <p>
                 {{ $listing->state->name }}
@@ -73,7 +73,7 @@
             </p>
         @endif
         @if ($listing->address)
-            <p class="line-clamp-2">{{ $listing->address }}</p>
+            <p class="line-clamp-2 break-words">{{ $listing->address }}</p>
         @endif
     </div>
 </article>

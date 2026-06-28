@@ -41,15 +41,15 @@
         :show-specialization-filter="$showSpecializationFilter"
     />
 
-    <div class="mb-4 flex items-center justify-between gap-3">
-        <p class="text-sm text-ink-muted">
+    <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
+        <p class="min-w-0 text-sm text-ink-muted">
             {{ number_format($listings->total()) }} مورد یافت شد
         </p>
-        <div class="flex flex-wrap gap-2 text-sm">
+        <div class="flex min-w-0 flex-wrap gap-2 text-sm">
             <a
                 href="{{ route('shops.index', request()->except('page')) }}"
                 @class([
-                    'rounded-lg px-3 py-1.5 transition',
+                    'rounded-lg px-3 py-1.5 transition break-words',
                     'bg-brand text-white' => $type === 'shop',
                     'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
                 ])
@@ -59,7 +59,7 @@
             <a
                 href="{{ route('repair-shops.index', request()->except('page')) }}"
                 @class([
-                    'rounded-lg px-3 py-1.5 transition',
+                    'rounded-lg px-3 py-1.5 transition break-words',
                     'bg-brand text-white' => $type === 'repair_shop',
                     'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
                 ])
@@ -69,7 +69,7 @@
             <a
                 href="{{ route('representations.index', request()->except('page')) }}"
                 @class([
-                    'rounded-lg px-3 py-1.5 transition',
+                    'rounded-lg px-3 py-1.5 transition break-words',
                     'bg-brand text-white' => $type === 'representation',
                     'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
                 ])
@@ -85,7 +85,7 @@
         </div>
     @else
         <h2 class="sr-only">نتایج جستجو</h2>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($listings as $listing)
                 <x-listings.card :listing="$listing" :type="$type" />
             @endforeach

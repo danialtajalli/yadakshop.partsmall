@@ -123,11 +123,11 @@
     @endif
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col font-sans antialiased bg-gray-50">
+<body class="flex min-h-screen overflow-x-hidden flex-col font-sans antialiased bg-gray-50">
     @include('layouts.partials.header')
 
-    <main class="flex-1 py-8 sm:py-10">
-        <div class="ps-container">
+    <main class="min-w-0 flex-1 overflow-x-clip py-8 sm:py-10">
+        <div class="ps-container min-w-0">
             @yield('content')
         </div>
     </main>
