@@ -178,18 +178,9 @@ class ProductService
     {
         $cards = [];
         $wages = $part->wages->values();
-        $categories = $part->repairCategories->values();
+        foreach ($wages as $wage) {
 
-        for ($i = 0; $i < 3; $i++) {
-            $category = $categories->get($i);
-            $wage = $wages->get($i) ?? $wages->first();
-
-            if ($category === null && $wage === null) {
-                break;
-            }
-
-            $cards[] = [
-                'type' => $category?->name ?? $wage->name,
+            $cards[$wage->name] = [
                 'cost' => $wage
                     ? (int) (($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000)
                     : null,

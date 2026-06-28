@@ -70,18 +70,15 @@
                     description="هزینه تقریبی — برای انجام کار به تعمیرگاه مراجعه کنید"
                 />
                 <div class="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface/40">
-                    @foreach ($repairCards as $card)
+                    @foreach ($repairCards as $wage_name => $wage)
                         <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm sm:px-5">
                             <div class="min-w-0">
-                                <p class="font-medium text-ink">اجرت {{ $card['type'] }}</p>
-                                @if ($card['wage_name'] && $card['wage_name'] !== $card['type'])
-                                    <p class="mt-0.5 text-xs text-ink-muted">{{ $card['wage_name'] }}</p>
-                                @endif
+                                <p class="font-medium text-ink">اجرت {{ $wage_name }}</p>
                             </div>
                             <div class="shrink-0 text-start sm:text-end">
-                                @if ($card['cost'] !== null)
+                                @if ($wage['cost'] !== null)
                                     <p class="tabular-nums font-medium text-ink-muted">
-                                        {{ number_format($card['cost']) }}
+                                        {{ number_format($wage['cost']) }}
                                         <span class="text-xs">تومان</span>
                                     </p>
                                 @else
@@ -220,17 +217,14 @@
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <h3 class="truncate text-sm font-semibold text-ink">فروشگاه شما اینجا</h3>
+                            <h3 class="truncate text-sm font-semibold text-ink">فروشگاه شما میتواند اینجا باشد</h3>
                             <p class="truncate text-xs text-ink-muted">قطعات خود را در پارتس‌مال معرفی کنید.</p>
                         </div>
                     </div>
 
                     <div class="flex gap-2 sm:w-auto sm:shrink-0">
                         <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
-                            مشاهده پروفایل فروشگاه
-                        </a>
-                        <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-secondary flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
-                            اطلاعات تماس
+                            ثبت نام
                         </a>
                     </div>
                 </article>

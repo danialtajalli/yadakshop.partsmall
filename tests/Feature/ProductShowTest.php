@@ -35,7 +35,8 @@ class ProductShowTest extends TestCase
         $response->assertSee('سانتافه', false);
         $response->assertSee('مشاهده پروفایل فروشگاه', false);
         $response->assertSee('اطلاعات تماس', false);
-        $response->assertSee('فروشگاه شما اینجا', false);
+        $response->assertSee('فروشگاه شما میتواند اینجا باشد', false);
+        $response->assertSee('ثبت نام', false);
         $response->assertSee(route('page.show', ['slug' => 'register']), false);
     }
 
