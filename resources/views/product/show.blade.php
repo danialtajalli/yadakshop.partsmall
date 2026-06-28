@@ -49,46 +49,53 @@
 
                 </div>
             </div>
-            <x-ui.section-heading
-                label="تعمیرگاه نزدیک شما"
-                title="تعمیرگاه‌های {{ $part->name }} برای {{ $company->name }} {{ $car->name }}"
-                description="استان و شهر خود را انتخاب کنید و نزدیک‌ترین تعمیرگاه‌های تخصصی را پیدا کنید."
-            />
             @if ($repairLocators)
-            <div class="mt-6 border-t border-line pt-6">
-                @foreach ($repairLocators as $repairLocator)
-                    <x-product.repair-locator :repair-locator="$repairLocator" />
-                @endforeach
-            </div>
+                <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+                    <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-5 sm:px-6">
+                        <x-ui.section-heading
+                            class="mb-0"
+                            label="تعمیرگاه نزدیک شما"
+                            title="تعمیرگاه‌های مرتبط"
+                            description="محدوده خود را انتخاب کنید و تعمیرگاه‌های تخصصی همین قطعه را ببینید."
+                        />
+                    </div>
+                    <div class="divide-y divide-line">
+                        @foreach ($repairLocators as $repairLocator)
+                            <x-product.repair-locator :repair-locator="$repairLocator" />
+                        @endforeach
+                    </div>
+                </section>
             @endif
-        @if (count($repairCards) > 0)
-            <section class="mt-8">
-                <x-ui.section-heading
-                    class="mb-3"
-                    label="راهنما"
-                    title="برآورد اجرت"
-                    description="هزینه تقریبی — برای انجام کار به تعمیرگاه مراجعه کنید"
-                />
-                <div class="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface/40">
-                    @foreach ($repairCards as $wage_name => $wage)
-                        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm sm:px-5">
-                            <div class="min-w-0">
-                                <p class="font-medium text-ink">اجرت {{ $wage_name }}</p>
+            @if (count($repairCards) > 0)
+                <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+                    <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-5 sm:px-6">
+                        <x-ui.section-heading
+                            class="mb-0"
+                            label="راهنما"
+                            title="برآورد اجرت"
+                            description="هزینه تقریبی خدمات مربوط به این قطعه"
+                        />
+                    </div>
+                    <div class="divide-y divide-line">
+                        @foreach ($repairCards as $wage_name => $wage)
+                            <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm sm:px-6">
+                                <div class="min-w-0">
+                                    <p class="font-medium text-ink">اجرت {{ $wage_name }}</p>
+                                </div>
+                                <div class="shrink-0 text-start sm:text-end">
+                                    @if ($wage['cost'] !== null)
+                                        <p class="tabular-nums font-semibold text-ink">
+                                            {{ number_format($wage['cost']) }}
+                                            <span class="text-xs font-medium text-ink-muted">تومان</span>
+                                        </p>
+                                    @else
+                                        <p class="text-xs text-ink-muted">نامشخص</p>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="shrink-0 text-start sm:text-end">
-                                @if ($wage['cost'] !== null)
-                                    <p class="tabular-nums font-medium text-ink-muted">
-                                        {{ number_format($wage['cost']) }}
-                                        <span class="text-xs">تومان</span>
-                                    </p>
-                                @else
-                                    <p class="text-xs text-ink-muted">نامشخص</p>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </section>
+                        @endforeach
+                    </div>
+                </section>
             @endif
         </div>
 
