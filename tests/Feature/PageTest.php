@@ -51,6 +51,8 @@ class PageTest extends TestCase
 
         $this->get(route('home'))
             ->assertOk()
+            ->assertSee('data-mobile-menu-toggle', false)
+            ->assertSee('id="mobile-menu"', false)
             ->assertSee(route('page.show', 'about'), false)
             ->assertSee(route('page.show', 'contact'), false);
     }
