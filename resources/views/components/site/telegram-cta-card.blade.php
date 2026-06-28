@@ -81,11 +81,24 @@
         <div class="mt-5 flex items-center gap-3">
 
             <div class="flex -space-x-2 rtl:space-x-reverse">
-
-                <div class="h-8 w-8 rounded-full border-2 border-white bg-sky-300"></div>
-                <div class="h-8 w-8 rounded-full border-2 border-white bg-cyan-300"></div>
-                <div class="h-8 w-8 rounded-full border-2 border-white bg-blue-300"></div>
-
+                <img
+                    src="https://i.pravatar.cc/64?img=12"
+                    alt=""
+                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
+                    loading="lazy"
+                >
+                <img
+                    src="https://i.pravatar.cc/64?img=32"
+                    alt=""
+                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
+                    loading="lazy"
+                >
+                <img
+                    src="https://i.pravatar.cc/64?img=56"
+                    alt=""
+                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
+                    loading="lazy"
+                >
             </div>
 
             <span class="text-sm font-medium text-white/90">
