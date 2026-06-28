@@ -35,10 +35,10 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'title', 'breadcrumbs', 'repairLocator'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'title', 'breadcrumbs', 'repairLocators'],
             array_keys($data),
         );
-        $this->assertNull($data['repairLocator']);
+        $this->assertNull($data['repairLocators']);
         $this->assertSame($company->id, $data['company']->id);
         $this->assertSame($car->id, $data['car']->id);
         $this->assertSame($model->id, $data['model']->id);
@@ -103,12 +103,12 @@ class ProductServiceTest extends TestCase
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
-        $this->assertNotNull($data['repairLocator']);
-        $this->assertSame('جلوبندی', $data['repairLocator']['category']->name);
-        $this->assertSame('سانتافه', $data['repairLocator']['carName']);
+        $this->assertNotNull($data['repairLocators']);
+        $this->assertSame('جلوبندی', $data['repairLocators'][0]['category']->name);
+        $this->assertSame('سانتافه', $data['repairLocators'][0]['carName']);
         $this->assertSame(
             'مشاهده خدمات جلوبندی سانتافه در محدوده شما',
-            $data['repairLocator']['buttonLabel'],
+            $data['repairLocators'][0]['buttonLabel'],
         );
     }
 
