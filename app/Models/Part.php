@@ -5,9 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Laravel\Scout\Searchable;
 
 class Part extends Model
 {
+    use Searchable;
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing('partsCategory');
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'description' => strip_tags((string) $this->description),
+            'category_description' => strip_tags((string) $this->category_description),
+            'parts_category_id' => $this->parts_category_id,
+            'parts_category_name' => $this->partsCategory?->name,
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'parts';
+    }
+
     protected $fillable = [
         'name',
         'description',
