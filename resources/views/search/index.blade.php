@@ -19,8 +19,6 @@
         </div>
     </div>
 
-    <x-home.parts-meilisearch-bar :action="route('search.index')" class="mb-8" />
-
     @if ($query === '')
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
             <p class="text-sm text-ink-muted">برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، کمپانی، خودرو یا مدل را وارد کنید.</p>
