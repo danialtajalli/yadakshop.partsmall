@@ -8,11 +8,13 @@ use App\Http\Controllers\PartSelectionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\RepairShopController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\VehicleCatalogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('search', SearchController::class)->name('search.index');
 
 Route::get('company', [VehicleCatalogController::class, 'companies'])->name('companies.index');
 Route::get('company/{company}', [VehicleCatalogController::class, 'cars'])->name('cars.index');

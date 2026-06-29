@@ -53,6 +53,8 @@ class PageTest extends TestCase
             ->assertOk()
             ->assertSee('data-mobile-menu-toggle', false)
             ->assertSee('id="mobile-menu"', false)
+            ->assertSee('id="header-meilisearch-parts-search"', false)
+            ->assertSee('id="mobile-meilisearch-parts-search"', false)
             ->assertSee(route('page.show', 'about'), false)
             ->assertSee(route('page.show', 'contact'), false);
     }

@@ -3,22 +3,29 @@
 @endphp
 
 <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
-    <div class="ps-container flex h-16 items-center justify-between">
+    <div class="ps-container flex h-16 items-center justify-between gap-4">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5">
             <img src="https://partsmall.ir/img/favicon.webp" class="size-9 text-brand" alt="پارتس‌مال">
             <span class="text-base font-bold text-ink">{{ 'پارتس‌مال' }}</span>
         </a>
 
-        <nav class="hidden items-center gap-1 text-sm text-ink-muted sm:flex" aria-label="منوی اصلی">
-            <a href="{{ route('companies.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">کمپانی ها</a>
-            <a href="{{ route('car.parts') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">قطعات</a>
-            <a href="{{ route('shops.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">فروشگاه‌ها</a>
-            @foreach ($headerNavigationPages as $navPage)
-                <a href="{{ route('page.show', $navPage->slug) }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">
-                    {{ $navPage->title }}
-                </a>
-            @endforeach
-        </nav>
+        <div class="hidden min-w-0 flex-1 items-center justify-end gap-3 sm:flex">
+            <x-ui.global-search-bar
+                id="header-meilisearch-parts-search"
+                class="mb-0 w-full max-w-sm"
+            />
+
+            <nav class="flex shrink-0 items-center gap-1 text-sm text-ink-muted" aria-label="منوی اصلی">
+                <a href="{{ route('companies.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">کمپانی ها</a>
+                <a href="{{ route('car.parts') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">قطعات</a>
+                <a href="{{ route('shops.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">فروشگاه‌ها</a>
+                @foreach ($headerNavigationPages as $navPage)
+                    <a href="{{ route('page.show', $navPage->slug) }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">
+                        {{ $navPage->title }}
+                    </a>
+                @endforeach
+            </nav>
+        </div>
 
         <button
             type="button"
@@ -44,6 +51,11 @@
         aria-hidden="true"
     >
         <div class="ps-container grid gap-1 py-3 text-sm text-ink-muted">
+            <x-ui.global-search-bar
+                id="mobile-meilisearch-parts-search"
+                class="mb-3"
+            />
+
             <a href="{{ route('companies.index') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">کمپانی ها</a>
             <a href="{{ route('car.parts') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">قطعات</a>
             <a href="{{ route('shops.index') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">فروشگاه‌ها</a>

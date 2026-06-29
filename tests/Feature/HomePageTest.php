@@ -31,6 +31,9 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
+        $response->assertSee('id="header-meilisearch-parts-search"', false);
+        $response->assertSee('id="mobile-meilisearch-parts-search"', false);
+        $response->assertSee('action="'.route('search.index').'"', false);
     }
 
     public function test_home_page_shows_featured_entities_and_parts(): void
