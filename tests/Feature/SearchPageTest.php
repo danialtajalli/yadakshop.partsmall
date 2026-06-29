@@ -98,7 +98,105 @@ class SearchPageTest extends TestCase
             ->assertSee('نمایندگی آزمایش', false)
             ->assertSee('کمپانی آزمایش', false)
             ->assertSee('خودرو آزمایش', false)
-            ->assertSee('مدل آزمایش', false);
+            ->assertDontSee('مدل آزمایش', false);
+    }
+
+    public function test_exact_vehicle_query_only_shows_vehicle(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture();
+
+        $this->get(route('search.index', ['q' => 'هیوندای سانتافه']))
+            ->assertOk()
+            ->assertSee('خودرو', false)
+            ->assertSee('سانتافه', false)
+            ->assertDontSee('محصولات', false)
+            ->assertDontSee('نیو', false)
+            ->assertDontSee('لنت ترمز جلو', false);
+    }
+
+    public function test_exact_company_query_shows_company_only(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture();
+
+        $this->get(route('search.index', ['q' => 'هیوندای']))
+            ->assertOk()
+            ->assertSee('هیوندای', false)
+            ->assertDontSee('محصولات', false)
+            ->assertDontSee('نیو', false)
+            ->assertDontSee('لنت ترمز جلو', false);
+    }
+
+    public function test_vehicle_query_with_model_name_shows_company_car_and_model(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture(modelName: '2012', modelSlug: '2012');
+        Car::create([
+            'name' => 'ix45',
+            'slug' => 'ix45',
+            'company_id' => Company::create(['name' => 'برند دیگر', 'slug' => 'other-brand'])->id,
+        ]);
+
+        $this->get(route('search.index', ['q' => 'هیوندای سانتافه 2012']))
+            ->assertOk()
+            ->assertSee('هیوندای', false)
+            ->assertSee('سانتافه', false)
+            ->assertSee('2012', false)
+            ->assertDontSee('محصولات', false)
+            ->assertDontSee('لنت ترمز جلو', false)
+            ->assertDontSee('front-brake-pad', false)
+            ->assertDontSee('ix45', false);
+    }
+
+    public function test_exact_part_query_shows_related_parts_only(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture();
+
+        $this->get(route('search.index', ['q' => 'لنت']))
+            ->assertOk()
+            ->assertSee('قطعات', false)
+            ->assertSee('لنت ترمز جلو', false)
+            ->assertSee('لنت ترمز عقب', false)
+            ->assertDontSee('محصولات', false)
+            ->assertDontSee('سانتافه', false);
+    }
+
+    public function test_mixed_part_vehicle_query_shows_existing_product_results_only(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture();
+
+        $this->get(route('search.index', ['q' => 'لنت جلو سانتافه']))
+            ->assertOk()
+            ->assertSee('محصولات', false)
+            ->assertSee('هیوندای سانتافه', false)
+            ->assertSee('لنت ترمز جلو', false)
+            ->assertDontSee('فروشگاه‌ها و نمایندگی‌ها', false);
+    }
+
+    public function test_model_only_queries_do_not_generate_products(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $this->createSearchIntentFixture();
+
+        $this->get(route('search.index', ['q' => 'نیو']))
+            ->assertOk()
+            ->assertDontSee('محصولات', false)
+            ->assertDontSee('لنت ترمز جلو', false);
     }
 
     public function test_search_page_prompts_for_a_query(): void
@@ -106,5 +204,48 @@ class SearchPageTest extends TestCase
         $this->get(route('search.index'))
             ->assertOk()
             ->assertSee('برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، کمپانی، خودرو یا مدل را وارد کنید.', false);
+    }
+
+    /**
+     * @return array{company: Company, car: Car, model: CarModel}
+     */
+    private function createSearchIntentFixture(string $modelName = 'نیو', string $modelSlug = 'new'): array
+    {
+        $company = Company::create([
+            'name' => 'هیوندای',
+            'slug' => 'hyundai',
+        ]);
+
+        $car = Car::create([
+            'name' => 'سانتافه',
+            'slug' => 'santafe',
+            'company_id' => $company->id,
+        ]);
+
+        $model = CarModel::create([
+            'name' => $modelName,
+            'slug' => $modelSlug,
+        ]);
+        $model->cars()->attach($car);
+
+        $category = PartsCategory::create(['name' => 'ترمز']);
+
+        Part::create([
+            'name' => 'لنت ترمز جلو',
+            'slug' => 'front-brake-pad',
+            'parts_category_id' => $category->id,
+        ]);
+
+        Part::create([
+            'name' => 'لنت ترمز عقب',
+            'slug' => 'rear-brake-pad',
+            'parts_category_id' => $category->id,
+        ]);
+
+        return [
+            'company' => $company,
+            'car' => $car,
+            'model' => $model,
+        ];
     }
 }
