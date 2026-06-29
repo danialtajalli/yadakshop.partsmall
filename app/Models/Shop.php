@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Shop extends Model
 {
+    use Searchable;
+
     protected $fillable = [
         'name',
         'secondary_name',
@@ -44,6 +47,29 @@ class Shop extends Model
             'order' => 'integer',
             'off' => 'boolean',
         ];
+    }
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing(['partsCategories', 'companies', 'state']);
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'secondary_name' => $this->secondary_name,
+            'slug' => $this->slug,
+            'description' => strip_tags((string) $this->description),
+            'person_responsible_name' => $this->person_responsible_name,
+            'address' => $this->address,
+            'state_name' => $this->state?->name,
+            'parts_categories' => $this->partsCategories->pluck('name')->all(),
+            'companies' => $this->companies->pluck('name')->all(),
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'shops';
     }
 
     protected static function booted(): void

@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class RepairShop extends Model
 {
+    use Searchable;
+
     protected $fillable = [
         'name',
         'slug',
@@ -27,6 +30,28 @@ class RepairShop extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
         ];
+    }
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing(['repairCategories', 'state']);
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'responsible_person_name' => $this->responsible_person_name,
+            'work_description' => strip_tags((string) $this->work_description),
+            'description' => strip_tags((string) $this->description),
+            'address' => $this->address,
+            'state_name' => $this->state?->name,
+            'repair_categories' => $this->repairCategories->pluck('name')->all(),
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'repair_shops';
     }
 
     public function state(): BelongsTo

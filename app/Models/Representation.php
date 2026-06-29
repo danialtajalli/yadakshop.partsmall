@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 class Representation extends Model
 {
+    use Searchable;
+
     protected $fillable = [
         'name',
         'slug',
@@ -49,6 +52,30 @@ class Representation extends Model
             'nearby_bus_distance' => 'float',
             'show_under_product' => 'boolean',
         ];
+    }
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing(['company', 'state', 'city']);
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'responsible_person_name' => $this->responsible_person_name,
+            'work_fields' => strip_tags((string) $this->work_fields),
+            'service_type' => $this->service_type,
+            'description' => strip_tags((string) $this->description),
+            'address' => $this->address,
+            'company_name' => $this->company?->name,
+            'state_name' => $this->state?->name,
+            'city_name' => $this->city?->name,
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'representations';
     }
 
     public function company(): BelongsTo

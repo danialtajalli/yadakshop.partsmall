@@ -15,10 +15,12 @@ class SearchController extends Controller
     public function __invoke(Request $request): View
     {
         $query = $request->string('q')->trim()->toString();
+        $results = $this->searchService->search($query);
 
         return view('search.index', [
             'query' => $query,
-            'parts' => $this->searchService->searchParts($query),
+            'groups' => $results['groups'],
+            'total' => $results['total'],
             'title' => $query === '' ? 'جستجو' : 'جستجوی '.$query,
         ]);
     }

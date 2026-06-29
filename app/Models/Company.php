@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Company extends Model
 {
+    use Searchable;
+
     protected $fillable = [
         'name',
         'description',
@@ -21,6 +24,25 @@ class Company extends Model
         return [
             'wage_strike' => 'float',
         ];
+    }
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing('cars');
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'country' => $this->country,
+            'description' => strip_tags((string) $this->description),
+            'cars' => $this->cars->pluck('name')->all(),
+        ];
+    }
+
+    public function searchableAs(): string
+    {
+        return 'companies';
     }
 
     public function cars(): HasMany
