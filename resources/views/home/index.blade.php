@@ -14,6 +14,12 @@
         </div>
     </div>
 
+    <x-ui.global-search-bar
+        id="home-global-search"
+        class="mb-10"
+        placeholder="جستجو در پارتس‌مال..."
+    />
+
     <x-home.entity-grid
         title="فروشگاه‌های لوازم یدکی"
         description="فروشگاه‌های معتبر قطعات خودرو"

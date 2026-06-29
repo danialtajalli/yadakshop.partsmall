@@ -31,8 +31,9 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
-        $response->assertSee('id="header-meilisearch-parts-search"', false);
-        $response->assertSee('id="mobile-meilisearch-parts-search"', false);
+        $response->assertSee('id="home-global-search"', false);
+        $response->assertDontSee('id="header-meilisearch-parts-search"', false);
+        $response->assertDontSee('id="mobile-meilisearch-parts-search"', false);
         $response->assertSee('action="'.route('search.index').'"', false);
     }
 

@@ -49,7 +49,7 @@ class PageTest extends TestCase
         Page::create(['title' => 'درباره ما', 'slug' => 'about', 'content' => 'محتوا']);
         Page::create(['title' => 'تماس با ما', 'slug' => 'contact', 'content' => 'محتوا']);
 
-        $this->get(route('home'))
+        $this->get(route('page.show', 'about'))
             ->assertOk()
             ->assertSee('data-mobile-menu-toggle', false)
             ->assertSee('id="mobile-menu"', false)

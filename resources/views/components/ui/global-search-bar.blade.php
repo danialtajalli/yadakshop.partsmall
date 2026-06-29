@@ -1,7 +1,7 @@
 @props([
     'action' => route('search.index'),
     'id' => 'global-search',
-    'placeholder' => 'جستجوی قطعه در پارتس‌مال...',
+    'placeholder' => 'جستجوی در پارتس‌مال...',
 ])
 
 <form method="GET" action="{{ $action }}" {{ $attributes }}>
