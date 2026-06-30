@@ -14,7 +14,6 @@
     >
         <span class="min-w-0">
             <span class="block truncate font-bold text-ink">{{ $repairLocator['category']->name }}</span>
-            <span class="mt-0.5 block truncate text-xs text-ink-muted">{{ $repairLocator['carName'] }}</span>
         </span>
         <span class="shrink-0 rounded-full bg-brand px-3 py-1.5 text-xs font-bold text-white transition group-hover:bg-brand-dark">
             انتخاب محدوده

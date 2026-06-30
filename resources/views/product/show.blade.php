@@ -60,10 +60,10 @@
 
                 <div class="grid gap-4 p-4 md:grid-cols-2">
                     @if ($repairLocators)
-                        <div>
+                        <div class="rounded-2xl border border-line bg-surface/50 p-3">
                             <div class="mb-2 flex items-center justify-between gap-3">
-                                <h3 class="text-sm font-bold text-ink">تعمیرگاه‌های مرتبط</h3>
-                                <span class="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand-dark">{{ count($repairLocators) }} مسیر</span>
+                                <h3 class="text-sm font-bold text-ink/80">تعمیرگاه‌های مرتبط</h3>
+                                <span class="text-[11px] font-medium text-ink-muted/70">{{ count($repairLocators) }} مسیر</span>
                             </div>
                             <div class="grid gap-2">
                                 @foreach ($repairLocators as $repairLocator)
