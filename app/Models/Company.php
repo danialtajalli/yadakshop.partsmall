@@ -36,7 +36,6 @@ class Company extends Model
             'slug' => $this->slug,
             'country' => $this->country,
             'description' => strip_tags((string) $this->description),
-            'cars' => $this->cars->pluck('name')->all(),
         ];
     }
 

@@ -107,7 +107,7 @@ class SearchService
         return [
             'key' => 'stores',
             'label' => 'فروشگاه‌ها و نمایندگی‌ها',
-            'total' => $shops->total() + $representations->total(),
+            'total' => $items->count(),
             'items' => $items,
         ];
     }
@@ -141,7 +141,7 @@ class SearchService
         return [
             'key' => $key,
             'label' => $label,
-            'total' => $results->total(),
+            'total' => $results->count(),
             'items' => collect($results->items())->map(fn (Model $result): array => $this->mapResult($result, $key)),
         ];
     }
@@ -152,7 +152,7 @@ class SearchService
     private function vehicleGroup(string $query): array
     {
         $companies = Company::search($query)->query(fn ($builder) => $builder->with('cars'))->paginate(self::PER_GROUP);
-        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company'])->where('name', 'like', '%'.$query.'%')->orWhere('slug', 'like', '%'.$query.'%'))->paginate(self::PER_GROUP);
+        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company']))->paginate(self::PER_GROUP);
         $items = collect($companies->items())
             ->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
             ->concat(collect($cars->items())->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
@@ -164,7 +164,7 @@ class SearchService
         return [
             'key' => 'vehicles',
             'label' => 'خودرو',
-            'total' => $companies->total() + $cars->total(),
+            'total' => $companies->count() + $cars->count(),
             'items' => $items,
         ];
     }

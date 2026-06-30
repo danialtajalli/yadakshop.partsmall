@@ -26,7 +26,6 @@ class Car extends Model
             'id' => (int) $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'description' => strip_tags((string) $this->description),
             'company_id' => $this->company_id,
             'company_name' => $this->company?->name,
             'models' => $this->models->pluck('name')->all(),
