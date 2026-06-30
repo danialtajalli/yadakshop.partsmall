@@ -55,7 +55,8 @@ class ProductShowTest extends TestCase
         ]));
 
         $response->assertOk();
-        $response->assertSee('مشاهده خدمات جلوبندی سانتافه در محدوده شما', false);
+        $response->assertSee('مشاهده تعمیرگاه‌ها و اجرت‌ها', false);
+        $response->assertSee('انتخاب محدوده', false);
         $response->assertSee('name="specialization_id"', false);
         $response->assertSee('value="'.$repairCategory->id.'"', false);
         $response->assertSee(route('repair-shops.index'), false);
