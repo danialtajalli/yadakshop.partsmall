@@ -11,14 +11,15 @@
                 description="فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو — همه در یکجا"
                 heading="h1"
             />
+
+            <x-ui.global-search-bar
+                id="home-global-search"
+                class="mx-auto mt-7 max-w-3xl px-1 sm:px-6"
+                placeholder="جستجو در پارتس‌مال..."
+                variant="hero"
+            />
         </div>
     </div>
-
-    <x-ui.global-search-bar
-        id="home-global-search"
-        class="mb-10"
-        placeholder="جستجو در پارتس‌مال..."
-    />
 
     <x-home.entity-grid
         title="فروشگاه‌های لوازم یدکی"
