@@ -6,42 +6,27 @@
     $cityId = 'repair-locator-city-'.$repairLocator['category']->id;
 @endphp
 
-<article class="group bg-white transition hover:bg-surface/60">
-    <div class="flex flex-col gap-3 px-5 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div class="flex min-w-0 items-center gap-3">
-            <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand">
-                <svg class="size-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                </svg>
-            </div>
-
-            <div class="min-w-0">
-                <p class="text-sm font-semibold leading-5 text-ink">
-                    {{ $repairLocator['category']->name }} {{ $repairLocator['carName'] }}
-                </p>
-                <p class="mt-0.5 text-xs text-ink-muted">انتخاب استان و شهر</p>
-            </div>
-        </div>
-
-        <button
-            type="button"
-            class="ps-btn-primary shrink-0 px-3 py-2 text-xs sm:min-w-36"
-            onclick="document.getElementById('{{ $modalId }}').showModal()"
-        >
-            {{ $repairLocator['buttonLabel'] }}
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m7 7-7-7 7-7" />
-            </svg>
-        </button>
-    </div>
+<article>
+    <button
+        type="button"
+        class="group flex w-full items-center justify-between gap-3 rounded-2xl border border-line bg-white px-3.5 py-3 text-start text-sm shadow-sm transition hover:border-brand/30 hover:bg-brand-soft/30 hover:shadow-card"
+        onclick="document.getElementById('{{ $modalId }}').showModal()"
+    >
+        <span class="min-w-0">
+            <span class="block truncate font-bold text-ink">{{ $repairLocator['category']->name }}</span>
+            <span class="mt-0.5 block truncate text-xs text-ink-muted">{{ $repairLocator['carName'] }}</span>
+        </span>
+        <span class="shrink-0 rounded-full bg-brand px-3 py-1.5 text-xs font-bold text-white transition group-hover:bg-brand-dark">
+            انتخاب محدوده
+        </span>
+    </button>
 </article>
 
 <dialog
     id="{{ $modalId }}"
     class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
 >
-    <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-4">
+    <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-4">
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
                 <p class="text-xs font-semibold text-brand">انتخاب محدوده خدمات</p>
@@ -112,7 +97,7 @@
         </div>
 
         <div class="flex flex-wrap gap-3 pt-1">
-            <button type="submit" class="ps-btn-primary flex-1">مشاهده تعمیرگاه‌ها</button>
+            <button type="submit" class="ps-btn-primary flex-1">نمایش تعمیرگاه‌ها</button>
             <button
                 type="button"
                 class="ps-btn-secondary"

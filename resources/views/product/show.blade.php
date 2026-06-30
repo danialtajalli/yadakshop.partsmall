@@ -3,104 +3,109 @@
 @section('title', $title)
 
 @section('content')
-    {{-- Hero + repair cards beside CTA sidebar --}}
-    <div class="mb-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
-        <div class="space-y-8 lg:col-span-8">
-            <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-                <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-                    <x-site.breadcrumb :items="$breadcrumbs" />
+    {{-- Title section --}}
+    <div class="mb-5 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
+            <x-site.breadcrumb :items="$breadcrumbs" />
 
-                    @if ($shops->isNotEmpty())
-                        <a
-                            href="#shops"
-                            data-shops-jump
-                            class="ps-shops-jump mb-5 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
-                        >
-                            <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
-                                <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36a1.125 1.125 0 0 1-1.009-.69L.5 9.75A1.125 1.125 0 0 1 1.509 8.5H5.25m8.25 0V5.625A2.625 2.625 0 0 0 11.625 3h-3.75A2.625 2.625 0 0 0 5.25 5.625V8.5m8.25 0H5.25" />
-                                    </svg>
-                                </span>
-                                <span>
-                                    <span class="block font-semibold text-brand-dark">{{ $shops->count() }} فروشگاه مرتبط</span>
-                                    <span class="block text-xs text-ink-muted">برای خرید {{ $title }} کلیک کنید</span>
-                                </span>
-                            </span>
-                            <span class="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand">
-                                مشاهده
-                                <svg class="ps-shops-jump-chevron size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </span>
-                        </a>
+            @if ($shops->isNotEmpty())
+                <a
+                    href="#shops"
+                    data-shops-jump
+                    class="ps-shops-jump mb-5 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
+                >
+                    <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
+                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36a1.125 1.125 0 0 1-1.009-.69L.5 9.75A1.125 1.125 0 0 1 1.509 8.5H5.25m8.25 0V5.625A2.625 2.625 0 0 0 11.625 3h-3.75A2.625 2.625 0 0 0 5.25 5.625V8.5m8.25 0H5.25" />
+                            </svg>
+                        </span>
+                        <span>
+                            <span class="block font-semibold text-brand-dark">{{ $shops->count() }} فروشگاه مرتبط</span>
+                            <span class="block text-xs text-ink-muted">برای خرید {{ $title }} کلیک کنید</span>
+                        </span>
+                    </span>
+                    <span class="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand">
+                        مشاهده
+                        <svg class="ps-shops-jump-chevron size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </span>
+                </a>
+            @endif
+
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    @if ($part->partsCategory)
+                        <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                            {{ $part->partsCategory->name }}
+                        </span>
                     @endif
-
-                    <div class="flex flex-wrap items-end justify-between gap-4">
-                        <div>
-                            @if ($part->partsCategory)
-                                <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
-                                    {{ $part->partsCategory->name }}
-                                </span>
-                            @endif
-                            <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $title }}</h1>
-                        </div>
-                    </div>
-
+                    <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $title }}</h1>
                 </div>
             </div>
-            @if ($repairLocators)
-                <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-                    <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-5 sm:px-6">
-                        <x-ui.section-heading
-                            class="mb-0"
-                            label="تعمیرگاه نزدیک شما"
-                            title="تعمیرگاه‌های مرتبط"
-                            description="محدوده خود را انتخاب کنید و تعمیرگاه‌های تخصصی همین قطعه را ببینید."
-                        />
-                    </div>
-                    <div class="divide-y divide-line">
-                        @foreach ($repairLocators as $repairLocator)
-                            <x-product.repair-locator :repair-locator="$repairLocator" />
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-            @if (count($repairCards) > 0)
-                <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-                    <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-5 sm:px-6">
-                        <x-ui.section-heading
-                            class="mb-0"
-                            label="راهنما"
-                            title="برآورد اجرت"
-                            description="هزینه تقریبی خدمات مربوط به این قطعه"
-                        />
-                    </div>
-                    <div class="divide-y divide-line">
-                        @foreach ($repairCards as $wage_name => $wage)
-                            <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm sm:px-6">
-                                <div class="min-w-0">
-                                    <p class="font-medium text-ink">اجرت {{ $wage_name }}</p>
-                                </div>
-                                <div class="shrink-0 text-start sm:text-end">
-                                    @if ($wage['cost'] !== null)
-                                        <p class="tabular-nums font-semibold text-ink">
-                                            {{ number_format($wage['cost']) }}
-                                            <span class="text-xs font-medium text-ink-muted">تومان</span>
-                                        </p>
-                                    @else
-                                        <p class="text-xs text-ink-muted">نامشخص</p>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
         </div>
+    </div>
 
-        <div class="mt-6 lg:col-span-4 lg:mt-0">
-            <div class="lg:sticky lg:top-24">
+    {{-- Service cards beside Telegram CTA --}}
+    <div class="mb-10 grid gap-5 lg:grid-cols-12 lg:items-stretch">
+        @if ($repairLocators || count($repairCards) > 0)
+            <section class="overflow-hidden rounded-3xl border border-line bg-white shadow-card lg:col-span-7">
+                <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-5">
+                    <p class="text-xs font-bold text-brand">خدمات تعمیر</p>
+                    <h2 class="mt-1 text-lg font-black text-ink">مشاهده تعمیرگاه‌ها و اجرت‌ها</h2>
+                    <p class="mt-1.5 text-xs leading-6 text-ink-muted">برای همین قطعه، مسیرهای تعمیر و حدود اجرت را کنار هم ببینید.</p>
+                </div>
+
+                <div class="grid gap-4 p-4 md:grid-cols-2">
+                    @if ($repairLocators)
+                        <div>
+                            <div class="mb-2 flex items-center justify-between gap-3">
+                                <h3 class="text-sm font-bold text-ink">تعمیرگاه‌های مرتبط</h3>
+                                <span class="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand-dark">{{ count($repairLocators) }} مسیر</span>
+                            </div>
+                            <div class="grid gap-2">
+                                @foreach ($repairLocators as $repairLocator)
+                                    <x-product.repair-locator :repair-locator="$repairLocator" />
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (count($repairCards) > 0)
+                        <div class="rounded-2xl border border-line bg-surface/50 p-3">
+                            <div class="mb-2 flex items-center justify-between gap-3">
+                                <h3 class="text-sm font-bold text-ink">برآورد اجرت</h3>
+                                <span class="text-[11px] font-medium text-ink-muted">حدودی</span>
+                            </div>
+
+                            <div class="grid gap-2">
+                                @foreach ($repairCards as $wage_name => $wage)
+                                    <div class="rounded-xl border border-line bg-white px-3 py-2.5">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <p class="min-w-0 text-xs font-semibold leading-5 text-ink">اجرت {{ $wage_name }}</p>
+                                            <div class="shrink-0 text-start">
+                                                @if ($wage['cost'] !== null)
+                                                    <p class="text-sm font-black tabular-nums text-ink">
+                                                        {{ number_format($wage['cost']) }}
+                                                        <span class="text-[10px] font-medium text-ink-muted">تومان</span>
+                                                    </p>
+                                                @else
+                                                    <p class="text-xs text-ink-muted">نامشخص</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
+
+        <div class="{{ $repairLocators || count($repairCards) > 0 ? 'lg:col-span-5' : 'lg:col-span-4' }}">
+            <div class="h-full">
                 <x-site.cta-sidebar
                     :telegram-title="'به گروه تلگرام ' . $company->name . ' ' . $car->name . ' سواران بپیوندید'"
                     :telegram-url="'https://t.me/' . $company->slug . '_saravan_partsmall'"
@@ -112,9 +117,8 @@
     {{-- Shops --}}
     <section id="shops" class="mb-12 scroll-mt-20 ps-shops-section">
         <x-ui.section-heading
-            label="فروشندگان"
-            title="فروشگاه‌های مرتبط"
-            description="فروشگاه‌هایی که این قطعه یا دسته آن را عرضه می‌کنند"
+            title="لیست فروشگاه ها"
+            description="فروشگاه های زیر این قطعه را موجود دارند"
         />
 
         @if ($shops->isNotEmpty())
