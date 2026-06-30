@@ -3,13 +3,13 @@
 @section('title', $title)
 
 @section('content')
+    <x-site.breadcrumb :items="[
+        ['label' => 'خانه', 'url' => route('home')],
+        ['label' => 'جستجو', 'active' => true],
+    ]" />
+
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            <x-site.breadcrumb :items="[
-                ['label' => 'خانه', 'url' => route('home')],
-                ['label' => 'جستجو', 'active' => true],
-            ]" />
-
             <x-ui.section-heading
                 label="جستجو"
                 :title="$query ? 'نتایج جستجو برای '.$query : 'جستجو در پارتس‌مال'"

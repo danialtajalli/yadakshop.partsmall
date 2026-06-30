@@ -47,7 +47,7 @@
         <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
     @endpush
 
-    <nav {{ $attributes->merge(['class' => 'mb-4 text-sm text-ink-muted']) }} aria-label="مسیر صفحه">
+    <nav {{ $attributes->merge(['class' => 'mb-4 text-xs font-medium text-ink-muted sm:text-sm']) }} aria-label="مسیر صفحه">
         <ol class="m-0 flex list-none flex-wrap items-center gap-1.5 p-0">
             @foreach ($crumbs as $index => $item)
                 @php
@@ -66,7 +66,7 @@
                         <a
                             href="{{ $href }}"
                             @class([
-                                'rounded-md px-1.5 py-0.5 transition hover:bg-brand-soft hover:text-brand',
+                                'transition hover:text-brand',
                                 'font-medium text-ink' => $isEmphasized || $isActive || $isLast,
                             ])
                             @if ($isLast) aria-current="page" @endif
@@ -76,8 +76,7 @@
                     @else
                         <span
                             @class([
-                                'px-1.5 py-0.5',
-                                'rounded-md font-medium text-ink' => $isEmphasized || $isActive || $isLast,
+                                'font-medium text-ink' => $isEmphasized || $isActive || $isLast,
                             ])
                             @if ($isLast) aria-current="page" @endif
                         >{{ $item['label'] }}</span>

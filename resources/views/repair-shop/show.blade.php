@@ -3,6 +3,12 @@
 @section('title', $title)
 
 @section('content')
+    <x-site.breadcrumb :items="[
+        ['label' => 'خانه', 'url' => url('/')],
+        ['label' => 'تعمیرگاه‌ها', 'url' => route('repair-shops.index')],
+        ['label' => $repairShop->name, 'active' => true],
+    ]" />
+
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($repairShop->cover ?? null)
             <div class="h-40 w-full overflow-hidden border-b border-line sm:h-52">
@@ -11,12 +17,6 @@
         @endif
 
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            <x-site.breadcrumb :items="[
-                ['label' => 'خانه', 'url' => url('/')],
-                ['label' => 'تعمیرگاه‌ها', 'url' => route('repair-shops.index')],
-                ['label' => $repairShop->name, 'active' => true],
-            ]" />
-
             <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
                 <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-2xl font-bold text-brand-dark ring-1 ring-line sm:size-24">
                     @if ($repairShop->logo ?? null)
