@@ -52,20 +52,20 @@
     {{-- Service cards beside Telegram CTA --}}
     <div class="mb-10 grid gap-5 lg:grid-cols-12 lg:items-stretch">
         @if ($repairLocators || count($repairCards) > 0)
-            <section class="overflow-hidden rounded-3xl border border-line bg-white shadow-card lg:col-span-7">
+            <section class="min-w-0 overflow-hidden rounded-3xl border border-line bg-white shadow-card lg:col-span-8">
                 <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-5">
                     <h2 class="mt-1 text-lg font-black text-ink/80">مشاهده تعمیرگاه‌ها و اجرت‌ها</h2>
                     <p class="mt-1.5 text-xs leading-6 text-ink-muted/70">برای همین قطعه، مسیرهای تعمیر و حدود اجرت را کنار هم ببینید.</p>
                 </div>
 
-                <div class="grid gap-4 p-4 md:grid-cols-2">
+                <div class="grid min-w-0 gap-4 p-4 md:grid-cols-2">
                     @if ($repairLocators)
-                        <div class="rounded-2xl border border-line bg-surface/50 p-3">
+                        <div class="min-w-0 rounded-2xl border border-line bg-surface/50 p-3">
                             <div class="mb-2 flex items-center justify-between gap-3">
                                 <h3 class="text-sm font-bold text-ink/80">تعمیرگاه‌های مرتبط</h3>
                                 <span class="text-[11px] font-medium text-ink-muted/70">{{ count($repairLocators) }} مسیر</span>
                             </div>
-                            <div class="grid gap-2">
+                            <div class="grid min-w-0 gap-2">
                                 @foreach ($repairLocators as $repairLocator)
                                     <x-product.repair-locator :repair-locator="$repairLocator" />
                                 @endforeach
@@ -74,7 +74,7 @@
                     @endif
 
                     @if (count($repairCards) > 0)
-                        <div class="rounded-2xl border border-line bg-surface/50 p-3">
+                        <div class="min-w-0 rounded-2xl border border-line bg-surface/50 p-3">
                             <div class="mb-2 flex items-center justify-between gap-3">
                                 <h3 class="text-sm font-bold text-ink/80">برآورد اجرت</h3>
                                 <span class="text-[11px] font-medium text-ink-muted/70">حدودی</span>
@@ -105,7 +105,7 @@
             </section>
         @endif
 
-        <div class="{{ $repairLocators || count($repairCards) > 0 ? 'lg:col-span-5' : 'lg:col-span-4' }}">
+        <div class="min-w-0 lg:col-span-4">
             <div class="h-full">
                 <x-site.cta-sidebar
                     :telegram-title="'به گروه تلگرام ' . $company->name . ' ' . $car->name . ' سواران بپیوندید'"
