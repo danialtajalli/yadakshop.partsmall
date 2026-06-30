@@ -38,8 +38,13 @@
                 </span>
 
                 <span class="min-w-0">
-                    <span class="line-clamp-2 block text-sm font-semibold leading-5 text-ink">
-                        {{ $item->name }}
+                    <span class="flex min-w-0 flex-wrap items-center gap-1.5">
+                        <span class="line-clamp-2 text-sm font-semibold leading-5 text-ink">
+                            {{ $item->name }}
+                        </span>
+                        @if ($item->verified ?? false)
+                            <x-shop.trusted-badge compact label="مورد اعتماد" />
+                        @endif
                     </span>
                 </span>
             </a>

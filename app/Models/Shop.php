@@ -18,6 +18,7 @@ class Shop extends Model
         'secondary_name',
         'slug',
         'confirmed',
+        'verified',
         'show_under_product',
         'description',
         'person_responsible_name',
@@ -41,6 +42,7 @@ class Shop extends Model
     {
         return [
             'confirmed' => 'boolean',
+            'verified' => 'boolean',
             'show_under_product' => 'boolean',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',

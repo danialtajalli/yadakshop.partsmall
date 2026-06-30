@@ -27,7 +27,12 @@
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $shop->name }}</h1>
+                    <div class="flex min-w-0 flex-wrap items-center gap-2">
+                        <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $shop->name }}</h1>
+                        @if ($shop->verified ?? false)
+                            <x-shop.trusted-badge />
+                        @endif
+                    </div>
 
                     @if ($shop->secondary_name)
                         <p class="mt-1 text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
