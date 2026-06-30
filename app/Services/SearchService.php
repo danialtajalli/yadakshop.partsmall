@@ -79,7 +79,7 @@ class SearchService
             $this->storeGroup($query),
             $this->buildGroup('repair_shops', 'تعمیرگاه‌ها', RepairShop::class, $query, ['state', 'repairCategories'], searchableFields: ['name']),
             $this->vehicleGroup($query),
-            $this->buildGroup('parts', 'قطعات', Part::class, $query, ['partsCategory']),
+            $this->buildGroup('parts', 'قطعات', Part::class, $query, ['partsCategory'], ['name', 'description']),
         ])->filter(fn (?array $group): bool => $group !== null && $group['total'] > 0)->values();
 
         return $groups;
@@ -152,7 +152,7 @@ class SearchService
     private function vehicleGroup(string $query): array
     {
         $companies = Company::search($query)->query(fn ($builder) => $builder->with('cars'))->paginate(self::PER_GROUP);
-        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company', 'models']))->paginate(self::PER_GROUP);
+        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company'])->where('name', 'like', '%'.$query.'%')->orWhere('slug', 'like', '%'.$query.'%'))->paginate(self::PER_GROUP);
         $items = collect($companies->items())
             ->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
             ->concat(collect($cars->items())->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
@@ -195,25 +195,10 @@ class SearchService
                 $this->normalizer->tokens($car->company?->name.' '.$car->slug),
             ]));
 
-        $models = CarModel::query()
-            ->with(['cars.company', 'category'])
-            ->get()
-            ->filter(function (CarModel $model) use ($queryTokens): bool {
-                if (! $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($model->name))) {
-                    return false;
-                }
-
-                return $model->cars->contains(function (Car $car) use ($queryTokens): bool {
-                    return $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($car->company?->name))
-                        || $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($car->name))
-                        || $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($car->company?->name.' '.$car->name));
-                });
-            });
-
+        //TODO: Start from here
         return $companies
             ->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
             ->concat($cars->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
-            ->concat($models->map(fn (CarModel $model): array => $this->mapResult($model, 'car_models')))
             ->values();
     }
 
@@ -379,7 +364,7 @@ class SearchService
                     : CatalogUrls::companies(),
                 'type' => 'خودرو',
             ],
-            $result instanceof CarModel => $this->mapCarModel($result),
+            // $result instanceof CarModel => $this->mapCarModel($result),
             default => [
                 'title' => (string) ($result->getAttribute('name') ?? ''),
                 'subtitle' => null,
@@ -387,24 +372,6 @@ class SearchService
                 'type' => $key,
             ],
         };
-    }
-
-    /**
-     * @return array{title: string, subtitle: ?string, url: string, type: string}
-     */
-    private function mapCarModel(CarModel $model): array
-    {
-        $car = $model->cars->sortBy('name')->first();
-        $company = $car?->company;
-
-        return [
-            'title' => CarModelLabel::display($model),
-            'subtitle' => collect([$company?->name, $car?->name, $model->category?->name])->filter()->implode(' / ') ?: null,
-            'url' => $company && $car
-                ? CatalogUrls::parts($company->slug, $car->slug, $model->slug)
-                : CatalogUrls::companies(),
-            'type' => 'مدل',
-        ];
     }
 
     /**
