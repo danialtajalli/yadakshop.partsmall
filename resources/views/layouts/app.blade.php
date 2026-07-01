@@ -135,6 +135,14 @@
         <div class="ps-container min-w-0">
             @yield('content')
         </div>
+
+        @stack('full-bleed')
+
+        @hasSection('content-tail')
+            <div class="ps-container min-w-0">
+                @yield('content-tail')
+            </div>
+        @endif
     </main>
 
     @include('layouts.partials.footer')

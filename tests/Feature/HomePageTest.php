@@ -82,6 +82,8 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه آریا', false);
         $response->assertSee('نمایندگی آسان', false);
         $response->assertSee('شمع', false);
+        $response->assertSee('دیده شوید، اعتماد بسازید، مشتری جذب کنید', false);
+        $response->assertSee('همین حالا ثبت‌نام کنید', false);
         $response->assertSee(route('shops.index'), false);
         $response->assertSee(route('repair-shops.index'), false);
         $response->assertSee(route('representations.index'), false);

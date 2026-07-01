@@ -47,7 +47,13 @@
         profile-route="representation.profile"
         empty-message="هنوز نمایندگی‌ای ثبت نشده است."
     />
+@endsection
 
+@push('full-bleed')
+    <x-home.signup-banner />
+@endpush
+
+@section('content-tail')
     <section id="companies" class="scroll-mt-24 mb-12">
         <x-ui.section-heading
             class="mb-6"
