@@ -19,8 +19,13 @@
                     title="{{ $phone->type->label() }}"
                     aria-label="{{ $phone->type->label() }}"
                 >
-                <span class="text-sm font-medium text-ink">{{ $phone->type->label() }}</span>
-                <p>{{ $phone->phone_number }}</p>
+                    <span class="min-w-0 flex-1">
+                        <span class="block font-medium text-ink">{{ $phone->type->label() }}</span>
+                        <span class="mt-0.5 block tabular-nums text-ink-muted" dir="ltr">{{ $phone->phone_number }}</span>
+                    </span>
+                    <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base text-brand">
+                        <i class="{{ $phone->type->icon() }}" aria-hidden="true"></i>
+                    </span>
                 </a>
             </li>
         @endforeach
@@ -34,8 +39,13 @@
                     title="{{ $contact['label'] }}"
                     aria-label="{{ $contact['label'] }}"
                 >
-                <span class="text-sm font-medium text-ink">{{ $contact['label'] }}</span>
-                    <i class="{{ ContactIcon::forKind($contact['kind'] ?? 'phone') }}" aria-hidden="true"></i>
+                    <span class="min-w-0 flex-1">
+                        <span class="block font-medium text-ink">{{ $contact['label'] }}</span>
+                        <span class="mt-0.5 block tabular-nums text-ink-muted" dir="ltr">{{ $contact['value'] }}</span>
+                    </span>
+                    <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base text-brand">
+                        <i class="{{ ContactIcon::forKind($contact['kind'] ?? 'phone') }}" aria-hidden="true"></i>
+                    </span>
                 </a>
             </li>
         @endforeach

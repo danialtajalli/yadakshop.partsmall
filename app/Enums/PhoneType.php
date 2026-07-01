@@ -38,7 +38,7 @@ enum PhoneType: string
             self::Land => 'fa-solid fa-phone',
             self::Telegram => 'fa-brands fa-telegram',
             self::Whatsapp => 'fa-brands fa-whatsapp',
-            default => 'fa-solid fa-phone',
+            default => 'fa-solid fa-share-nodes',
         };
     }
 

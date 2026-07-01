@@ -29,6 +29,7 @@ class ShopProfileTest extends TestCase
         $response->assertSee('یدک شاپ', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('02133979370', false);
+        $response->assertSee('fa-solid fa-phone', false);
         $response->assertSee('https://t.me/yadakshop', false);
         $response->assertSee('telegram', false);
         $response->assertSee('نظرات کاربران', false);
