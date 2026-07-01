@@ -13,7 +13,7 @@
                     <a
                         href="#shops"
                         data-shops-jump
-                        class="ps-shops-jump flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition duration-200 hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
+                        class="ps-shops-jump w-1/2 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition duration-200 hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
                     >
                         <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
                             <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
@@ -320,6 +320,7 @@
                 (function () {
                     const link = document.querySelector('[data-shops-jump]');
                     const jumpAnchor = document.querySelector('[data-shops-jump-anchor]');
+                    const titleSection = document.querySelector('[data-product-title-section]');
                     const target = document.getElementById('shops');
                     const shopsList = document.querySelector('[data-shops-list]');
                     const loadMore = document.querySelector('[data-shops-load-more]');
@@ -333,9 +334,24 @@
                     const headerOffset = 80;
                     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                     const mobileMedia = window.matchMedia('(max-width: 639px)');
-                    const fixedClasses = ['fixed', 'inset-x-4', 'top-20', 'z-30', 'mx-auto', 'max-w-2xl', 'rounded-2xl', 'bg-white/95', 'shadow-card', 'backdrop-blur-md'];
+                    const fixedClasses = ['fixed', 'top-20', 'z-30', 'rounded-2xl', 'bg-white/95', 'shadow-card', 'backdrop-blur-md'];
                     const inlineClasses = ['mb-5', 'rounded-xl', 'bg-brand-soft'];
                     let shopsLazyInitialized = false;
+
+                    const updateFixedGeometry = function (shouldFix) {
+                        if (!shouldFix || !titleSection) {
+                            link.style.width = '';
+                            link.style.left = '';
+
+                            return;
+                        }
+
+                        const sectionRect = titleSection.getBoundingClientRect();
+                        const halfWidth = sectionRect.width / 2;
+
+                        link.style.width = halfWidth + 'px';
+                        link.style.left = (sectionRect.left + (sectionRect.width - halfWidth) / 2) + 'px';
+                    };
 
                     const setFixed = function (shouldFix) {
                         fixedClasses.forEach(function (className) {
@@ -345,6 +361,8 @@
                         inlineClasses.forEach(function (className) {
                             link.classList.toggle(className, !shouldFix);
                         });
+
+                        updateFixedGeometry(shouldFix);
                     };
 
                     const setJumpVisibility = function () {
@@ -354,12 +372,15 @@
                         const middleBandBottom = window.innerHeight * 0.65;
                         const isOriginalButtonAboveViewport = anchorRect.bottom < 0;
                         const isShopsInMiddle = rect.top <= middleBandBottom && rect.bottom >= middleBandTop;
-                        const shouldFix = isOriginalButtonAboveViewport && !isShopsInMiddle;
+                        const isMobile = mobileMedia.matches;
+                        const shouldFix = isMobile && isOriginalButtonAboveViewport && !isShopsInMiddle;
 
                         setFixed(shouldFix);
-                        link.classList.toggle('opacity-0', isShopsInMiddle);
-                        link.classList.toggle('pointer-events-none', isShopsInMiddle);
-                        link.setAttribute('aria-hidden', String(isShopsInMiddle));
+
+                        const hideFixedLink = isMobile && shouldFix && isShopsInMiddle;
+                        link.classList.toggle('opacity-0', hideFixedLink);
+                        link.classList.toggle('pointer-events-none', hideFixedLink);
+                        link.setAttribute('aria-hidden', String(hideFixedLink));
                     };
 
                     link.addEventListener('click', function (event) {
@@ -396,6 +417,7 @@
                     setJumpVisibility();
                     window.addEventListener('scroll', setJumpVisibility, { passive: true });
                     window.addEventListener('resize', setJumpVisibility);
+                    mobileMedia.addEventListener?.('change', setJumpVisibility);
 
                     const initializeMobileLazyLoading = function () {
                         if (shopsLazyInitialized || !mobileMedia.matches || !shopsList || !loadMore) {
