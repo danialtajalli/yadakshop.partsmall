@@ -24,6 +24,7 @@ class ProductService
      *     part: Part,
      *     repairCards: list<array{type: string, cost: ?int, wage_name: ?string}>,
      *     shops: Collection<int, Shop>,
+     *     shopFilterStates: Collection<int, State>,
      *     title: string,
      *     breadcrumbs: list<array<string, mixed>>,
      *     repairLocator: ?array{
@@ -57,6 +58,7 @@ class ProductService
             'part' => $part,
             'repairCards' => $repairCards,
             'shops' => $shops,
+            'shopFilterStates' => $this->shopFilterStates($shops),
             'title' => $title,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $company,
@@ -215,5 +217,17 @@ class ProductService
         }
 
         return $shops;
+    }
+
+    /** @return Collection<int, State> */
+    private function shopFilterStates(Collection $shops): Collection
+    {
+        return $shops
+            ->filter(fn (Shop $shop): bool => $shop->state_id !== null)
+            ->map(fn (Shop $shop) => $shop->state)
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
     }
 }

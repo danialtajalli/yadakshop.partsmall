@@ -35,7 +35,7 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'title', 'breadcrumbs', 'repairLocators'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'title', 'breadcrumbs', 'repairLocators'],
             array_keys($data),
         );
         $this->assertNull($data['repairLocators']);

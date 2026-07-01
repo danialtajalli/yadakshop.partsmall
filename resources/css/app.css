@@ -271,3 +271,7 @@
         outline-offset: 12px;
     }
 }
+
+[data-shop-filter-hidden] {
+    display: none !important;
+}

@@ -99,26 +99,84 @@
 
     {{-- Shops --}}
     <section id="shops" class="mb-12 scroll-mt-20 ps-shops-section">
-        <x-ui.section-heading
-            title="لیست فروشگاه ها"
-            description="فروشگاه های زیر این قطعه را موجود دارند"
-        />
+        <div class="mb-6">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div class="min-w-0">
+                    <h2 class="ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">لیست فروشگاه ها</h2>
+                    <p class="mt-1.5 text-sm text-ink-muted">فروشگاه های زیر این قطعه را موجود دارند</p>
+                </div>
+
+                @if ($shops->isNotEmpty())
+                    <div class="relative shrink-0" data-shops-filter>
+                        <button
+                            type="button"
+                            class="ps-btn-secondary inline-flex items-center gap-2"
+                            data-shops-filter-toggle
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-controls="shops-filter-menu"
+                        >
+                            فیلتر
+                            <svg class="size-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div
+                            id="shops-filter-menu"
+                            data-shops-filter-menu
+                            class="absolute end-0 z-30 mt-2 hidden w-72 rounded-xl border border-line bg-white p-4 shadow-card"
+                        >
+                            <label class="mb-4 flex cursor-pointer items-center gap-2.5 text-sm text-ink">
+                                <input
+                                    type="checkbox"
+                                    data-shops-filter-verified
+                                    class="size-4 rounded border-line text-brand focus:ring-brand/30"
+                                >
+                                <span>فقط فروشگاه مورد اعتماد</span>
+                            </label>
+
+                            <div>
+                                <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
+                                <select
+                                    id="shops-filter-state"
+                                    data-shops-filter-state
+                                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                                >
+                                    <option value="">همه شهرها</option>
+                                    @foreach ($shopFilterStates as $state)
+                                        <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
 
         @if ($shops->isNotEmpty())
+            <div
+                data-shops-filter-empty
+                class="mb-4 hidden rounded-xl border border-dashed border-line bg-white px-6 py-10 text-center"
+            >
+                <p class="text-sm text-ink-muted">فروشگاهی با این فیلتر یافت نشد.</p>
+            </div>
+
             <div class="grid gap-2.5 sm:grid-cols-1 lg:grid-cols-1" data-shops-list data-initial-visible="10" data-batch-size="10">
                 @foreach ($shops as $shopIndex => $shop)
                     <article
                         class="ps-card-interactive relative flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $shopIndex >= 10 ? 'hidden sm:flex' : '' }}"
                         data-shop-card
+                        data-shop-state-id="{{ $shop->state_id }}"
+                        data-shop-verified="{{ $shop->verified ? '1' : '0' }}"
                     >
                         <div class="flex min-w-0 flex-1 items-center gap-3">
-                            <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-brand-soft to-accent-soft text-sm font-bold text-brand-dark ring-1 ring-line sm:size-11">
-                                @if ($shop->logo)
-                                    <img src="{{ $shop->logo }}" alt="{{ $shop->name }}" class="size-full object-contain p-1" />
-                                @else
-                                    {{ mb_substr($shop->name, 0, 1) }}
-                                @endif
-                            </div>
+                            <x-ui.company-logo
+                                :name="$shop->name"
+                                :logo-url="$shop->logo ?? null"
+                                size="xs"
+                            />
                             <div class="min-w-0 flex-1">
                                 <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                                     <h3 class="truncate text-sm font-semibold text-ink">{{ $shop->name }}</h3>
@@ -315,15 +373,143 @@
         @push('scripts')
             <script>
                 (function () {
+                    const shopsList = document.querySelector('[data-shops-list]');
+                    const loadMore = document.querySelector('[data-shops-load-more]');
+                    const loadMoreWrap = document.querySelector('[data-shops-load-more-wrap]');
+                    const signupCard = document.querySelector('[data-shop-signup-card]');
+                    const filterRoot = document.querySelector('[data-shops-filter]');
+                    const filterToggle = document.querySelector('[data-shops-filter-toggle]');
+                    const filterMenu = document.querySelector('[data-shops-filter-menu]');
+                    const filterState = document.querySelector('[data-shops-filter-state]');
+                    const filterVerified = document.querySelector('[data-shops-filter-verified]');
+                    const filterEmpty = document.querySelector('[data-shops-filter-empty]');
+                    const shopCards = shopsList
+                        ? Array.from(shopsList.querySelectorAll('[data-shop-card]'))
+                        : [];
+                    const initialBatchSize = Number(shopsList?.dataset.batchSize || 10);
+                    const mobileMedia = window.matchMedia('(max-width: 639px)');
+
+                    const isFilterActive = function () {
+                        return (filterState?.value || '') !== '' || Boolean(filterVerified?.checked);
+                    };
+
+                    const setCardFilterHidden = function (card, hidden) {
+                        if (hidden) {
+                            card.setAttribute('data-shop-filter-hidden', '');
+                        } else {
+                            card.removeAttribute('data-shop-filter-hidden');
+                        }
+                    };
+
+                    const shopMatchesFilters = function (card) {
+                        const selectedStateId = filterState?.value || '';
+                        const verifiedOnly = Boolean(filterVerified?.checked);
+                        const cardStateId = String(card.getAttribute('data-shop-state-id') ?? '');
+                        const cardVerified = card.getAttribute('data-shop-verified') === '1';
+
+                        if (selectedStateId !== '' && cardStateId !== selectedStateId) {
+                            return false;
+                        }
+
+                        if (verifiedOnly && !cardVerified) {
+                            return false;
+                        }
+
+                        return true;
+                    };
+
+                    const setFilterMenuOpen = function (isOpen) {
+                        if (!filterMenu || !filterToggle) {
+                            return;
+                        }
+
+                        filterMenu.classList.toggle('hidden', !isOpen);
+                        filterToggle.setAttribute('aria-expanded', String(isOpen));
+                    };
+
+                    const resetLazyLoadVisibility = function () {
+                        shopCards.forEach(function (card, index) {
+                            const hideForLazy = mobileMedia.matches && index >= initialBatchSize;
+                            card.classList.toggle('hidden', hideForLazy);
+                        });
+
+                        if (loadMoreWrap) {
+                            loadMoreWrap.classList.toggle(
+                                'hidden',
+                                shopCards.length <= initialBatchSize || !mobileMedia.matches,
+                            );
+                        }
+
+                        if (signupCard) {
+                            signupCard.classList.toggle(
+                                'hidden',
+                                shopCards.length > initialBatchSize && mobileMedia.matches,
+                            );
+                        }
+
+                        filterEmpty?.classList.add('hidden');
+                    };
+
+                    const applyShopFilters = function () {
+                        if (!shopsList) {
+                            return;
+                        }
+
+                        if (!isFilterActive()) {
+                            shopCards.forEach(function (card) {
+                                setCardFilterHidden(card, false);
+                            });
+                            resetLazyLoadVisibility();
+
+                            return;
+                        }
+
+                        let visibleCount = 0;
+
+                        shopCards.forEach(function (card) {
+                            const match = shopMatchesFilters(card);
+
+                            setCardFilterHidden(card, !match);
+
+                            if (match) {
+                                card.classList.remove('hidden');
+                                visibleCount++;
+                            }
+                        });
+
+                        loadMoreWrap?.classList.add('hidden');
+                        signupCard?.classList.remove('hidden');
+                        filterEmpty?.classList.toggle('hidden', visibleCount > 0);
+                    };
+
+                    filterToggle?.addEventListener('click', function (event) {
+                        event.stopPropagation();
+
+                        if (!filterMenu) {
+                            return;
+                        }
+
+                        setFilterMenuOpen(filterMenu.classList.contains('hidden'));
+                    });
+
+                    document.addEventListener('click', function (event) {
+                        if (!filterRoot || filterMenu?.classList.contains('hidden')) {
+                            return;
+                        }
+
+                        if (!filterRoot.contains(event.target)) {
+                            setFilterMenuOpen(false);
+                        }
+                    });
+
+                    filterState?.addEventListener('change', applyShopFilters);
+                    filterVerified?.addEventListener('change', applyShopFilters);
+
                     const inlineLink = document.querySelector('[data-shops-jump]');
                     const fixedBar = document.querySelector('[data-shops-jump-fixed]');
                     const fixedLink = document.querySelector('[data-shops-jump-fixed-link]');
                     const jumpAnchor = document.querySelector('[data-shops-jump-anchor]');
                     const target = document.getElementById('shops');
-                    const shopsList = document.querySelector('[data-shops-list]');
-                    const loadMore = document.querySelector('[data-shops-load-more]');
-                    const loadMoreWrap = document.querySelector('[data-shops-load-more-wrap]');
-                    const signupCard = document.querySelector('[data-shop-signup-card]');
 
                     if (!inlineLink || !fixedBar || !fixedLink || !target || !jumpAnchor) {
                         return;
@@ -331,7 +517,6 @@
 
                     const headerOffset = 80;
                     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                    const mobileMedia = window.matchMedia('(max-width: 639px)');
                     let shopsLazyInitialized = false;
 
                     const hideFixedBar = function () {
@@ -404,10 +589,18 @@
                     setJumpVisibility();
                     window.addEventListener('scroll', setJumpVisibility, { passive: true });
                     window.addEventListener('resize', setJumpVisibility);
-                    mobileMedia.addEventListener?.('change', setJumpVisibility);
+                    mobileMedia.addEventListener?.('change', function () {
+                        setJumpVisibility();
+
+                        if (!isFilterActive()) {
+                            resetLazyLoadVisibility();
+                        } else {
+                            applyShopFilters();
+                        }
+                    });
 
                     const initializeMobileLazyLoading = function () {
-                        if (shopsLazyInitialized || !mobileMedia.matches || !shopsList || !loadMore) {
+                        if (shopsLazyInitialized || !mobileMedia.matches || !shopsList || !loadMore || isFilterActive()) {
                             return;
                         }
 
