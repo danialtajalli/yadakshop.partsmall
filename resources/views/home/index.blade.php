@@ -92,6 +92,7 @@
                         @disabled($company->cars->flatMap->models->isEmpty())
                     >
                         <x-ui.company-logo
+                            class="mb-2"
                             :name="$company->name"
                             :logo-url="$company->logo_url"
                             size="sm"

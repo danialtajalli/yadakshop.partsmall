@@ -9,13 +9,11 @@
         <a href="{{ route('representation.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @endif
     <div class="mb-4 flex min-w-0 items-start gap-4">
-        <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line">
-            @if ($listing->logo ?? null)
-                <img src="{{ $listing->logo }}" alt="{{ $listing->name }}" class="size-full object-cover">
-            @else
-                {{ mb_substr($listing->name, 0, 1) }}
-            @endif
-        </div>
+        <x-ui.company-logo
+            :name="$listing->name"
+            :logo-url="$listing->logo ?? null"
+            size="listing"
+        />
 
         <div class="min-w-0 flex-1">
             <div class="flex min-w-0 flex-wrap items-center gap-2">

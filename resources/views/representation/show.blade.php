@@ -12,13 +12,11 @@
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
             <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
-                <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-2xl font-bold text-brand-dark ring-1 ring-line sm:size-24">
-                    @if ($representation->logo_url ?? null)
-                        <img src="{{ $representation->logo_url }}" alt="{{ $representation->name }}" class="size-full object-cover">
-                    @else
-                        {{ mb_substr($representation->name, 0, 1) }}
-                    @endif
-                </div>
+                <x-ui.company-logo
+                    :name="$representation->name"
+                    :logo-url="$representation->logo_url ?? null"
+                    size="xl"
+                />
 
                 <div class="min-w-0 flex-1">
                     <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $representation->name }}</h1>
@@ -89,13 +87,11 @@
                     <x-ui.section-heading title="برند مرتبط" />
 
                     <article class="ps-card flex items-center gap-4 p-4">
-                        <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface ring-1 ring-line">
-                            @if ($representation->company->logo_url ?? null)
-                                <img src="{{ $representation->company->logo_url }}" alt="{{ $representation->company->name }}" class="size-full object-contain p-1.5">
-                            @else
-                                <span class="text-lg font-bold text-brand-dark">{{ mb_substr($representation->company->name, 0, 1) }}</span>
-                            @endif
-                        </div>
+                        <x-ui.company-logo
+                            :name="$representation->company->name"
+                            :logo-url="$representation->company->logo_url ?? null"
+                            size="listing"
+                        />
                         <div class="min-w-0">
                             <h3 class="font-semibold text-ink">{{ $representation->company->name }}</h3>
                             @if ($representation->company->country)

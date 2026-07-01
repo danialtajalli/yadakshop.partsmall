@@ -23,19 +23,11 @@
                 href="{{ route($profileRoute, $item->slug) }}"
                 class="ps-card-interactive flex items-center gap-3 p-3"
             >
-                <span class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-line bg-white text-sm font-bold text-brand shadow-sm">
-                    @if ($item->logo ?? null)
-                        <img
-                            src="{{ $item->logo }}"
-                            alt="{{ $item->name }}"
-                            class="size-full object-contain p-1.5"
-                            loading="lazy"
-                            decoding="async"
-                        >
-                    @else
-                        {{ mb_substr($item->name, 0, 1) }}
-                    @endif
-                </span>
+                <x-ui.company-logo
+                    :name="$item->name"
+                    :logo-url="$item->logo ?? null"
+                    size="grid"
+                />
 
                 <span class="min-w-0">
                     <span class="flex min-w-0 flex-wrap items-center gap-1.5">

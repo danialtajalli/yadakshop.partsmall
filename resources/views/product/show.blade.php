@@ -225,13 +225,18 @@
                                 </button>
                             </div>
                             <div class="max-h-[70vh] space-y-5 overflow-y-auto px-5 py-5 text-sm">
-                                @if ($shop->description)
+                                {{-- @if ($shop->description)
                                 <div class="border-t border-line px-5 py-6 sm:px-6">
                                     <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</p>
                                         {!! $shop->description !!}
                                 </div>
-                                @endif
+                                @endif --}}
 
+                                @if ($shop->phones->isNotEmpty())
+                                    <div>
+                                        <p class="mb-2 text-xs font-semibold text-ink/80">تلفن‌ها</p>
+                                        <x-ui.phone-icons :phones="$shop->phones" />
+                                    </div>
                                 @if ($shop->address)
                                     <div class="rounded-xl bg-surface p-4">
                                         <p class="mb-1 text-xs font-semibold text-ink/80">آدرس</p>
@@ -239,11 +244,6 @@
                                     </div>
                                 @endif
 
-                                @if ($shop->phones->isNotEmpty())
-                                    <div>
-                                        <p class="mb-2 text-xs font-semibold text-ink/80">تلفن‌ها</p>
-                                        <x-ui.phone-icons :phones="$shop->phones" />
-                                    </div>
                                 @endif
 
                                 @if ($shop->links->isNotEmpty())

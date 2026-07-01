@@ -45,19 +45,12 @@
                                 class="ps-card-interactive flex h-full flex-col items-center gap-3 p-4 text-center"
                                 draggable="false"
                             >
-                                <div class="flex size-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-soft to-accent-soft text-lg font-bold text-brand-dark ring-1 ring-line sm:size-20">
-                                    @if ($item->logo ?? null)
-                                        <img
-                                            src="{{ $item->logo }}"
-                                            alt="{{ $item->name }}"
-                                            class="size-full object-cover"
-                                            loading="lazy"
-                                            draggable="false"
-                                        >
-                                    @else
-                                        {{ mb_substr($item->name, 0, 1) }}
-                                    @endif
-                                </div>
+                                <x-ui.company-logo
+                                    :name="$item->name"
+                                    :logo-url="$item->logo ?? null"
+                                    size="carousel"
+                                    draggable="false"
+                                />
                                 <h3 class="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-5 text-ink">
                                     {{ $item->name }}
                                 </h3>

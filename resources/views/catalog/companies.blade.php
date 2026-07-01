@@ -38,6 +38,7 @@
                     data-search-text="{{ $company->name }}"
                 >
                     <x-ui.company-logo
+                        class="mb-3"
                         :name="$company->name"
                         :logo-url="$company->logo_url ?? null"
                     />
