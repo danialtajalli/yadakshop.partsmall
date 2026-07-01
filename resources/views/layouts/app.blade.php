@@ -68,6 +68,11 @@
                 .ps-btn-secondary { @apply ps-btn border border-line bg-white text-ink hover:border-brand/30 hover:bg-brand-soft/50; }
                 .ps-section-label { @apply text-xs font-semibold uppercase tracking-wider text-brand; }
                 .ps-section-title { @apply text-xl font-bold text-ink sm:text-2xl; }
+                .ps-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(148 163 184 / 0.5) transparent; }
+                .ps-scrollbar::-webkit-scrollbar { width: 6px; }
+                .ps-scrollbar::-webkit-scrollbar-track { margin-block: 0.5rem; background: transparent; }
+                .ps-scrollbar::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 9999px; background-color: rgb(226 232 240 / 0.95); background-clip: padding-box; transition: background-color 150ms ease; }
+                .ps-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgb(148 163 184 / 0.75); }
                 .ps-prose { @apply space-y-3 text-sm leading-7 text-ink-muted; }
                 .ps-prose :is(h2,h3,h4) { @apply font-semibold text-ink; }
                 .ps-prose :is(ul,ol) { @apply pr-5; }

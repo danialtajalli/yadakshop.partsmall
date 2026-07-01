@@ -224,7 +224,7 @@
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
-                            <div class="max-h-[70vh] space-y-5 overflow-y-auto px-5 py-5 text-sm">
+                            <div class="ps-scrollbar max-h-[70vh] space-y-5 overflow-y-auto overscroll-contain px-5 py-5 pe-4 text-sm">
                                 {{-- @if ($shop->description)
                                 <div class="border-t border-line px-5 py-6 sm:px-6">
                                     <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</p>
