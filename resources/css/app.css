@@ -217,11 +217,11 @@
 @keyframes ps-shops-jump-glow {
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgb(13 148 136 / 0.2);
+        box-shadow: 0 8px 30px rgb(242 124 34 / 0.14), 0 0 0 0 rgb(242 124 34 / 0.2);
     }
 
     50% {
-        box-shadow: 0 0 0 6px rgb(13 148 136 / 0);
+        box-shadow: 0 12px 36px rgb(242 124 34 / 0.2), 0 0 0 6px rgb(242 124 34 / 0);
     }
 }
 

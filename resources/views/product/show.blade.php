@@ -6,36 +6,8 @@
     <x-site.breadcrumb :items="$breadcrumbs" />
 
     {{-- Title section --}}
-    <div class="mb-5 overflow-hidden rounded-2xl border border-line bg-white shadow-card" data-product-title-section>
+    <div class="mb-5 rounded-2xl border border-line bg-white shadow-card" data-product-title-section>
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            @if ($shops->isNotEmpty())
-                <div class="mb-5 min-h-16" data-shops-jump-anchor>
-                    <a
-                        href="#shops"
-                        data-shops-jump
-                        class="ps-shops-jump w-1/2 flex items-center justify-between gap-3 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3.5 text-sm transition duration-200 hover:border-brand/40 hover:bg-brand-soft/80 active:scale-[0.99]"
-                    >
-                        <span class="flex min-w-0 items-center gap-2.5 font-medium text-ink">
-                            <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand text-white">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36a1.125 1.125 0 0 1-1.009-.69L.5 9.75A1.125 1.125 0 0 1 1.509 8.5H5.25m8.25 0V5.625A2.625 2.625 0 0 0 11.625 3h-3.75A2.625 2.625 0 0 0 5.25 5.625V8.5m8.25 0H5.25" />
-                                </svg>
-                            </span>
-                            <span>
-                                <span class="block font-semibold text-brand-dark">{{ count($shops) }} فروشگاه مرتبط</span>
-                                <span class="block text-xs font-medium text-brand-dark/70">برای خرید {{ $title }} کلیک کنید</span>
-                            </span>
-                        </span>
-                        <span class="flex shrink-0 items-center gap-1 text-xs font-semibold text-brand">
-                            مشاهده
-                            <svg class="ps-shops-jump-chevron size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </span>
-                    </a>
-                </div>
-            @endif
-
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div>
                     @if ($part->partsCategory)
@@ -46,6 +18,16 @@
                     <h1 class="text-2xl font-bold tracking-tight text-ink/80 sm:text-3xl">{{ $title }}</h1>
                 </div>
             </div>
+
+            @if ($shops->isNotEmpty())
+                <div class="mt-5" data-shops-jump-anchor>
+                    <x-product.shops-jump-button
+                        :title="$title"
+                        :shops-count="count($shops)"
+                        data-shops-jump
+                    />
+                </div>
+            @endif
         </div>
     </div>
 
@@ -315,83 +297,85 @@
     </section>
 
     @if ($shops->isNotEmpty())
+        @push('overlays')
+            <div
+                data-shops-jump-fixed
+                class="pointer-events-none fixed inset-x-4 top-20 z-50 opacity-0 transition-opacity duration-200 sm:hidden"
+                aria-hidden="true"
+            >
+                <x-product.shops-jump-button
+                    :title="$title"
+                    :shops-count="count($shops)"
+                    data-shops-jump-fixed-link
+                    class="!w-full sm:!w-full"
+                />
+            </div>
+        @endpush
+
         @push('scripts')
             <script>
                 (function () {
-                    const link = document.querySelector('[data-shops-jump]');
+                    const inlineLink = document.querySelector('[data-shops-jump]');
+                    const fixedBar = document.querySelector('[data-shops-jump-fixed]');
+                    const fixedLink = document.querySelector('[data-shops-jump-fixed-link]');
                     const jumpAnchor = document.querySelector('[data-shops-jump-anchor]');
-                    const titleSection = document.querySelector('[data-product-title-section]');
                     const target = document.getElementById('shops');
                     const shopsList = document.querySelector('[data-shops-list]');
                     const loadMore = document.querySelector('[data-shops-load-more]');
                     const loadMoreWrap = document.querySelector('[data-shops-load-more-wrap]');
                     const signupCard = document.querySelector('[data-shop-signup-card]');
 
-                    if (!link || !target || !jumpAnchor) {
+                    if (!inlineLink || !fixedBar || !fixedLink || !target || !jumpAnchor) {
                         return;
                     }
 
                     const headerOffset = 80;
                     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                     const mobileMedia = window.matchMedia('(max-width: 639px)');
-                    const fixedClasses = ['fixed', 'top-20', 'z-30', 'rounded-2xl', 'bg-white/95', 'shadow-card', 'backdrop-blur-md'];
-                    const inlineClasses = ['mb-5', 'rounded-xl', 'bg-brand-soft'];
                     let shopsLazyInitialized = false;
 
-                    const updateFixedGeometry = function (shouldFix) {
-                        if (!shouldFix || !titleSection) {
-                            link.style.width = '';
-                            link.style.left = '';
+                    const hideFixedBar = function () {
+                        fixedBar.classList.add('opacity-0', 'pointer-events-none');
+                        fixedBar.setAttribute('aria-hidden', 'true');
+                    };
+
+                    const showFixedBar = function () {
+                        fixedBar.classList.remove('opacity-0', 'pointer-events-none');
+                        fixedBar.setAttribute('aria-hidden', 'false');
+                    };
+
+                    const setJumpVisibility = function () {
+                        if (!mobileMedia.matches) {
+                            hideFixedBar();
 
                             return;
                         }
 
-                        const sectionRect = titleSection.getBoundingClientRect();
-                        const halfWidth = sectionRect.width / 2;
-
-                        link.style.width = halfWidth + 'px';
-                        link.style.left = (sectionRect.left + (sectionRect.width - halfWidth) / 2) + 'px';
-                    };
-
-                    const setFixed = function (shouldFix) {
-                        fixedClasses.forEach(function (className) {
-                            link.classList.toggle(className, shouldFix);
-                        });
-
-                        inlineClasses.forEach(function (className) {
-                            link.classList.toggle(className, !shouldFix);
-                        });
-
-                        updateFixedGeometry(shouldFix);
-                    };
-
-                    const setJumpVisibility = function () {
                         const anchorRect = jumpAnchor.getBoundingClientRect();
                         const rect = target.getBoundingClientRect();
-                        const middleBandTop = window.innerHeight * 0.35;
+                        const middleBandTop = window.innerHeight * 0.3;
                         const middleBandBottom = window.innerHeight * 0.65;
                         const isOriginalButtonAboveViewport = anchorRect.bottom < 0;
                         const isShopsInMiddle = rect.top <= middleBandBottom && rect.bottom >= middleBandTop;
-                        const isMobile = mobileMedia.matches;
-                        const shouldFix = isMobile && isOriginalButtonAboveViewport && !isShopsInMiddle;
+                        const shouldShowFixed = isOriginalButtonAboveViewport && !isShopsInMiddle;
 
-                        setFixed(shouldFix);
-
-                        const hideFixedLink = isMobile && shouldFix && isShopsInMiddle;
-                        link.classList.toggle('opacity-0', hideFixedLink);
-                        link.classList.toggle('pointer-events-none', hideFixedLink);
-                        link.setAttribute('aria-hidden', String(hideFixedLink));
+                        if (shouldShowFixed) {
+                            showFixedBar();
+                        } else {
+                            hideFixedBar();
+                        }
                     };
 
-                    link.addEventListener('click', function (event) {
+                    const scrollToShops = function (event) {
                         event.preventDefault();
 
-                        link.classList.add('is-scrolling');
+                        const activeLink = event.currentTarget;
+                        activeLink.classList.add('is-scrolling');
 
                         const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
 
                         const finish = function () {
-                            link.classList.remove('is-scrolling');
+                            activeLink.classList.remove('is-scrolling');
                             target.classList.add('ps-shops-section--highlight');
                             window.setTimeout(function () {
                                 target.classList.remove('ps-shops-section--highlight');
@@ -412,7 +396,10 @@
                         } else {
                             window.setTimeout(finish, 750);
                         }
-                    });
+                    };
+
+                    inlineLink.addEventListener('click', scrollToShops);
+                    fixedLink.addEventListener('click', scrollToShops);
 
                     setJumpVisibility();
                     window.addEventListener('scroll', setJumpVisibility, { passive: true });
