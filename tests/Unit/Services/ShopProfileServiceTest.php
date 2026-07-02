@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Enums\ImageType;
+use App\Models\Comment;
 use App\Models\Company;
 use App\Models\Shop;
 use App\Models\State;
@@ -55,6 +56,33 @@ class ShopProfileServiceTest extends TestCase
         $data = $this->service->getProfilePageData('hidden-shop');
 
         $this->assertSame('مخفی', $data['shop']->name);
+    }
+
+    public function test_it_only_returns_confirmed_comments(): void
+    {
+        $shop = $this->createShopWithRelations();
+
+        Comment::create([
+            'shop_id' => $shop->id,
+            'fullname' => 'تایید شده',
+            'body' => 'نظر تایید شده',
+            'rating' => 5,
+            'confirmed' => true,
+        ]);
+
+        Comment::create([
+            'shop_id' => $shop->id,
+            'fullname' => 'تایید نشده',
+            'body' => 'نظر تایید نشده',
+            'rating' => 1,
+            'confirmed' => false,
+        ]);
+
+        $data = $this->service->getProfilePageData($shop->slug);
+
+        $this->assertSame(1, $data['commentsCount']);
+        $this->assertSame(5.0, $data['averageRating']);
+        $this->assertSame('نظر تایید شده', $data['shop']->comments->first()->body);
     }
 
     public function test_it_throws_not_found_for_unknown_slug(): void

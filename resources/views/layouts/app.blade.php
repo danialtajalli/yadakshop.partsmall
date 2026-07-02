@@ -124,6 +124,26 @@
                 0% { outline: 2px solid rgb(13 148 136 / 0.45); outline-offset: 6px; }
                 100% { outline: 2px solid transparent; outline-offset: 12px; }
             }
+            .ps-comment-star { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+            .ps-comment-star--filled path { fill: #d4a017; }
+            .ps-comment-star--empty path { fill: #e2e8f0; }
+            .ps-comment-star-score { margin-inline-start: 0.375rem; font-size: 0.75rem; font-weight: 500; color: #64748b; }
+            .ps-comment-rating-summary { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem; color: #64748b; }
+            .ps-comment-rating-summary__icon { width: 1rem; height: 1rem; }
+            .ps-comment-rating-summary__icon path { fill: #d4a017; }
+            .ps-comment-rating-summary__value { font-weight: 600; color: #0f172a; }
+            .ps-comment-star-picker [data-rating-star] { padding: 0.125rem; background: transparent; border: none; cursor: pointer; border-radius: 0.25rem; line-height: 0; }
+            .ps-comment-star-picker [data-rating-star] [data-star-icon] { width: 1.375rem; height: 1.375rem; }
+            .ps-comment-star-picker [data-rating-star] path { fill: #e2e8f0; }
+            .ps-comment-star-picker [data-rating-star][data-star-active='true'] path { fill: #d4a017; }
+            .ps-comment-star-picker--error { border-radius: 0.5rem; outline: 1px solid #f0d4d4; outline-offset: 2px; }
+            .ps-comment-rating-label--selected { color: #0f172a; }
+            .ps-input--error { border-color: #e8b4b4; }
+            .ps-form-errors { margin-bottom: 1rem; border-radius: 0.75rem; border: 1px solid #f0d4d4; background: #fdfafa; padding: 0.875rem 1rem; }
+            .ps-form-errors__title { margin-bottom: 0.5rem; font-size: 0.8125rem; font-weight: 500; color: #9f1239; }
+            .ps-form-errors__list { margin: 0; padding: 0; list-style: none; }
+            .ps-form-errors__item { position: relative; padding-block: 0.2rem; padding-inline-start: 0.875rem; font-size: 0.8125rem; line-height: 1.55; color: #be123c; }
+            .ps-form-errors__item::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.65em; width: 0.25rem; height: 0.25rem; border-radius: 9999px; background: #e11d48; opacity: 0.45; }
         </style>
     @endif
     @stack('head')

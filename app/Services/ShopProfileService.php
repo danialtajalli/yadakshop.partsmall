@@ -32,9 +32,9 @@ class ShopProfileService
                 'links',
                 'partsCategories',
                 'companies.images',
-                'comments' => fn ($query) => $query->where('confirmed', true)->latest(),
+                'comments' => fn ($query) => $query->confirmed()->latest(),
             ])
-            ->withAvg(['comments as average_rating' => fn ($query) => $query->where('confirmed', true)], 'rating')
+            ->withAvg(['comments as average_rating' => fn ($query) => $query->confirmed()], 'rating')
             ->where('slug', $slug)
             ->first();
 

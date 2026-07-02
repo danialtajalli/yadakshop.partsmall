@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Enums\ImageType;
 use App\Enums\LinkType;
 use App\Enums\PhoneType;
-use App\Models\Company;
 use App\Models\Comment;
+use App\Models\Company;
 use App\Models\PartsCategory;
 use App\Models\Shop;
 use App\Models\State;
@@ -33,6 +33,11 @@ class ShopProfileTest extends TestCase
         $response->assertSee('https://t.me/yadakshop', false);
         $response->assertSee('telegram', false);
         $response->assertSee('نظرات کاربران', false);
+        $response->assertSee('فروشگاه عالی بود', false);
+        $response->assertSee('کاربر تست', false);
+        $response->assertSee('میانگین امتیاز', false);
+        $response->assertSee('5/5', false);
+        $response->assertDontSee('نظر تایید نشده', false);
         $response->assertSee('aria-current="page"', false);
         $response->assertSee('BreadcrumbList', false);
         $response->assertSee(route('shops.index'), false);
@@ -41,6 +46,44 @@ class ShopProfileTest extends TestCase
         $response->assertSee('leaflet@1.9.4', false);
         $response->assertSee('data-lat="35.68843735"', false);
         $response->assertSee('data-lng="51.43004894"', false);
+    }
+
+    public function test_shop_profile_hides_unconfirmed_comments(): void
+    {
+        $shop = $this->seedShopProfileGraph();
+
+        Comment::create([
+            'shop_id' => $shop->id,
+            'fullname' => 'کاربر تایید نشده',
+            'body' => 'نظر تایید نشده',
+            'rating' => 1,
+            'confirmed' => false,
+        ]);
+
+        $response = $this->get(route('shop.profile', $shop->slug));
+
+        $response->assertOk();
+        $response->assertSee('فروشگاه عالی بود', false);
+        $response->assertDontSee('نظر تایید نشده', false);
+        $response->assertDontSee('کاربر تایید نشده', false);
+    }
+
+    public function test_shop_profile_shows_empty_comments_state(): void
+    {
+        $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+
+        $shop = Shop::create([
+            'name' => 'بدون نظر',
+            'slug' => 'no-comments-shop',
+            'state_id' => $state->id,
+            'order' => 1,
+        ]);
+
+        $response = $this->get(route('shop.profile', $shop->slug));
+
+        $response->assertOk();
+        $response->assertSee('نظرات کاربران', false);
+        $response->assertSee('هنوز نظری برای این فروشگاه ثبت نشده است.', false);
     }
 
     public function test_shop_profile_returns_not_found_for_unknown_slug(): void

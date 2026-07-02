@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\RepairShopController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ShopCommentController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\VehicleCatalogController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,9 @@ Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show
 
 Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
+Route::post('profile/{shop_slug}/comments', [ShopCommentController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('shop.comments.store');
 Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
 Route::get('repair_profile/{repair_shop_slug}', [RepairShopController::class, 'show'])->name('repair-shop.profile');
 Route::get('representations', [RepresentationController::class, 'index'])->name('representations.index');
