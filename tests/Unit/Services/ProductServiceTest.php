@@ -35,9 +35,12 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'title', 'breadcrumbs', 'repairLocators'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'title', 'breadcrumbs', 'repairLocators', 'telegramTitle', 'telegramUrl', 'signupUrl'],
             array_keys($data),
         );
+        $this->assertSame('به گروه تلگرام هیوندای سانتافه سواران بپیوندید', $data['telegramTitle']);
+        $this->assertSame('https://t.me/hyundai_saravan_partsmall', $data['telegramUrl']);
+        $this->assertSame(route('page.show', 'register'), $data['signupUrl']);
         $this->assertNull($data['repairLocators']);
         $this->assertSame($company->id, $data['company']->id);
         $this->assertSame($car->id, $data['car']->id);

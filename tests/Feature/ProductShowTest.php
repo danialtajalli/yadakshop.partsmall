@@ -33,10 +33,14 @@ class ProductShowTest extends TestCase
         $response->assertSee('طبق', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('سانتافه', false);
-        $response->assertSee('مشاهده پروفایل فروشگاه', false);
+        $response->assertSee('لیست فروشگاه ها', false);
+        $response->assertSee('برای اطلاع از قیمت به‌روز این قطعه', false);
         $response->assertSee('اطلاعات تماس', false);
         $response->assertSee('فروشگاه شما میتواند اینجا باشد', false);
         $response->assertSee('ثبت نام', false);
+        $response->assertSee('قطعات خود را در پارتس‌مال بفروشید', false);
+        $response->assertSee('به گروه تلگرام هیوندای سانتافه سواران بپیوندید', false);
+        $response->assertSee('https://t.me/hyundai_saravan_partsmall', false);
         $response->assertSee(route('page.show', ['slug' => 'register']), false);
     }
 

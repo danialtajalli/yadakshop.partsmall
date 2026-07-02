@@ -35,6 +35,9 @@ class ProductService
      *         citiesByState: array<int, list<array{id: int, name: string}>>,
      *         defaultStateId: ?int,
      *     },
+     *     telegramTitle: string,
+     *     telegramUrl: string,
+     *     signupUrl: string,
      * }
      */
     public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part,): array {
@@ -50,6 +53,7 @@ class ProductService
         });
 
         $title = $this->buildTitle($part, $company, $car, $model);
+        $telegramCta = $this->buildTelegramCta($company, $car);
 
         return [
             'company' => $company,
@@ -68,6 +72,20 @@ class ProductService
                 terminalLabel: $title,
             ),
             'repairLocators' => $this->buildRepairLocatorContext($part, $car),
+            'telegramTitle' => $telegramCta['title'],
+            'telegramUrl' => $telegramCta['url'],
+            'signupUrl' => route('page.show', 'register'),
+        ];
+    }
+
+    /**
+     * @return array{title: string, url: string}
+     */
+    private function buildTelegramCta(Company $company, Car $car): array
+    {
+        return [
+            'title' => 'به گروه تلگرام '.$company->name.' '.$car->name.' سواران بپیوندید',
+            'url' => 'https://t.me/'.$company->slug.'_saravan_partsmall',
         ];
     }
 

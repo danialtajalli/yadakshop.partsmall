@@ -5,36 +5,35 @@
 @section('content')
     <x-site.breadcrumb :items="$breadcrumbs" />
 
-    {{-- Title section --}}
-    <div class="mb-5 rounded-2xl border border-line bg-white shadow-card" data-product-title-section>
-        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            <div class="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                    @if ($part->partsCategory)
-                        <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
-                            {{ $part->partsCategory->name }}
-                        </span>
+    <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+        <div class="min-w-0 flex-1 space-y-5">
+            <div class="rounded-2xl border border-line bg-white shadow-card" data-product-title-section>
+                <div class="bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
+                    <div class="flex flex-wrap items-end justify-between gap-4">
+                        <div>
+                            @if ($part->partsCategory)
+                                <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                                    {{ $part->partsCategory->name }}
+                                </span>
+                            @endif
+                            <h1 class="text-2xl font-bold tracking-tight text-ink/80 sm:text-3xl">{{ $title }}</h1>
+                        </div>
+                    </div>
+
+                    @if ($shops->isNotEmpty())
+                        <div class="mt-5" data-shops-jump-anchor>
+                            <x-product.shops-jump-button
+                                :title="$title"
+                                :shops-count="count($shops)"
+                                data-shops-jump
+                            />
+                        </div>
                     @endif
-                    <h1 class="text-2xl font-bold tracking-tight text-ink/80 sm:text-3xl">{{ $title }}</h1>
                 </div>
             </div>
 
-            @if ($shops->isNotEmpty())
-                <div class="mt-5" data-shops-jump-anchor>
-                    <x-product.shops-jump-button
-                        :title="$title"
-                        :shops-count="count($shops)"
-                        data-shops-jump
-                    />
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- Service cards beside Telegram CTA --}}
-    <div class="mb-10 grid gap-5 lg:grid-cols-12 lg:items-stretch">
-        @if ($repairLocators || count($repairCards) > 0)
-            <section class="min-w-0 overflow-hidden rounded-3xl border border-line bg-white shadow-card lg:col-span-8">
+            @if ($repairLocators || count($repairCards) > 0)
+            <section class="mb-10 min-w-0 overflow-hidden rounded-3xl border border-line bg-white shadow-card">
                 <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-5">
                     <h2 class="mt-1 text-lg font-black text-ink/80">مشاهده تعمیرگاه‌ها و اجرت‌ها</h2>
                     <p class="mt-1.5 text-xs leading-6 text-ink-muted/70">برای همین قطعه، مسیرهای تعمیر و حدود اجرت را کنار هم ببینید.</p>
@@ -85,17 +84,22 @@
                     @endif
                 </div>
             </section>
-        @endif
+            @endif
+        </div>
 
-        <div class="min-w-0 lg:col-span-4">
-            <div class="h-full">
+
+        <aside class="w-full shrink-0 md:w-72 lg:w-80">
+            <div class="md:sticky md:top-24">
                 <x-site.cta-sidebar
-                    :telegram-title="'به گروه تلگرام ' . $company->name . ' ' . $car->name . ' سواران بپیوندید'"
-                    :telegram-url="'https://t.me/' . $company->slug . '_saravan_partsmall'"
+                    :telegram-title="$telegramTitle"
+                    :telegram-url="$telegramUrl"
+                    :signup-url="$signupUrl"
                 />
             </div>
-        </div>
+        </aside>
     </div>
+
+
 
     {{-- Shops --}}
     <section id="shops" class="mb-12 scroll-mt-20 ps-shops-section">
@@ -152,6 +156,13 @@
                         </div>
                     </div>
                 @endif
+            </div>
+
+            <div class="mt-5 rounded-xl border border-line bg-surface/60 px-4 py-4 sm:px-5">
+                <p class="text-sm leading-7 text-ink-muted">
+                    از آنجایی که تمام قطعات خودرو بر اساس قیمت دلار و موجودی لحظه‌ای شرکت‌های واردکننده قطعات خودرو تعیین می‌شود،
+                    برای اطلاع از قیمت به‌روز این قطعه، لطفاً با فروشگاه‌های زیر ارتباط برقرار کنید.
+                </p>
             </div>
         </div>
 
