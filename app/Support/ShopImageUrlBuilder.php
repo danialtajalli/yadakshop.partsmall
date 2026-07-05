@@ -12,19 +12,19 @@ class ShopImageUrlBuilder
 {
     public static function build(string $modelType, ImageType $imageType, int|string $modelId, string $path): string
     {
-        return str_replace(
+        return asset(str_replace(
             ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
             [$modelType, $imageType->value, (string) $modelId, $path],
-            config('partsmall.image_url'),
+            config('partsmall.image_url')),
         );
     }
 
     public static function buildCompanyLogoUrl(string $modelType, int|string $modelId, string $path): string
     {
-        return str_replace(
+        return asset(str_replace(
             ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
             [$modelType, '', (string) $modelId, $path],
-            config('partsmall.image_url'),
+            config('partsmall.image_url')),
         );
     }
 
@@ -55,7 +55,7 @@ class ShopImageUrlBuilder
 
         $repairShop->logo = $logo?->path
             ? self::build('repair', ImageType::Logo, $repairShop->id, $logo->path)
-            : 'https://partsmall.ir/img/no_image_repair.jpg';
+            : asset('storage/img/no_image_repair.jpg');
 
         $cover = $repairShop->images->firstWhere('type', ImageType::Cover);
 
@@ -67,7 +67,7 @@ class ShopImageUrlBuilder
     public static function attachRepresentationMedia(Representation $representation): void
     {
         if (! $representation->logo) {
-            $representation->logo = "https://partsmall.ir/img/no_image_representation.jpg";
+            $representation->logo = asset('storage/img/no_image_representation.jpg');
             return;
         }
 

@@ -4,15 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title??config('app.name') }}</title>
-    <link rel="icon" type="image/png" href="https://partsmall.ir/img/favicon.webp">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://partsmall.ir/img/favicon.webp">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://partsmall.ir/img/favicon.webp">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://partsmall.ir/img/favicon.webp">
-    <link rel="manifest" href="https://partsmall.ir/img/favicon.webp">
-    <link rel="mask-icon" href="https://partsmall.ir/img/favicon.webp" color="#0d9488">
-    <link rel="shortcut icon" href="https://partsmall.ir/img/favicon.webp">
+    <link rel="icon" type="image/png" href="{{asset('storage/img/favicon.webp')}}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('storage/img/favicon.webp')}}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{asset('storage/img/favicon.webp')}}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('storage/img/favicon.webp')}}">
+    <link rel="manifest" href="{{asset('storage/img/favicon.webp')}}">
+    <link rel="mask-icon" href="{{asset('storage/img/favicon.webp')}}" color="#0d9488">
+    <link rel="shortcut icon" href="{{asset('storage/img/favicon.webp')}}">
     <meta name="msapplication-TileColor" content="#0d9488">
-    <meta name="msapplication-config" content="https://partsmall.ir/img/favicon.webp">
+    <meta name="msapplication-config" content="{{asset('storage/img/favicon.webp')}}">
     <meta name="theme-color" content="#0d9488">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,6 +166,8 @@
     </main>
 
     @include('layouts.partials.footer')
+
+    <x-ui.floating-call-button />
 
     @stack('overlays')
     @stack('scripts')
