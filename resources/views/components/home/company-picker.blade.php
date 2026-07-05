@@ -20,7 +20,7 @@
             </button>
         </div>
 
-        <div class="max-h-[min(70vh,32rem)] overflow-y-auto px-5 py-5">
+        <div class="ps-scrollbar max-h-[min(70vh,32rem)] overflow-y-auto overscroll-contain px-5 py-5 pe-4">
             <div id="company-picker-cars-step">
                 <p class="mb-4 text-sm text-ink-muted">خودروی مورد نظر را انتخاب کنید.</p>
                 <ul id="company-picker-cars-list" class="divide-y divide-line overflow-hidden rounded-xl border border-line"></ul>

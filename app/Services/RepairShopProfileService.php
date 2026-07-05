@@ -17,7 +17,7 @@ class RepairShopProfileService
      *     title: string,
      * }
      */
-    public function getProfilePageData(string $slug): array
+    public function getProfilePageData(int $id, string $slug): array
     {
         $repairShop = RepairShop::query()
             ->with([
@@ -27,11 +27,11 @@ class RepairShopProfileService
                 'links',
                 'repairCategories',
             ])
-            ->where('slug', $slug)
+            ->whereKey($id)
             ->first();
 
-        if ($repairShop === null) {
-            throw (new ModelNotFoundException)->setModel(RepairShop::class, [$slug]);
+        if ($repairShop === null || $repairShop->slug !== $slug) {
+            throw (new ModelNotFoundException)->setModel(RepairShop::class, [$id]);
         }
 
         ShopImageUrlBuilder::attachRepairShopMedia($repairShop);

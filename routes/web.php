@@ -30,7 +30,9 @@ Route::post('profile/{shop_slug}/comments', [ShopCommentController::class, 'stor
     ->middleware('throttle:6,1')
     ->name('shop.comments.store');
 Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
-Route::get('repair_profile/{repair_shop_slug}', [RepairShopController::class, 'show'])->name('repair-shop.profile');
+Route::get('carservice/{id}/{slug}', [RepairShopController::class, 'show'])
+    ->whereNumber('id')
+    ->name('repair-shop.profile');
 Route::get('representations', [RepresentationController::class, 'index'])->name('representations.index');
 Route::get('representation/{representation_slug}', [RepresentationController::class, 'show'])->name('representation.profile');
 

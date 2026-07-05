@@ -78,4 +78,12 @@ class RepairShop extends Model
     {
         return $this->belongsToMany(RepairCategory::class, 'repair_category_repair_shop');
     }
+
+    public function profileUrl(): string
+    {
+        return route('repair-shop.profile', [
+            'id' => $this->id,
+            'slug' => $this->slug,
+        ]);
+    }
 }

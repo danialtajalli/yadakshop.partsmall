@@ -19,7 +19,7 @@ class RepairShopProfileTest extends TestCase
     {
         $repairShop = $this->seedRepairShopProfileGraph();
 
-        $response = $this->get(route('repair-shop.profile', $repairShop->slug));
+        $response = $this->get($repairShop->profileUrl());
 
         $response->assertOk();
         $response->assertViewIs('repair-shop.show');
@@ -35,9 +35,16 @@ class RepairShopProfileTest extends TestCase
         $response->assertSee('leaflet@1.9.4', false);
     }
 
-    public function test_repair_shop_profile_returns_not_found_for_unknown_slug(): void
+    public function test_repair_shop_profile_returns_not_found_for_unknown_id(): void
     {
-        $this->get(route('repair-shop.profile', 'unknown-repair-shop'))->assertNotFound();
+        $this->get(route('repair-shop.profile', ['id' => 99999, 'slug' => 'unknown-repair-shop']))->assertNotFound();
+    }
+
+    public function test_repair_shop_profile_returns_not_found_when_slug_does_not_match(): void
+    {
+        $repairShop = $this->seedRepairShopProfileGraph();
+
+        $this->get(route('repair-shop.profile', ['id' => $repairShop->id, 'slug' => 'wrong-slug']))->assertNotFound();
     }
 
     private function seedRepairShopProfileGraph(): RepairShop

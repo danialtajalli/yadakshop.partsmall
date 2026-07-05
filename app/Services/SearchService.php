@@ -341,7 +341,7 @@ class SearchService
             $result instanceof RepairShop => [
                 'title' => $result->name,
                 'subtitle' => $result->work_description ?: $result->state?->name,
-                'url' => route('repair-shop.profile', $result->slug),
+                'url' => $result->profileUrl(),
                 'type' => 'تعمیرگاه',
             ],
             $result instanceof Representation => [

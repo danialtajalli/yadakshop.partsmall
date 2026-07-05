@@ -20,7 +20,7 @@
     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         @foreach ($items as $item)
             <a
-                href="{{ route($profileRoute, $item->slug) }}"
+                href="{{ method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $item->slug) }}"
                 class="ps-card-interactive flex items-center gap-3 p-3"
             >
                 <x-ui.company-logo

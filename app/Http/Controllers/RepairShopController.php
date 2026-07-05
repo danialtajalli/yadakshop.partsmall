@@ -19,8 +19,8 @@ class RepairShopController extends Controller
         return view('listings.index', $this->directoryListingService->getRepairShopListing($request));
     }
 
-    public function show(string $repair_shop_slug): View
+    public function show(int $id, string $slug): View
     {
-        return view('repair-shop.show', $this->repairShopProfileService->getProfilePageData($repair_shop_slug));
+        return view('repair-shop.show', $this->repairShopProfileService->getProfilePageData($id, $slug));
     }
 }

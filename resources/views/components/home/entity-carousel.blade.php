@@ -41,7 +41,7 @@
                     @foreach ($items as $item)
                         <article class="ps-carousel-slide">
                             <a
-                                href="{{ route($profileRoute, $item->slug) }}"
+                                href="{{ method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $item->slug) }}"
                                 class="ps-card-interactive flex h-full flex-col items-center gap-3 p-4 text-center"
                                 draggable="false"
                             >

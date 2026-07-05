@@ -4,7 +4,7 @@
     @if ($type === 'shop')
         <a href="{{ route('shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @elseif ($type === 'repair_shop')
-        <a href="{{ route('repair-shop.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
+        <a href="{{ $listing->profileUrl() }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @elseif ($type === 'representation')
         <a href="{{ route('representation.profile', $listing->slug) }}" class="absolute inset-0 z-10 rounded-2xl" aria-label="مشاهده پروفایل {{ $listing->name }}"></a>
     @endif

@@ -27,7 +27,7 @@ class RepairShopProfileServiceTest extends TestCase
     {
         $repairShop = $this->createRepairShopWithRelations();
 
-        $data = $this->service->getProfilePageData($repairShop->slug);
+        $data = $this->service->getProfilePageData($repairShop->id, $repairShop->slug);
 
         $this->assertSame(
             ['repairShop', 'title'],
@@ -46,16 +46,25 @@ class RepairShopProfileServiceTest extends TestCase
             'slug' => 'no-logo',
         ]);
 
-        $data = $this->service->getProfilePageData('no-logo');
+        $data = $this->service->getProfilePageData($repairShop->id, $repairShop->slug);
 
         $this->assertSame('https://partsmall.ir/img/no_image_repair.jpg', $data['repairShop']->logo);
     }
 
-    public function test_it_throws_not_found_for_unknown_slug(): void
+    public function test_it_throws_not_found_for_unknown_id(): void
     {
         $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
 
-        $this->service->getProfilePageData('missing-repair-shop');
+        $this->service->getProfilePageData(99999, 'missing-repair-shop');
+    }
+
+    public function test_it_throws_not_found_when_slug_does_not_match(): void
+    {
+        $repairShop = $this->createRepairShopWithRelations();
+
+        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+
+        $this->service->getProfilePageData($repairShop->id, 'wrong-slug');
     }
 
     private function createRepairShopWithRelations(): RepairShop
