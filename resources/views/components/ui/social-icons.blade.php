@@ -14,7 +14,11 @@
                 <a
                     href="{{ $link->link_type->actionUrl($link->name) }}"
                     target="_blank"
+                    @if(!in_array($link->shop?->id, [1, 2, 3]))
+                    rel="noopener nofollow sponsored"
+                    @else
                     rel="noopener"
+                    @endif
                     class="flex mt-2 items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
                 >
                     <span class="font-medium text-ink">{{ $link->link_type->label() }}</span>
@@ -30,7 +34,7 @@
                 <a
                     href="{{ $item['url'] }}"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener @if(!in_array($link->shop?->id, [1, 2, 3])) nofollow sponsored @endif"
                     class="flex items-center justify-between gap-3 rounded-xl border border-line px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
                 >
                     <span class="font-medium text-ink">{{ $item['label'] }}</span>
