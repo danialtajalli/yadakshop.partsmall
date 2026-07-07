@@ -28,7 +28,7 @@
 
     <button
         type="button"
-        class="flex size-14 items-center justify-center rounded-full bg-brand text-white shadow-lg ring-1 ring-black/5 transition hover:bg-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 active:scale-95"
+        class="flex size-14 items-center justify-center rounded-full bg-green-500 text-white shadow-lg ring-1 ring-black/5 transition hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 active:scale-95"
         data-floating-call-toggle
         aria-expanded="false"
         aria-controls="floating-call-panel"
