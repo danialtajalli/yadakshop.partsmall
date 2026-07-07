@@ -175,7 +175,40 @@
             </div>
 
             <div class="grid gap-2.5 sm:grid-cols-1 lg:grid-cols-1" data-shops-list data-initial-visible="10" data-batch-size="10">
+                @php
+                    $count = 0;
+                @endphp
                 @foreach ($shops as $shopIndex => $shop)
+                    @php
+                        ++$count;
+                    @endphp
+                    @if($count % 10 == 0 && count($shops) > 10)
+                    <article
+                    class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $count > 10 ? 'hidden sm:flex' : '' }}"
+                    data-shop-signup-card
+                    >
+                        <div class="flex min-w-0 flex-1 items-center gap-3">
+                            <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-soft/20 text-brand sm:size-11">
+                                <svg class="size-6" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="6" y="7" width="20" height="18" rx="4" />
+                                    <path d="M11 20h10" />
+                                    <path d="M12 16l3-3 3 3 2-2 3 3" />
+                                    <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h3 class="truncate text-sm font-semibold text-ink">فروشگاه شما میتواند اینجا باشد</h3>
+                                <p class="truncate text-xs text-ink-muted/70">قطعات خود را در پارتس‌مال معرفی کنید.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 sm:w-auto sm:shrink-0">
+                            <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
+                                ثبت نام
+                            </a>
+                        </div>
+                    </article>
+                    @endif
                     <article
                         class="ps-card-interactive relative flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $shopIndex >= 10 ? 'hidden sm:flex' : '' }}"
                         data-shop-card
@@ -274,10 +307,10 @@
                         </dialog>
                     </article>
                 @endforeach
-
+                @if(count($shops) < 10)
                 <article
-                    class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5 {{ count($shops) > 10 ? 'hidden sm:flex' : '' }}"
-                    data-shop-signup-card
+                class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $count > 10 ? 'hidden sm:flex' : '' }}"
+                data-shop-signup-card
                 >
                     <div class="flex min-w-0 flex-1 items-center gap-3">
                         <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-soft/20 text-brand sm:size-11">
@@ -300,6 +333,7 @@
                         </a>
                     </div>
                 </article>
+                @endif
             </div>
 
             @if (count($shops) > 10)
