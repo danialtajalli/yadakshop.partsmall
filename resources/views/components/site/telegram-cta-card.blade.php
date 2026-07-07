@@ -3,6 +3,10 @@
     'telegramUrl' => config('partsmall.telegram_url'),
 ])
 
+@php
+    $telegramMemberAvatars = \App\Support\TelegramMemberAvatars::pickRandom(3);
+@endphp
+
 <article
     {{ $attributes->merge([
         'class' => 'group relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-sky-500 via-cyan-500 to-blue-600 text-white shadow-[0_20px_60px_rgba(14,165,233,0.35)]',
@@ -81,24 +85,17 @@
         <div class="mt-5 flex items-center gap-3">
 
             <div class="flex -space-x-2 rtl:space-x-reverse">
-                <img
-                    src="https://i.pravatar.cc/64?img=12"
-                    alt=""
-                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
-                    loading="lazy"
-                >
-                <img
-                    src="https://i.pravatar.cc/64?img=32"
-                    alt=""
-                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
-                    loading="lazy"
-                >
-                <img
-                    src="https://i.pravatar.cc/64?img=56"
-                    alt=""
-                    class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
-                    loading="lazy"
-                >
+                @foreach ($telegramMemberAvatars as $avatar)
+                    <img
+                        src="{{ $avatar['src'] }}"
+                        alt="{{ $avatar['alt'] }}"
+                        class="h-8 w-8 rounded-full border-2 border-white shadow-sm {{ $avatar['class'] }}"
+                        width="32"
+                        height="32"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                @endforeach
             </div>
 
             <span class="text-sm font-medium text-white/90">
