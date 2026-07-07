@@ -377,27 +377,27 @@
     <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <button
             type="button"
-            class="group flex w-full items-center gap-3 bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
+            class="group flex w-full items-center bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
             data-part-specs-toggle
             aria-expanded="false"
             aria-controls="part-specs-panel"
         >
-            <span class="min-w-0 flex-1">
-                <span class="ps-section-label block">جزئیات</span>
-                <span class="mt-1 flex min-w-0 items-center gap-2">
-                    <span class="ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">مشخصات قطعه</span>
-                    <svg
-                        class="size-5 shrink-0 text-ink-muted transition-transform duration-200 group-hover:text-brand"
-                        data-part-specs-chevron
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                    >
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                    </svg>
+            <span class="flex w-full min-w-0 items-center justify-between sm:w-auto sm:justify-start sm:gap-2.5">
+                <span class="min-w-0">
+                    <span class="ps-section-label block">جزئیات</span>
+                    <span class="mt-1 block ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">مشخصات قطعه</span>
                 </span>
+                <svg
+                    class="size-5 shrink-0 self-center text-ink-muted transition-transform duration-200 group-hover:text-brand sm:size-6"
+                    data-part-specs-chevron
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
             </span>
         </button>
 
