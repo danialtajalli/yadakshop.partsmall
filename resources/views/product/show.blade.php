@@ -284,20 +284,13 @@
                                         <p class="mb-2 text-xs font-semibold text-ink/80">تلفن‌ها</p>
                                         <x-ui.phone-icons :phones="$shop->phones" />
                                     </div>
-                                @if ($shop->address)
+                                @if (!empty($shop->address))
                                     <div class="rounded-xl bg-surface p-4">
                                         <p class="mb-1 text-xs font-semibold text-ink/80">آدرس</p>
                                         <p class="text-ink-muted/70">{{ $shop->address }}</p>
                                     </div>
                                 @endif
 
-                                @endif
-
-                                @if ($shop->links->isNotEmpty())
-                                    <div>
-                                        <p class="mb-2 text-xs font-semibold text-ink/80">شبکه‌های اجتماعی</p>
-                                        <x-ui.social-icons :links="$shop->links" />
-                                    </div>
                                 @endif
 
                                 @if ($shop->open_time && $shop->close_time)
