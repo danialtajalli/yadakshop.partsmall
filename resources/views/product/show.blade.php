@@ -356,6 +356,23 @@
         </div>
     </section>
 
+    <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <a
+            href="{{ \App\Support\CatalogUrls::parts($company->slug, $car->slug, $model->slug) }}"
+            class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
+        >
+            <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} + {{ $car->name }}</span>
+            <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
+        </a>
+        <a
+            href="{{ route('part.show', $part->slug) }}"
+            class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
+        >
+            <span>مشاهده همه {{ $part->name }} های موجود در بازار</span>
+            <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
+        </a>
+    </div>
+
     {{-- Part specs --}}
     <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <button
