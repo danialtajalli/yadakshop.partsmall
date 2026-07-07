@@ -94,9 +94,7 @@ class VehicleCatalogService
             ? 'خودروهای '.$context->company->name
             : 'همه خودروها';
 
-        $description = $context->company !== null
-            ? 'خودروی '.$context->company->name.' را انتخاب کنید تا مدل‌های آن را ببینید.'
-            : 'خودروی مورد نظر را انتخاب کنید یا ابتدا برند را فیلتر کنید.';
+        $description = 'خودروی مورد نظر را انتخاب کنید یا ابتدا برند را فیلتر کنید.';
 
         return [
             'cars' => $cars,
