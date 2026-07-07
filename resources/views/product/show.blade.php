@@ -658,6 +658,12 @@
                         const isOriginalButtonAboveViewport = anchorRect.bottom < 0;
                         const isShopsInMiddle = rect.top <= middleBandBottom && rect.bottom >= middleBandTop;
                         const shouldShowFixed = isOriginalButtonAboveViewport && !isShopsInMiddle;
+                        const isBelowShopsSection = rect.bottom < headerOffset;
+                        const fixedChevron = fixedLink.querySelector('.ps-shops-jump-chevron');
+                        const inlineChevron = inlineLink.querySelector('.ps-shops-jump-chevron');
+
+                        fixedChevron?.classList.toggle('ps-shops-jump-chevron--up', isBelowShopsSection);
+                        inlineChevron?.classList.remove('ps-shops-jump-chevron--up');
 
                         if (shouldShowFixed) {
                             showFixedBar();
