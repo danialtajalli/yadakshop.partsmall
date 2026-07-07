@@ -9,11 +9,13 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{asset('storage/img/favicon.webp')}}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{asset('storage/img/favicon.webp')}}">
     <link rel="manifest" href="{{asset('storage/img/favicon.webp')}}">
-    <link rel="mask-icon" href="{{asset('storage/img/favicon.webp')}}" color="#0d9488">
-    <link rel="shortcut icon" href="{{asset('storage/img/favicon.webp')}}">
-    <meta name="msapplication-TileColor" content="#0d9488">
-    <meta name="msapplication-config" content="{{asset('storage/img/favicon.webp')}}">
-    <meta name="theme-color" content="#0d9488">
+    @php($themeColor = config('partsmall.theme_color', '#3f4857'))
+    <link rel="mask-icon" href="{{ asset('storage/img/favicon.webp') }}" color="{{ $themeColor }}">
+    <link rel="shortcut icon" href="{{ asset('storage/img/favicon.webp') }}">
+    <meta name="msapplication-TileColor" content="{{ $themeColor }}">
+    <meta name="msapplication-config" content="{{ asset('storage/img/favicon.webp') }}">
+    <meta name="theme-color" content="{{ $themeColor }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,8 +87,10 @@
                 .ps-expandable-toggle[hidden] { display: none; }
                 .ps-shops-jump { animation: ps-shops-jump-enter 0.5s ease-out both, ps-shops-jump-glow 2.4s ease-in-out 0.5s infinite; }
                 .ps-shops-jump-chevron { animation: ps-shops-jump-nudge 1.5s ease-in-out infinite; }
+                .ps-shops-jump-chevron--up { animation: ps-shops-jump-nudge-up 1.5s ease-in-out infinite; }
                 .ps-shops-jump.is-scrolling { animation: ps-shops-jump-tap 0.35s ease-out; }
                 .ps-shops-jump.is-scrolling .ps-shops-jump-chevron { animation: ps-shops-jump-chevron-scroll 0.55s ease-in-out infinite; }
+                .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up { animation: ps-shops-jump-chevron-scroll-up 0.55s ease-in-out infinite; }
                 .ps-shops-section--highlight { animation: ps-shops-section-reveal 0.9s ease-out; }
                 .ps-carousel { @apply relative; }
                 .ps-carousel-viewport { @apply w-full overflow-hidden; direction: ltr; cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; }
@@ -97,7 +101,8 @@
                 .ps-carousel-nav--prev { @apply -end-3 sm:-end-4; }
                 .ps-carousel-nav--next { @apply -start-3 sm:-start-4; }
                 @media (prefers-reduced-motion: reduce) {
-                    .ps-shops-jump, .ps-shops-jump-chevron, .ps-shops-jump.is-scrolling, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron, .ps-shops-section--highlight { animation: none; }
+                    .ps-shops-jump, .ps-shops-jump-chevron, .ps-shops-jump-chevron--up, .ps-shops-jump.is-scrolling, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up, .ps-shops-section--highlight { animation: none; }
+                    .ps-shops-jump-chevron--up { transform: rotate(180deg); }
                 }
             }
             @keyframes ps-shops-jump-enter {
@@ -112,6 +117,10 @@
                 0%, 100% { transform: translateY(0); }
                 50% { transform: translateY(3px); }
             }
+            @keyframes ps-shops-jump-nudge-up {
+                0%, 100% { transform: rotate(180deg) translateY(0); }
+                50% { transform: rotate(180deg) translateY(-3px); }
+            }
             @keyframes ps-shops-jump-tap {
                 0%, 100% { transform: scale(1); }
                 50% { transform: scale(0.97); }
@@ -119,6 +128,10 @@
             @keyframes ps-shops-jump-chevron-scroll {
                 0%, 100% { transform: translateY(0); opacity: 1; }
                 50% { transform: translateY(5px); opacity: 0.65; }
+            }
+            @keyframes ps-shops-jump-chevron-scroll-up {
+                0%, 100% { transform: rotate(180deg) translateY(0); opacity: 1; }
+                50% { transform: rotate(180deg) translateY(-5px); opacity: 0.65; }
             }
             @keyframes ps-shops-section-reveal {
                 0% { outline: 2px solid rgb(13 148 136 / 0.45); outline-offset: 6px; }

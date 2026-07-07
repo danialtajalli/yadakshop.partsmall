@@ -17,4 +17,6 @@ return [
         'display' => env('PARTSMALL_FLOATING_CALL_DISPLAY', '021 77 222 4 99'),
         'tel' => env('PARTSMALL_FLOATING_CALL_TEL', '02177222499'),
     ],
+
+    'theme_color' => '#f27c22',
 ];
