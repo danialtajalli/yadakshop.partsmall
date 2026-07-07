@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ImageType;
+use App\Enums\LinkType;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\City;
@@ -11,6 +12,7 @@ use App\Models\Image;
 use App\Models\Part;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -85,7 +87,7 @@ class ProductService
     {
         return [
             'title' => 'به گروه تلگرام '.$company->name.' '.$car->name.' سواران بپیوندید',
-            'url' => 'https://t.me/'.$company->slug.'_saravan_partsmall',
+            'url' => $company->links()->where('link_type', LinkType::Telegram)->first()->name??'#',
         ];
     }
 
@@ -152,19 +154,11 @@ class ProductService
         $shop->images->each(function (Image $image) use ($shop) : void {
             if($image->type === ImageType::Cover)
             {
-                $shop->cover = config('partsmall.image_url', 'https://partsmall.ir/panel/assets/uploads/{model_type}/{image_type}/{model_id}/{image_name}');
-                $shop->cover = str_replace('{model_type}', "shop", $shop->cover);
-                $shop->cover = str_replace('{image_type}', $image->type->value, $shop->cover);
-                $shop->cover = str_replace('{model_id}', $shop->id, $shop->cover);
-                $shop->cover = str_replace('{image_name}', $image->path, $shop->cover);
+                $shop->cover = ShopImageUrlBuilder::build('shop', $image->type, $shop->id, $image->path);
             }
             elseif($image->type === ImageType::Logo)
             {
-                $shop->logo = config('partsmall.image_url', 'https://partsmall.ir/panel/assets/uploads/{model_type}/{image_type}/{model_id}/{image_name}');
-                $shop->logo = str_replace('{model_type}', "shop", $shop->logo);
-                $shop->logo = str_replace('{image_type}', $image->type->value, $shop->logo);
-                $shop->logo = str_replace('{model_id}', $shop->id, $shop->logo);
-                $shop->logo = str_replace('{image_name}', $image->path, $shop->logo);
+                $shop->logo = ShopImageUrlBuilder::build('shop', $image->type, $shop->id, $image->path);
             }
 
             $image->save();
