@@ -98,20 +98,8 @@
                         <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
                     </div>
                     <div class="min-w-0">
-                        <h2 class="text-sm font-bold text-ink">موبایل</h2>
-                        <a href="tel:{{ preg_replace('/\s+/', '', $contact['mobile']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
-                            {{ $contact['mobile'] }}
-                        </a>
-                    </div>
-                </div>
-
-                <div class="ps-card flex min-w-0 gap-4 p-5 sm:col-span-2">
-                    <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-white shadow-card">
-                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-                    </div>
-                    <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">ایمیل</h2>
-                        <a href="mailto:{{ $contact['email'] }}" class="mt-1 block break-all text-sm text-brand transition hover:text-brand-dark">
+                        <a href="mailto:{{ $contact['email'] }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
                             {{ $contact['email'] }}
                         </a>
                     </div>
