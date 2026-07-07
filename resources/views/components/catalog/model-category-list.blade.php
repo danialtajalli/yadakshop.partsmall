@@ -48,7 +48,7 @@
         <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             @foreach ($groups as $group)
                 <section class="model-category-section rounded-xl border border-line bg-surface/40 p-3" data-search-section>
-                    <h3 class="mb-2 text-xs font-bold text-brand">{{ $group['label'] }}</h3>
+                    <h3 class="mb-2 text-xs font-bold text-brand">انتخاب براساس {{ $group['label'] }}</h3>
                     <div class="flex flex-wrap gap-1.5">
                         @foreach ($group['models'] as $entry)
                             @if ($selectable)
