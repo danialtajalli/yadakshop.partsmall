@@ -26,6 +26,7 @@
         description="فروشگاه‌های معتبر قطعات خودرو"
         :items="$shops"
         :more-url="route('shops.index')"
+        more-label="مشاهده همه فروشگاه‌ها"
         profile-route="shop.profile"
         empty-message="هنوز فروشگاهی ثبت نشده است."
     />
@@ -35,6 +36,7 @@
         description="تعمیرگاه‌های تخصصی خودرو"
         :items="$repairShops"
         :more-url="route('repair-shops.index')"
+        more-label="مشاهده همه تعمیرگاه‌ها"
         profile-route="repair-shop.profile"
         empty-message="هنوز تعمیرگاهی ثبت نشده است."
     />
@@ -44,6 +46,7 @@
         description="نمایندگی‌های رسمی و خدمات پس از فروش"
         :items="$representations"
         :more-url="route('representations.index')"
+        more-label="مشاهده همه نمایندگی‌ها"
         profile-route="representation.profile"
         empty-message="هنوز نمایندگی‌ای ثبت نشده است."
     />
