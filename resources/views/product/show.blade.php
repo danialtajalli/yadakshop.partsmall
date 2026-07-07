@@ -102,8 +102,8 @@
 
 
     {{-- Shops --}}
-    <section id="shops" class="mb-12 scroll-mt-20 ps-shops-section">
-        <div class="mb-6">
+    <section id="shops" class="mb-12 scroll-mt-20 overflow-hidden rounded-2xl border border-line bg-white shadow-card ps-shops-section">
+        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 sm:px-6">
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div class="min-w-0">
                     <h2 class="ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">لیست فروشگاه ها</h2>
@@ -157,14 +157,15 @@
                     </div>
                 @endif
             </div>
+        </div>
 
-            <div class="mt-5 rounded-xl border border-line bg-surface/60 px-4 py-4 sm:px-5">
+        <div class="px-5 py-5 sm:px-6">
+            <div class="mb-5 rounded-xl border border-line bg-surface/60 px-4 py-4 sm:px-5">
                 <p class="text-sm leading-7 text-ink-muted">
                     از آنجایی که تمام قطعات خودرو بر اساس قیمت دلار و موجودی لحظه‌ای شرکت‌های واردکننده قطعات خودرو تعیین می‌شود،
                     برای اطلاع از قیمت به‌روز این قطعه، لطفاً با فروشگاه‌های زیر ارتباط برقرار کنید.
                 </p>
             </div>
-        </div>
 
         @if ($shops->isNotEmpty())
             <div
@@ -348,17 +349,42 @@
                 </div>
             @endif
         @else
-            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+            <div class="rounded-2xl border border-dashed border-line bg-surface/30 px-6 py-12 text-center">
                 <p class="text-sm text-ink-muted/70">فروشگاهی برای این قطعه یافت نشد.</p>
             </div>
         @endif
+        </div>
     </section>
 
     {{-- Part specs --}}
-    <section>
-        <x-ui.section-heading label="جزئیات" title="مشخصات قطعه" />
+    <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+        <button
+            type="button"
+            class="group flex w-full items-center gap-3 bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
+            data-part-specs-toggle
+            aria-expanded="false"
+            aria-controls="part-specs-panel"
+        >
+            <span class="min-w-0 flex-1">
+                <span class="ps-section-label block">جزئیات</span>
+                <span class="mt-1 flex min-w-0 items-center gap-2">
+                    <span class="ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">مشخصات قطعه</span>
+                    <svg
+                        class="size-5 shrink-0 text-ink-muted transition-transform duration-200 group-hover:text-brand"
+                        data-part-specs-chevron
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </span>
+            </span>
+        </button>
 
-        <div class="ps-card overflow-hidden">
+        <div id="part-specs-panel" data-part-specs-panel class="hidden border-t border-line">
             <dl class="divide-y divide-line">
                 @foreach ([
                     'نام خودرو' => $car->name,
@@ -398,6 +424,28 @@
             @endif
         </div>
     </section>
+
+    @push('scripts')
+        <script>
+            (function () {
+                const toggle = document.querySelector('[data-part-specs-toggle]');
+                const panel = document.querySelector('[data-part-specs-panel]');
+                const chevron = document.querySelector('[data-part-specs-chevron]');
+
+                if (!toggle || !panel) {
+                    return;
+                }
+
+                toggle.addEventListener('click', function () {
+                    const isOpen = !panel.classList.contains('hidden');
+
+                    panel.classList.toggle('hidden', isOpen);
+                    toggle.setAttribute('aria-expanded', String(!isOpen));
+                    chevron?.classList.toggle('rotate-180', !isOpen);
+                });
+            })();
+        </script>
+    @endpush
 
     @if ($shops->isNotEmpty())
         @push('overlays')
