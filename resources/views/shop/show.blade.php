@@ -161,13 +161,10 @@
                 </section>
             @endif
 
-            @if ($shop->links->isNotEmpty())
+            @if ($shop->links->isNotEmpty() || $shop->website_show)
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب سایت</h2>
-                    @if ($shop->website_show !== null)
-                        <x-ui.social-icons :links="[$shop->website_show]" />
-                    @endif
-                    <x-ui.social-icons :links="$shop->links" />
+                    <x-ui.social-icons :links="collect($shop->website_show ? [$shop->website_show] : [])->merge($shop->links)" />
                 </section>
             @endif
 
