@@ -16,12 +16,10 @@
         />
 
         <div class="min-w-0 flex-1">
-            <div class="flex min-w-0 flex-wrap items-center gap-2">
                 <h3 class="truncate text-lg font-semibold text-ink">{{ $listing->name }}</h3>
                 @if ($type === 'shop' && ($listing->verified ?? false))
                     <x-shop.trusted-badge compact />
                 @endif
-            </div>
 
             @if ($type === 'shop' && $listing->secondary_name)
                 <p class="truncate text-sm text-ink-muted">{{ $listing->secondary_name }}</p>
