@@ -187,6 +187,8 @@
                     <article
                     class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $count > 10 ? 'hidden sm:flex' : '' }}"
                     data-shop-signup-card
+                    data-shop-card
+                    data-shop-verified="0"
                     >
                         <div class="flex min-w-0 flex-1 items-center gap-3">
                             <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-soft/20 text-brand sm:size-11">
@@ -312,6 +314,8 @@
                 <article
                 class="ps-card-interactive relative flex flex-col gap-3 border-dashed p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $count > 10 ? 'hidden sm:flex' : '' }}"
                 data-shop-signup-card
+                data-shop-card
+                data-shop-verified="0"
                 >
                     <div class="flex min-w-0 flex-1 items-center gap-3">
                         <div class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand-soft/20 text-brand sm:size-11">
@@ -578,6 +582,7 @@
 
                         shopCards.forEach(function (card) {
                             const match = shopMatchesFilters(card);
+                            console.log(match, card);
 
                             setCardFilterHidden(card, !match);
 
