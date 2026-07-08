@@ -6,7 +6,7 @@
 <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
     <div class="ps-container flex h-16 items-center justify-between gap-4">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5">
-            <img src="{{ asset('storage/img/favicon.webp') }}" class="size-9 text-brand" alt="پارتس‌مال">
+            <img src="{{ asset('panel/assets/uploads/img/favicon.webp') }}" class="size-9 text-brand" alt="پارتس‌مال">
             <span class="text-base font-bold text-ink">{{ 'پارتس‌مال' }}</span>
         </a>
 

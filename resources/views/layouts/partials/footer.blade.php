@@ -3,7 +3,7 @@
         <div class="grid gap-8 sm:grid-cols-3">
             <div>
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5">
-                    <img src="{{ asset('storage/img/favicon.webp') }}" class="size-9" alt="{{ config('app.name', 'پارتس‌مال') }}">
+                    <img src="{{ asset('panel/assets/uploads/img/favicon.webp') }}" class="size-9" alt="{{ config('app.name', 'پارتس‌مال') }}">
                     <span class="font-bold text-ink">{{ config('app.name', 'پارتس‌مال') }}</span>
                 </a>
                 <p class="mt-2 text-sm leading-relaxed text-ink-muted">مرجع لوازم یدکی و اطلاعات تعمیر خودرو</p>
