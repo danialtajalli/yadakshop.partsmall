@@ -1,6 +1,10 @@
 @php
     $headerNavigationPages = collect($navigationPages ?? []);
     $showHeaderSearch = ! request()->routeIs('home');
+
+    $isCompaniesNavActive = request()->routeIs('companies.index', 'cars.index', 'models.index');
+    $isPartsNavActive = request()->routeIs('car.parts', 'car.parts.vehicle', 'part.show', 'product.show');
+    $isShopsNavActive = request()->routeIs('shops.index', 'shop.profile');
 @endphp
 
 <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
@@ -33,11 +37,40 @@
                     </svg>
                     خانه
                 </a>
-                <a href="{{ route('companies.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">کمپانی ها</a>
-                <a href="{{ route('car.parts') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">قطعات</a>
-                <a href="{{ route('shops.index') }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">فروشگاه‌ها</a>
+                <a
+                    href="{{ route('companies.index') }}"
+                    @class([
+                        'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isCompaniesNavActive,
+                    ])
+                    @if ($isCompaniesNavActive) aria-current="page" @endif
+                >کمپانی ها</a>
+                <a
+                    href="{{ route('car.parts') }}"
+                    @class([
+                        'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isPartsNavActive,
+                    ])
+                    @if ($isPartsNavActive) aria-current="page" @endif
+                >قطعات</a>
+                <a
+                    href="{{ route('shops.index') }}"
+                    @class([
+                        'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isShopsNavActive,
+                    ])
+                    @if ($isShopsNavActive) aria-current="page" @endif
+                >فروشگاه‌ها</a>
                 @foreach ($headerNavigationPages as $navPage)
-                    <a href="{{ route('page.show', $navPage->slug) }}" class="rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink">
+                    @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
+                    <a
+                        href="{{ route('page.show', $navPage->slug) }}"
+                        @class([
+                            'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                            'bg-surface text-ink' => $isPageNavActive,
+                        ])
+                        @if ($isPageNavActive) aria-current="page" @endif
+                    >
                         {{ $navPage->title }}
                     </a>
                 @endforeach
@@ -101,11 +134,40 @@
                 </svg>
                 خانه
             </a>
-            <a href="{{ route('companies.index') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">کمپانی ها</a>
-            <a href="{{ route('car.parts') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">قطعات</a>
-            <a href="{{ route('shops.index') }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">فروشگاه‌ها</a>
+            <a
+                href="{{ route('companies.index') }}"
+                @class([
+                    'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                    'bg-surface text-ink' => $isCompaniesNavActive,
+                ])
+                @if ($isCompaniesNavActive) aria-current="page" @endif
+            >کمپانی ها</a>
+            <a
+                href="{{ route('car.parts') }}"
+                @class([
+                    'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                    'bg-surface text-ink' => $isPartsNavActive,
+                ])
+                @if ($isPartsNavActive) aria-current="page" @endif
+            >قطعات</a>
+            <a
+                href="{{ route('shops.index') }}"
+                @class([
+                    'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                    'bg-surface text-ink' => $isShopsNavActive,
+                ])
+                @if ($isShopsNavActive) aria-current="page" @endif
+            >فروشگاه‌ها</a>
             @foreach ($headerNavigationPages as $navPage)
-                <a href="{{ route('page.show', $navPage->slug) }}" class="rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink">
+                @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
+                <a
+                    href="{{ route('page.show', $navPage->slug) }}"
+                    @class([
+                        'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isPageNavActive,
+                    ])
+                    @if ($isPageNavActive) aria-current="page" @endif
+                >
                     {{ $navPage->title }}
                 </a>
             @endforeach
