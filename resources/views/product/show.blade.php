@@ -383,7 +383,7 @@
             <span class="ps-part-specs-toggle__title-row">
                 <span class="block ps-section-title text-2xl tracking-tight sm:text-3xl">مشخصات قطعه</span>
                 <svg
-                    class="size-5 shrink-0 text-ink-muted transition-transform duration-200 group-hover:text-brand sm:size-6"
+                    class="size-5 shrink-0 text-bold transition-transform duration-200 group-hover:text-brand sm:size-6"
                     data-part-specs-chevron
                     fill="none"
                     viewBox="0 0 24 24"
