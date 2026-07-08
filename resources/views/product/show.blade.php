@@ -12,7 +12,7 @@
                     <div class="flex flex-wrap items-end justify-between gap-4">
                         <div>
                             @if ($part->partsCategory)
-                                <span class="mb-2 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-dark">
+                                <span class="text-[11px] font-medium text-ink-muted/70 mb-2">
                                     {{ $part->partsCategory->name }}
                                 </span>
                             @endif
@@ -358,7 +358,7 @@
             href="{{ \App\Support\CatalogUrls::parts($company->slug, $car->slug, $model->slug) }}"
             class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
         >
-            <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} + {{ $car->name }}</span>
+            <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} {{ $car->name }}</span>
             <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
         </a>
         <a
