@@ -86,6 +86,33 @@ class ShopProfileTest extends TestCase
         $response->assertSee('هنوز نظری برای این فروشگاه ثبت نشده است.', false);
     }
 
+    public function test_shop_profile_formats_telegram_t_me_links_with_at_prefix(): void
+    {
+        $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+
+        $shop = Shop::create([
+            'name' => 'فروشگاه تلگرام',
+            'slug' => 'telegram-shop',
+            'state_id' => $state->id,
+            'order' => 1,
+        ]);
+
+        $shop->links()->create([
+            'name' => 't.me/yadakshop',
+            'link_type' => LinkType::Telegram,
+        ]);
+
+        $shop->links()->create([
+            'name' => 't.me/secondshop',
+            'link_type' => LinkType::Telegram,
+        ]);
+
+        $this->get(route('shop.profile', $shop->slug))
+            ->assertOk()
+            ->assertSee('@t.me/yadakshop', false)
+            ->assertSee('@t.me/secondshop', false);
+    }
+
     public function test_shop_profile_returns_not_found_for_unknown_slug(): void
     {
         $this->get(route('shop.profile', 'unknown-shop'))->assertNotFound();

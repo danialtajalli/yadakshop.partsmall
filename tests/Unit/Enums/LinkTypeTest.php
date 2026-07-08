@@ -36,6 +36,29 @@ class LinkTypeTest extends TestCase
         );
     }
 
+    public function test_telegram_display_name_adds_at_prefix_for_t_me_links(): void
+    {
+        $this->assertSame(
+            '@t.me/yadakshop',
+            LinkType::Telegram->displayName('t.me/yadakshop'),
+        );
+
+        $this->assertSame(
+            '@yadakshop',
+            LinkType::Telegram->displayName('@yadakshop'),
+        );
+
+        $this->assertSame(
+            'yadakshop',
+            LinkType::Telegram->displayName('yadakshop'),
+        );
+
+        $this->assertSame(
+            't.me/yadakshop',
+            LinkType::Website->displayName('t.me/yadakshop'),
+        );
+    }
+
     public function test_website_action_url_does_not_use_t_me(): void
     {
         $this->assertSame(
