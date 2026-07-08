@@ -246,7 +246,6 @@
                         </div>
 
                         <div class="flex gap-2 sm:w-auto sm:shrink-0">
-                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">مشاهده پروفایل فروشگاه</a>
                             <button
                                 type="button"
                                 class="ps-btn-secondary shrink-0 flex-1 px-2.5 py-1.5 text-xs sm:flex-none"
@@ -254,6 +253,7 @@
                             >
                                 اطلاعات تماس
                             </button>
+                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">مشاهده پروفایل فروشگاه</a>
                         </div>
 
                         <dialog
