@@ -104,6 +104,24 @@
         }
     }
 
+    .ps-messenger-meta {
+        display: grid;
+        width: 8.75rem;
+        flex-shrink: 0;
+        grid-template-columns: minmax(0, 1fr) 2.25rem;
+        align-items: center;
+        column-gap: 0.5rem;
+        direction: ltr;
+    }
+
+    .ps-messenger-meta__label {
+        @apply text-end text-xs font-medium leading-none text-ink;
+    }
+
+    .ps-messenger-meta__icon {
+        @apply flex size-9 items-center justify-center rounded-lg bg-surface text-base leading-none text-brand;
+    }
+
     .ps-scrollbar {
         scrollbar-width: thin;
         scrollbar-color: rgb(148 163 184 / 0.5) transparent;

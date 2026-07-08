@@ -101,16 +101,15 @@
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
-                                    dir="ltr"
                                     aria-label="{{ $phoneType->label() }}: {{ $phone->phone_number }}"
                                 >
-                                    <span class="min-w-0 tabular-nums text-ink">{{ $phone->phone_number }}</span>
-                                    <span class="flex shrink-0 items-center gap-2">
-                                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base leading-none text-brand">
-                                            <i class="{{ $phoneType->icon() }}" aria-hidden="true"></i>
+                                    <span class="ps-messenger-meta">
+                                        <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
+                                        <span class="ps-messenger-meta__icon">
+                                            <i class="{{ $phoneType->icon() }} block leading-none" aria-hidden="true"></i>
                                         </span>
-                                        <span class="text-xs font-medium text-ink">{{ $phoneType->label() }}</span>
                                     </span>
+                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
                                 </a>
                             </li>
                         @endforeach
@@ -131,16 +130,15 @@
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
-                                    dir="ltr"
                                     aria-label="{{ $phoneType->label() }}: {{ $phone->phone_number }}"
                                 >
-                                    <span class="min-w-0 tabular-nums text-ink">{{ $phone->phone_number }}</span>
-                                    <span class="flex shrink-0 items-center gap-2">
-                                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base leading-none text-brand">
-                                            <i class="{{ $phoneType->icon() }}" aria-hidden="true"></i>
+                                    <span class="ps-messenger-meta">
+                                        <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
+                                        <span class="ps-messenger-meta__icon">
+                                            <i class="{{ $phoneType->icon() }} block leading-none" aria-hidden="true"></i>
                                         </span>
-                                        <span class="text-xs font-medium text-ink">{{ $phoneType->label() }}</span>
                                     </span>
+                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
                                 </a>
                             </li>
                         @endforeach
@@ -167,16 +165,15 @@
                                 href="{{ $groupContact['url'] ?? 'tel:'.$groupContact['value'] }}"
                                 @if ($groupContact['external'] ?? false) target="_blank" rel="noopener" @endif
                                 class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
-                                dir="ltr"
                                 aria-label="{{ $label }}: {{ $groupContact['value'] }}"
                             >
-                                <span class="tabular-nums text-ink">{{ $groupContact['value'] }}</span>
-                                <span class="flex shrink-0 items-center gap-2">
-                                    <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base leading-none text-brand">
-                                        <i class="{{ ContactIcon::forKind($contact['kind'] ?? 'phone') }}" aria-hidden="true"></i>
+                                <span class="ps-messenger-meta">
+                                    <span class="ps-messenger-meta__label">{{ $label }}</span>
+                                    <span class="ps-messenger-meta__icon">
+                                        <i class="{{ ContactIcon::forKind($contact['kind'] ?? 'phone') }} block leading-none" aria-hidden="true"></i>
                                     </span>
-                                    <span class="text-xs font-medium text-ink">{{ $label }}</span>
                                 </span>
+                                <span class="tabular-nums text-ink" dir="ltr">{{ $groupContact['value'] }}</span>
                             </a>
                         </li>
                     @endforeach
