@@ -10,15 +10,15 @@
 <article class="min-w-0">
     <button
         type="button"
-        class="group flex w-full min-w-0 items-center justify-between gap-2 overflow-hidden rounded-2xl border border-line bg-white px-3.5 py-3 text-start text-sm shadow-sm transition hover:border-brand/30 hover:bg-brand-soft/30 hover:shadow-card"
+        class="group flex w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-xl border border-line bg-white px-3 py-2.5 text-start transition hover:border-brand/30 hover:bg-brand-soft/30"
         onclick="document.getElementById('{{ $modalId }}').showModal()"
     >
         <span class="min-w-0 flex-1 overflow-hidden">
-            <span class="block truncate font-bold text-ink" title="خدمات {{ $repairLocator['category']->name }}">
+            <span class="block truncate text-xs font-semibold leading-5 text-ink/80" title="خدمات {{ $repairLocator['category']->name }}">
                 {{ $displayName }}
             </span>
         </span>
-        <span class="shrink-0 rounded-full bg-brand px-3 py-1.5 text-xs font-bold text-white transition group-hover:bg-brand-dark">
+        <span class="shrink-0 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold text-white transition group-hover:bg-brand-dark">
             انتخاب محدوده
         </span>
     </button>

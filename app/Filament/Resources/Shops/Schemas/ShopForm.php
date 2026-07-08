@@ -42,12 +42,12 @@ class ShopForm
                     ->required()->label('ساعت شروع کار'),
                 TimePicker::make('close_time')
                     ->required()->label('ساعت پایان کار'),
-                TimePicker::make('open_time_friday')->label('ساعت شروع کار روز پنجشنبه'),
-                TimePicker::make('close_time_friday')->label('ساعت پایان کار روز پنجشنبه'),
-                TimePicker::make('open_time_thursday')->label('ساعت شروع کار روز جمعه'),
-                TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز جمعه'),
+                TimePicker::make('open_time_friday')->label('ساعت شروع کار روز جمعه'),
+                TimePicker::make('close_time_friday')->label('جمعهساعت پایان کار روز جمعه'),
+                TimePicker::make('open_time_thursday')->label('ساعت شروع کار روز پنجشنبه'),
+                TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز پنجشنبه'),
                 Toggle::make('off')
-                    ->required()->label('غیر فعال'),
+                    ->required()->label('ایا فروشگاه تخفیف دارد؟'),
                 Select::make('state')
                     ->relationship('state', 'name')
                     ->searchable()->preload()->label('استان'),

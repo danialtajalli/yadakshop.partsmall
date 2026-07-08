@@ -24,7 +24,7 @@ class PhoneForm
                     ->relationship('repairShop', 'name')->searchable()->preload()
                     ->label('تعمیر گاه')->default(fn () => request('repair_shop_id')),
                 Select::make('user_id')
-                    ->relationship('user', 'name')->searchable()->preload()->default(fn () => request('user_id'))
+                    ->relationship('user', 'username')->searchable()->preload()->default(fn () => request('user_id'))
                     ->label('کاربر'),
                 Select::make('type')
                     ->options(PhoneType::class)->searchable()->preload()

@@ -44,7 +44,7 @@
                                     class="block truncate px-3 py-2.5 text-sm text-brand transition hover:bg-brand-soft/40"
                                     dir="ltr"
                                 >
-                                    {{ $link->name }}
+                                    {{ $linkType->displayName($link->name) }}
                                 </a>
                             </li>
                         @endforeach

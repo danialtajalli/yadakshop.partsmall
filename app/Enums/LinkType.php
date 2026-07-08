@@ -38,7 +38,7 @@ enum LinkType: string
             self::Telegram => 'fa-brands fa-telegram',
             self::Instagram => 'fa-brands fa-instagram',
             self::Whatsapp => 'fa-brands fa-whatsapp',
-            default => 'fa-solid fa-share-nodes',
+            default => 'fa-solid fa-comment-dots',
         };
     }
 
@@ -67,5 +67,20 @@ enum LinkType: string
             self::Website => 'https://'.ltrim($value, '/'),
             default => 'https://'.ltrim($value, '/'),
         };
+    }
+
+    public function displayName(string $name): string
+    {
+        $value = trim($name);
+
+        if ($this !== self::Telegram || $value === '' || str_starts_with($value, '@')) {
+            return $value;
+        }
+
+        if (str_starts_with(strtolower($value), 't.me')) {
+            return '@'.$value;
+        }
+
+        return $value;
     }
 }

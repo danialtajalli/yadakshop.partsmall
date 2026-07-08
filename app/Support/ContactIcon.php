@@ -13,7 +13,7 @@ class ContactIcon
             'whatsapp' => 'fa-brands fa-whatsapp',
             'mobile' => 'fa-solid fa-mobile-screen-button',
             'land' => 'fa-solid fa-phone',
-            default => 'fa-solid fa-share-nodes',
+            default => 'fa-solid fa-comment-dots',
         };
     }
 }
