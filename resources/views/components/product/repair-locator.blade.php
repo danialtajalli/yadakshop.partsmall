@@ -4,18 +4,17 @@
     $modalId = 'product-repair-locator-modal-'.$repairLocator['category']->id;
     $stateId = 'repair-locator-state-'.$repairLocator['category']->id;
     $cityId = 'repair-locator-city-'.$repairLocator['category']->id;
-    $displayName = $repairLocator['displayName'] ?? 'خدمات '.\Illuminate\Support\Str::limit($repairLocator['category']->name, 12);
 @endphp
 
 <article class="min-w-0">
     <button
         type="button"
-        class="group flex w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-xl border border-line bg-white px-3 py-2.5 text-start transition hover:border-brand/30 hover:bg-brand-soft/30"
+        class="group flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-line bg-white px-3 py-2.5 text-start transition hover:border-brand/30 hover:bg-brand-soft/30"
         onclick="document.getElementById('{{ $modalId }}').showModal()"
     >
-        <span class="min-w-0 flex-1 overflow-hidden">
-            <span class="block truncate text-xs font-semibold leading-5 text-ink/80" title="خدمات {{ $repairLocator['category']->name }}">
-                {{ $displayName }}
+        <span class="min-w-0 flex-1 text-start">
+            <span class="block text-[11px] font-semibold leading-snug text-ink/80">
+                خدمات {{ $repairLocator['category']->name }}
             </span>
         </span>
         <span class="shrink-0 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold text-white transition group-hover:bg-brand-dark">
