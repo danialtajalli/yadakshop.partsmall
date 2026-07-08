@@ -374,18 +374,16 @@
     <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <button
             type="button"
-            class="group flex w-full items-center bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
+            class="group w-full bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
             data-part-specs-toggle
             aria-expanded="false"
             aria-controls="part-specs-panel"
         >
-            <span class="flex w-full min-w-0 items-center justify-between sm:w-auto sm:justify-start sm:gap-2.5">
-                <span class="min-w-0">
-                    <span class="ps-section-label block">جزئیات</span>
-                    <span class="mt-1 block ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">مشخصات قطعه</span>
-                </span>
+            <span class="ps-section-label block">جزئیات</span>
+            <span class="ps-part-specs-toggle__title-row">
+                <span class="block ps-section-title text-2xl tracking-tight sm:text-3xl">مشخصات قطعه</span>
                 <svg
-                    class="size-5 shrink-0 self-center text-ink-muted transition-transform duration-200 group-hover:text-brand sm:size-6"
+                    class="size-5 shrink-0 text-ink-muted transition-transform duration-200 group-hover:text-brand sm:size-6"
                     data-part-specs-chevron
                     fill="none"
                     viewBox="0 0 24 24"
