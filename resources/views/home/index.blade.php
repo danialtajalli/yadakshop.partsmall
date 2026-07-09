@@ -154,10 +154,20 @@
                     <x-ui.part-card
                         :part="$part"
                         :url="route('part.show', $part->slug)"
-                        class="home-part-card flex-col items-center gap-1.5 p-2 text-center sm:flex-row sm:gap-2.5 sm:p-3 sm:text-start [&_h3]:whitespace-normal [&_h3]:text-center [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-start sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
+                        class="home-part-card flex-col gap-1.5 p-2 sm:flex-row sm:gap-2.5 sm:p-3 [&_h3]:whitespace-normal [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
                         data-part-name="{{ $part->title }}"
                     />
                 @endforeach
+            </div>
+
+            <div id="home-parts-load-more-wrap" class="mt-5 hidden justify-center">
+                <button
+                    type="button"
+                    id="home-parts-load-more"
+                    class="ps-btn-secondary min-w-44 justify-center"
+                >
+                    نمایش بیشتر
+                </button>
             </div>
         @endif
     </section>
@@ -194,28 +204,72 @@
 
             const partSearchInput = document.getElementById('home-part-search');
             const partEmptyMessage = document.getElementById('home-part-search-empty');
+            const partsGrid = document.getElementById('home-parts-grid');
             const partCards = Array.from(document.querySelectorAll('.home-part-card'));
+            const partsLoadMore = document.getElementById('home-parts-load-more');
+            const partsLoadMoreWrap = document.getElementById('home-parts-load-more-wrap');
+            const INITIAL_PART_ROWS = 8;
+            let partsExpanded = false;
 
-            if (partSearchInput && partCards.length > 0) {
-                partSearchInput.addEventListener('input', function () {
-                    const query = this.value.trim().toLowerCase();
-                    let visibleCount = 0;
+            const getPartsGridColumnCount = function () {
+                if (!partsGrid) {
+                    return 1;
+                }
 
-                    partCards.forEach(function (card) {
-                        const name = (card.dataset.partName || '').toLowerCase();
-                        const matches = query === '' || name.includes(query);
+                const columns = window.getComputedStyle(partsGrid).gridTemplateColumns.split(' ').filter(Boolean);
 
-                        card.classList.toggle('hidden', !matches);
+                return columns.length || 1;
+            };
 
-                        if (matches) {
-                            visibleCount++;
-                        }
-                    });
+            const getInitialPartsLimit = function () {
+                return getPartsGridColumnCount() * INITIAL_PART_ROWS;
+            };
 
-                    if (partEmptyMessage) {
-                        partEmptyMessage.classList.toggle('hidden', query === '' || visibleCount > 0);
+            const applyPartVisibility = function () {
+                const query = (partSearchInput?.value || '').trim().toLowerCase();
+                const isSearching = query !== '';
+                const initialLimit = getInitialPartsLimit();
+                let visibleCount = 0;
+
+                partCards.forEach(function (card, index) {
+                    const name = (card.dataset.partName || '').toLowerCase();
+                    const matchesSearch = query === '' || name.includes(query);
+                    const withinInitialLimit = partsExpanded || isSearching || index < initialLimit;
+                    const visible = matchesSearch && withinInitialLimit;
+
+                    card.classList.toggle('hidden', !visible);
+
+                    if (visible) {
+                        visibleCount++;
                     }
                 });
+
+                if (partEmptyMessage) {
+                    partEmptyMessage.classList.toggle('hidden', !isSearching || visibleCount > 0);
+                }
+
+                if (partsLoadMoreWrap) {
+                    const showLoadMore = !partsExpanded && !isSearching && partCards.length > initialLimit;
+                    partsLoadMoreWrap.classList.toggle('hidden', !showLoadMore);
+                    partsLoadMoreWrap.classList.toggle('flex', showLoadMore);
+                }
+            };
+
+            if (partCards.length > 0) {
+                applyPartVisibility();
+
+                if (partSearchInput) {
+                    partSearchInput.addEventListener('input', applyPartVisibility);
+                }
+
+                if (partsLoadMore) {
+                    partsLoadMore.addEventListener('click', function () {
+                        partsExpanded = true;
+                        applyPartVisibility();
+                    });
+                }
+
+                window.addEventListener('resize', applyPartVisibility);
             }
         })();
     </script>
