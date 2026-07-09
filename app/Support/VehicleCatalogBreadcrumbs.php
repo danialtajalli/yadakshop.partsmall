@@ -23,6 +23,9 @@ class VehicleCatalogBreadcrumbs
         ?string $terminalUrl = null,
     ): array {
 
+        if($car)
+            $car->name = strtoupper(($car->name));
+
         $items = [
             ['label' => 'خانه', 'url' => route('home')],
         ];

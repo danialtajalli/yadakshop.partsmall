@@ -113,7 +113,7 @@ class HomePageService
                         ->map(function ($car) use ($company): array {
                             return [
                                 'slug' => $car->slug,
-                                'name' => $car->name,
+                                'name' => strtoupper($car->name),
                                 'modelCategories' => $car->models
                                     ->sortBy('name')
                                     ->groupBy(fn ($model) => (string) ($model->category_id ?? 0))

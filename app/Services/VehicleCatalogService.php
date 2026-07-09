@@ -90,6 +90,11 @@ class VehicleCatalogService
 
         $cars = $carsQuery->get();
 
+        $cars->transform(function($car){
+            $car->name = strtoupper(($car->name));
+            return $car;
+        });
+
         $title = $context->company !== null
             ? 'لیست خودرو‌های '.$context->company->name
             : 'لیست تمام خودروها';
@@ -138,6 +143,14 @@ class VehicleCatalogService
         }
 
         $cars = $carsQuery->get();
+
+        $cars->transform(function($car){
+            $car->name = strtoupper(($car->name));
+            return $car;
+        });
+
+        if($context?->car?->name)
+            $context->car->name = strtoupper(($context->car->name));
 
         $modelsQuery = CarModel::query()
             ->with(['cars.company', 'category'])
@@ -209,6 +222,13 @@ class VehicleCatalogService
         }
 
         $cars = $carsQuery->get();
+        $cars->transform(function($car){
+            $car->name = strtoupper(($car->name));
+            return $car;
+        });
+
+        if($context?->car?->name)
+            $context->car->name = strtoupper(($context->car->name));
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,

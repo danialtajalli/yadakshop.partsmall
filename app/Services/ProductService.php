@@ -54,8 +54,11 @@ class ProductService
             $this->loadImagesForShops($shop);
         });
 
+        $car->name = strtoupper($car->name);
+
         $title = $this->buildTitle($part, $company, $car, $model);
         $telegramCta = $this->buildTelegramCta($company, $car);
+;
 
         return [
             'company' => $company,
