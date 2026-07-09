@@ -159,6 +159,7 @@
             .ps-form-errors__item::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.65em; width: 0.25rem; height: 0.25rem; border-radius: 9999px; background: #e11d48; opacity: 0.45; }
         </style>
     @endif
+
     @stack('head')
 </head>
 <body class="flex min-h-screen overflow-x-hidden flex-col font-sans antialiased bg-gray-50">

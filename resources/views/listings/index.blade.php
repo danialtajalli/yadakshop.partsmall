@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+@if (isset($_GET['page']) && $_GET['page'] > 1
+ && Route::current()->getName() != 'shops.index')
+@push('head')
+<meta name="robots" content="noindex, follow" />
+@endpush
+@endif
+
 @section('title', $title)
 
 @section('content')

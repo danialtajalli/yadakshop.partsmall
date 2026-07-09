@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@if (isset($_GET['page']) && $_GET['page'] > 1)
+@push('head')
+<meta name="robots" content="noindex, follow" />
+@endpush
+@endif
+
 @section('title', $title)
 
 @section('content')
