@@ -79,7 +79,7 @@
 
                         const heading = document.createElement('h3');
                         heading.className = 'mb-2 text-xs font-bold text-brand';
-                        heading.textContent = category.label;
+                        heading.textContent = "انتخاب بر اساس " + category.label;
                         section.appendChild(heading);
 
                         const chips = document.createElement('div');
