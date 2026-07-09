@@ -60,7 +60,7 @@
                         'bg-surface text-ink' => $isShopsNavActive,
                     ])
                     @if ($isShopsNavActive) aria-current="page" @endif
-                >فروشگاه‌ها</a>
+                >فروشگاه‌های عضو</a>
                 @foreach ($headerNavigationPages as $navPage)
                     @if ($navPage->slug == 'terms')
                         @continue
