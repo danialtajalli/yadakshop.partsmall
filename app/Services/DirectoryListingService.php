@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
 
 class DirectoryListingService
 {
-    private const PER_PAGE = 12;
+    private const PER_PAGE = 24;
 
     /**
      * @return array{
