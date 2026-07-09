@@ -208,7 +208,15 @@ class ProductService
     /** @return Collection<int, Shop> */
     private function loadShopsForPart(Part $part, int $company_id): Collection
     {
-        $query = fn () => Shop::query()
+        if(in_array($company_id, [1, 2]))
+        {
+            $query = fn () => Shop::whereIn('id', [1, 2, 3]);
+        }
+        else
+        {
+            $query = fn () => Shop::query();
+        }
+        $query = fn() =>$query()
             ->visibleUnderProduct()
             ->ordered()
             ->with(['phones', 'links', 'state', 'images'])
