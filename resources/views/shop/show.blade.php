@@ -90,6 +90,7 @@
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach ($shop->companies as $company)
+                        <a href="{{ route('cars.index', $company->slug) }}">
                             <article class="ps-card flex items-center gap-4 p-4">
                                 <x-ui.company-logo
                                     :name="$company->name"
@@ -103,6 +104,7 @@
                                     @endif
                                 </div>
                             </article>
+                        </a>
                         @endforeach
                     </div>
                 </section>
