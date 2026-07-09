@@ -62,6 +62,9 @@
                     @if ($isShopsNavActive) aria-current="page" @endif
                 >فروشگاه‌ها</a>
                 @foreach ($headerNavigationPages as $navPage)
+                    @if ($navPage->slug == 'terms')
+                        @continue
+                    @endif
                     @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
                     <a
                         href="{{ route('page.show', $navPage->slug) }}"
@@ -159,6 +162,9 @@
                 @if ($isShopsNavActive) aria-current="page" @endif
             >فروشگاه‌ها</a>
             @foreach ($headerNavigationPages as $navPage)
+                @if ($navPage->slug == 'terms')
+                    @continue
+                @endif
                 @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
                 <a
                     href="{{ route('page.show', $navPage->slug) }}"
