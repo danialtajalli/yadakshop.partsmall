@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 
 class HomePageService
 {
-    private const FEATURED_LIMIT = 16;
+    private const FEATURED_LIMIT = 17;
 
     /**
      * @return array{
