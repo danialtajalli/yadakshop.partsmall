@@ -258,7 +258,7 @@
 
                         <dialog
                             id="shop-modal-{{ $shop->id }}"
-                            class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
+                            class="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
                         >
                             <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
                                 <h4 class="font-bold text-ink">{{ $shop->name }}</h4>
@@ -463,7 +463,7 @@
         @push('overlays')
             <div
                 data-shops-jump-fixed
-                class="pointer-events-none fixed inset-x-4 top-20 z-50 opacity-0 transition-opacity duration-200 sm:hidden"
+                class="pointer-events-none fixed inset-x-4 top-20 opacity-0 transition-opacity duration-200 sm:hidden"
                 aria-hidden="true"
             >
                 <x-product.shops-jump-button
