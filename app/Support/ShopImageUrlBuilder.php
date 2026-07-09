@@ -55,7 +55,7 @@ class ShopImageUrlBuilder
 
         $repairShop->logo = $logo?->path
             ? self::build('repair', ImageType::Logo, $repairShop->id, $logo->path)
-            : asset('storage/img/no_image_repair.jpg');
+            : asset('panel/assets/uploads/img/no_image_repair.jpg');
 
         $cover = $repairShop->images->firstWhere('type', ImageType::Cover);
 
@@ -67,7 +67,7 @@ class ShopImageUrlBuilder
     public static function attachRepresentationMedia(Representation $representation): void
     {
         if (! $representation->logo) {
-            $representation->logo = asset('storage/img/no_image_representation.jpg');
+            $representation->logo = asset('panel/assets/uploads/img/no_image_representation.jpg');
             return;
         }
 
