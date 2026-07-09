@@ -60,7 +60,7 @@ class ShopProfileService
 
         return [
             'shop' => $shop,
-            'title' => $shop->name,
+            'title' => "پروفایل " . $shop->name . " " . " در پارتس‌مال",
             'averageRating' => $shop->average_rating !== null ? (float) $shop->average_rating : null,
             'commentsCount' => $shop->comments->count(),
         ];
