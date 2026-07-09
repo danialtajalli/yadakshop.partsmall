@@ -37,9 +37,5 @@
                 <x-ui.part-card :context="$context" :part="$part" :url="$part->catalog_url" />
             @endforeach
         </div>
-
-        <div class="mt-10">
-            {{ $parts->links() }}
-        </div>
     @endif
 @endsection

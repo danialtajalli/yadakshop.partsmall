@@ -235,9 +235,9 @@ class VehicleCatalogService
             default => 'لیست تمام قطعات',
         };
 
-        $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
+        $parts = $partsQuery->get();
 
-        $parts->getCollection()->transform(function (Part $part) use ($context): Part {
+        $parts->transform(function (Part $part) use ($context): Part {
             $part->setAttribute('catalog_url', $this->partUrl($part, $context));
             if($context->company !== null && $context->car !== null && $context->model !== null)
             {
