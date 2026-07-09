@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Company;
 use App\Models\Part;
+use App\Support\PageTitle;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -39,14 +40,16 @@ class PartPageService
             'q' => $request->string('q')->trim()->toString() ?: null,
         ];
 
+        $vehicleApplications = $this->paginateVehicleApplications(
+            $part,
+            $filters['q'],
+            $request->integer('page', 1),
+        );
+
         return [
             'part' => $part,
-            'title' => $part->name,
-            'vehicleApplications' => $this->paginateVehicleApplications(
-                $part,
-                $filters['q'],
-                $request->integer('page', 1),
-            ),
+            'title' => PageTitle::appendPageNumber($part->name, $vehicleApplications->currentPage()),
+            'vehicleApplications' => $vehicleApplications,
             'filters' => $filters,
         ];
     }

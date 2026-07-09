@@ -158,6 +158,21 @@ class DirectoryListingServiceTest extends TestCase
         $this->assertSame(15, $data['listings']->total());
     }
 
+    public function test_shop_listing_title_includes_page_number_on_later_pages(): void
+    {
+        foreach (range(1, 25) as $index) {
+            $this->createShopWithLogo([
+                'name' => "فروشگاه {$index}",
+                'slug' => "shop-{$index}",
+                'order' => $index,
+            ]);
+        }
+
+        $data = $this->service->getShopListing(Request::create('/shops', 'GET', ['page' => 2]));
+
+        $this->assertSame('فروشگاه‌های لوازم یدکی - صفحه 2', $data['title']);
+    }
+
     public function test_repair_shop_listing_returns_expected_page_data_structure(): void
     {
         $specialization = RepairCategory::create(['name' => 'جلوبندی']);

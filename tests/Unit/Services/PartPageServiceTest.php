@@ -66,6 +66,7 @@ class PartPageServiceTest extends TestCase
         $paginated = $this->service->getPartPageData('arm', Request::create('/part/arm', 'GET', ['page' => 2]));
         $this->assertSame(63, $paginated['vehicleApplications']->total());
         $this->assertCount(3, $paginated['vehicleApplications']->items());
+        $this->assertSame('طبق - صفحه 2', $paginated['title']);
     }
 
     private function seedVehicles(): Part

@@ -10,6 +10,7 @@ use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\PageTitle;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -249,7 +250,7 @@ class DirectoryListingService
         return [
             'listings' => $listings,
             'type' => $type,
-            'title' => $title,
+            'title' => PageTitle::appendPageNumber($title, $listings->currentPage()),
             'states' => $states,
             'cities' => $cities,
             'citiesByState' => $this->citiesGroupedByState(),

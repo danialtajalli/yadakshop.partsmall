@@ -92,6 +92,24 @@ class DirectoryListingTest extends TestCase
         $response->assertViewHas('listings', fn ($listings) => $listings->count() === 12 && $listings->total() === 15);
     }
 
+    public function test_shops_index_title_includes_page_number_on_later_pages(): void
+    {
+        $state = State::create(['name' => 'فارس', 'slug' => 'fars', 'tel_prefix' => '071']);
+
+        foreach (range(1, 25) as $index) {
+            $this->createListedShop([
+                'name' => "فروشگاه {$index}",
+                'slug' => "shop-{$index}",
+                'state_id' => $state->id,
+                'order' => $index,
+            ]);
+        }
+
+        $this->get(route('shops.index', ['page' => 2]))
+            ->assertOk()
+            ->assertSee('فروشگاه‌های لوازم یدکی - صفحه 2', false);
+    }
+
     /**
      * @param  array<string, mixed>  $attributes
      */

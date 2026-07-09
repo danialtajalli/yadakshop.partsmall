@@ -19,7 +19,7 @@
         <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
             <x-ui.section-heading
                 label="قطعه"
-                :title="$part->name"
+                :title="$title"
                 :description="$part->partsCategory?->name"
                 heading="h1"
             />
