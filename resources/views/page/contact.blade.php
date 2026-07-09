@@ -87,8 +87,10 @@
                     </div>
                     <div class="min-w-0">
                         <h2 class="text-sm font-bold text-ink">تلفن</h2>
-                        <a href="tel:{{ preg_replace('/\s+/', '', $contact['phone']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark">
-                            {{ $contact['phone'] }}
+                        <a dir="rtl" href="tel:{{ preg_replace('/\s+/', '', $contact['phone']) }}" class="mt-1 block text-sm text-brand transition hover:text-brand-dark text-right">
+                            <span dir="ltr">
+                                {{ $contact['phone'] }}
+                            </span>
                         </a>
                     </div>
                 </div>
