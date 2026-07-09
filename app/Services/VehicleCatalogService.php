@@ -55,7 +55,7 @@ class VehicleCatalogService
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 terminalLabel: 'کمپانی ها',
             ),
-            'title' => 'کمپانی های خودرو',
+            'title' => 'لیست کمپانی‌ها',
         ];
     }
 
