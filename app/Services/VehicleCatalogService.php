@@ -232,7 +232,7 @@ class VehicleCatalogService
                 .$context->company->name.' '
                 .$context->car->name.' '
                 .CarModelLabel::display($context->model),
-            default => 'لوازم یدکی خودرو',
+            default => 'لیست تمام قطعات',
         };
 
         $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
