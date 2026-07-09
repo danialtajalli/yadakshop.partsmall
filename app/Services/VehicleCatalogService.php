@@ -91,8 +91,8 @@ class VehicleCatalogService
         $cars = $carsQuery->get();
 
         $title = $context->company !== null
-            ? 'خودروهای '.$context->company->name
-            : 'همه خودروها';
+            ? 'لیست خودرو‌های '.$context->company->name
+            : 'لیست تمام خودروها';
 
         $description = 'خودروی مورد نظر را انتخاب کنید یا ابتدا برند را فیلتر کنید.';
 
@@ -153,8 +153,8 @@ class VehicleCatalogService
         $modelCategoryGroups = $this->groupModelEntriesByCategory($models);
 
         $title = match (true) {
-            $context->company !== null && $context->car !== null => 'مدل‌های '.$context->company->name.' '.$context->car->name,
-            $context->company !== null => 'مدل‌های '.$context->company->name,
+            $context->company !== null && $context->car !== null => 'لیست مدل‌های '.$context->company->name.' '.$context->car->name,
+            $context->company !== null => 'لیست مدل‌های '.$context->company->name,
             default => 'همه مدل‌ها',
         };
 
