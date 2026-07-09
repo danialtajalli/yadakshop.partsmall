@@ -142,7 +142,7 @@
 
         <!-- CTA -->
         <a
-            href="{{ $telegramUrl }}"
+            href="{{ strlen($telegramUrl)>3?$telegramUrl:"https://t.me/PartsMallClub" }}"
             target="_blank"
             rel="noopener noreferrer"
             class="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl bg-white py-3.5 text-base font-extrabold text-[#229ED9] shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
