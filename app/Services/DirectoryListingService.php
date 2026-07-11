@@ -11,6 +11,7 @@ use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Models\State;
 use App\Support\PageTitle;
+use App\Support\Pagination;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,7 @@ class DirectoryListingService
      *     listings: LengthAwarePaginator,
      *     type: string,
      *     title: string,
+     *     breadcrumbs: list<array{label: string, url?: string, active?: bool, emphasized?: bool}>,
      *     states: Collection<int, State>,
      *     cities: Collection<int, City>,
      *     citiesByState: array<int, list<array{id: int, name: string}>>,
@@ -71,6 +73,7 @@ class DirectoryListingService
      *     listings: LengthAwarePaginator,
      *     type: string,
      *     title: string,
+     *     breadcrumbs: list<array{label: string, url?: string, active?: bool, emphasized?: bool}>,
      *     states: Collection<int, State>,
      *     cities: Collection<int, City>,
      *     citiesByState: array<int, list<array{id: int, name: string}>>,
@@ -121,6 +124,7 @@ class DirectoryListingService
      *     listings: LengthAwarePaginator,
      *     type: string,
      *     title: string,
+     *     breadcrumbs: list<array{label: string, url?: string, active?: bool, emphasized?: bool}>,
      *     states: Collection<int, State>,
      *     cities: Collection<int, City>,
      *     citiesByState: array<int, list<array{id: int, name: string}>>,
@@ -227,6 +231,7 @@ class DirectoryListingService
      *     listings: LengthAwarePaginator,
      *     type: string,
      *     title: string,
+     *     breadcrumbs: list<array{label: string, url?: string, active?: bool, emphasized?: bool}>,
      *     states: Collection<int, State>,
      *     cities: Collection<int, City>,
      *     citiesByState: array<int, list<array{id: int, name: string}>>,
@@ -251,6 +256,14 @@ class DirectoryListingService
             'listings' => $listings,
             'type' => $type,
             'title' => PageTitle::appendPageNumber($title, $listings->currentPage()),
+            'breadcrumbs' => Pagination::buildBreadcrumbs(
+                [
+                    ['label' => 'خانه', 'url' => url('/')],
+                    ['label' => $title],
+                ],
+                $listings->currentPage(),
+                Pagination::pageUrl($listings, 1),
+            ),
             'states' => $states,
             'cities' => $cities,
             'citiesByState' => $this->citiesGroupedByState(),

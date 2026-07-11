@@ -171,6 +171,8 @@ class DirectoryListingServiceTest extends TestCase
         $data = $this->service->getShopListing(Request::create('/shops', 'GET', ['page' => 2]));
 
         $this->assertSame('فروشگاه‌های لوازم یدکی - صفحه 2', $data['title']);
+        $this->assertSame('صفحه 2', $data['breadcrumbs'][2]['label']);
+        $this->assertSame('فروشگاه‌های لوازم یدکی', $data['breadcrumbs'][1]['label']);
     }
 
     public function test_repair_shop_listing_returns_expected_page_data_structure(): void

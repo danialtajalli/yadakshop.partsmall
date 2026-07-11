@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Company;
 use App\Models\Part;
 use App\Support\PageTitle;
+use App\Support\Pagination;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class PartPageService
      * @return array{
      *     part: Part,
      *     title: string,
+     *     breadcrumbs: list<array{label: string, url?: string, active?: bool, emphasized?: bool}>,
      *     vehicleApplications: LengthAwarePaginator,
      *     filters: array{q: ?string},
      * }
@@ -49,6 +51,15 @@ class PartPageService
         return [
             'part' => $part,
             'title' => PageTitle::appendPageNumber($part->name, $vehicleApplications->currentPage()),
+            'breadcrumbs' => Pagination::buildBreadcrumbs(
+                [
+                    ['label' => 'خانه', 'url' => route('home')],
+                    ['label' => 'قطعات', 'url' => route('car.parts')],
+                    ['label' => $part->name],
+                ],
+                $vehicleApplications->currentPage(),
+                Pagination::pageUrl($vehicleApplications, 1),
+            ),
             'vehicleApplications' => $vehicleApplications,
             'filters' => $filters,
         ];

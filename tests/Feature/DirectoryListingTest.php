@@ -107,7 +107,9 @@ class DirectoryListingTest extends TestCase
 
         $this->get(route('shops.index', ['page' => 2]))
             ->assertOk()
-            ->assertSee('فروشگاه‌های لوازم یدکی - صفحه 2', false);
+            ->assertSee('فروشگاه‌های لوازم یدکی - صفحه 2', false)
+            ->assertSee('صفحه 2', false)
+            ->assertDontSee('page=1', false);
     }
 
     /**

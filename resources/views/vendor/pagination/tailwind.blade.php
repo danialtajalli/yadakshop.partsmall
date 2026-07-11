@@ -1,3 +1,7 @@
+@php
+    use App\Support\Pagination as PaginationUrl;
+@endphp
+
 @if ($paginator->hasPages())
     @php
         $currentPage = $paginator->currentPage();
@@ -22,7 +26,7 @@
             @if ($paginator->onFirstPage())
                 <span class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink-muted/50">قبلی</span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">قبلی</a>
+                <a href="{{ PaginationUrl::previousPageUrl($paginator) }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">قبلی</a>
             @endif
 
             @foreach ($mobilePageItems as $page)
@@ -31,12 +35,12 @@
                 @elseif ($page == $currentPage)
                     <span class="shrink-0 rounded-xl bg-brand px-2.5 py-2 text-sm font-medium text-white">{{ $page }}</span>
                 @else
-                    <a href="{{ $paginator->url($page) }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">{{ $page }}</a>
+                    <a href="{{ PaginationUrl::pageUrl($paginator, $page) }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">{{ $page }}</a>
                 @endif
             @endforeach
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">بعدی</a>
+                <a href="{{ PaginationUrl::nextPageUrl($paginator) }}" class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink transition hover:bg-surface">بعدی</a>
             @else
                 <span class="shrink-0 rounded-xl px-2.5 py-2 text-sm text-ink-muted/50">بعدی</span>
             @endif
@@ -49,7 +53,7 @@
             @if ($paginator->onFirstPage())
                 <span class="rounded-xl px-3 py-2 text-sm text-ink-muted/50">قبلی</span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">قبلی</a>
+                <a href="{{ PaginationUrl::previousPageUrl($paginator) }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">قبلی</a>
             @endif
 
             @foreach ($elements as $element)
@@ -62,14 +66,14 @@
                         @if ($page == $paginator->currentPage())
                             <span class="rounded-xl bg-brand px-3 py-2 text-sm font-medium text-white">{{ $page }}</span>
                         @else
-                            <a href="{{ $url }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">{{ $page }}</a>
+                            <a href="{{ PaginationUrl::pageUrl($paginator, $page) }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">{{ $page }}</a>
                         @endif
                     @endforeach
                 @endif
             @endforeach
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">بعدی</a>
+                <a href="{{ PaginationUrl::nextPageUrl($paginator) }}" class="rounded-xl px-3 py-2 text-sm text-ink transition hover:bg-surface">بعدی</a>
             @else
                 <span class="rounded-xl px-3 py-2 text-sm text-ink-muted/50">بعدی</span>
             @endif

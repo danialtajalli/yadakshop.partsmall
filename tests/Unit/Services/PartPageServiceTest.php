@@ -67,6 +67,8 @@ class PartPageServiceTest extends TestCase
         $this->assertSame(63, $paginated['vehicleApplications']->total());
         $this->assertCount(3, $paginated['vehicleApplications']->items());
         $this->assertSame('طبق - صفحه 2', $paginated['title']);
+        $this->assertSame('صفحه 2', $paginated['breadcrumbs'][3]['label']);
+        $this->assertSame(route('part.show', 'arm'), $paginated['breadcrumbs'][2]['url']);
     }
 
     private function seedVehicles(): Part
