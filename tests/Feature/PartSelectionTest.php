@@ -64,6 +64,57 @@ class PartSelectionTest extends TestCase
         ]))->assertNotFound();
     }
 
+    public function test_car_parts_page_paginates_parts_for_vehicle_context(): void
+    {
+        [$company, $car, $model] = array_slice($this->seedSelectionGraph(), 0, 3);
+        $category = PartsCategory::create(['name' => 'موتور']);
+
+        foreach (range(1, 25) as $index) {
+            Part::create([
+                'name' => 'قطعه '.$index,
+                'slug' => 'part-'.$index,
+                'parts_category_id' => $category->id,
+            ]);
+        }
+
+        $vehiclePartsUrl = route('car.parts.vehicle', [
+            'company' => $company->slug,
+            'car' => $car->slug,
+            'model' => $model->slug,
+        ]);
+
+        $this->get($vehiclePartsUrl)
+            ->assertOk()
+            ->assertSee('قطعه 1', false)
+            ->assertDontSee('قطعه 25', false)
+            ->assertSee('?page=2', false);
+
+        $this->get($vehiclePartsUrl.'?page=2')
+            ->assertOk()
+            ->assertSee('قطعه 25', false)
+            ->assertSee(' - صفحه 2', false);
+    }
+
+    public function test_global_parts_page_does_not_paginate(): void
+    {
+        $this->seedSelectionGraph();
+        $category = PartsCategory::create(['name' => 'موتور']);
+
+        foreach (range(1, 25) as $index) {
+            Part::create([
+                'name' => 'قطعه '.$index,
+                'slug' => 'global-part-'.$index,
+                'parts_category_id' => $category->id,
+            ]);
+        }
+
+        $this->get(route('car.parts'))
+            ->assertOk()
+            ->assertSee('قطعه 1', false)
+            ->assertSee('قطعه 25', false)
+            ->assertDontSee('?page=2', false);
+    }
+
     /**
      * @return array{0: Company, 1: Car, 2: CarModel, 3: Part}
      */

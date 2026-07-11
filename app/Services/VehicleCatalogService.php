@@ -11,6 +11,8 @@ use App\Models\Part;
 use App\Support\CarModelLabel;
 use App\Support\CatalogUrls;
 use App\Support\ModelCategoryLabel;
+use App\Support\PageTitle;
+use App\Support\Pagination;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
@@ -194,7 +196,7 @@ class VehicleCatalogService
 
     /**
      * @return array{
-     *     parts: LengthAwarePaginator,
+     *     parts: LengthAwarePaginator|Collection<int, Part>,
      *     categories: Collection<int, \App\Models\PartsCategory>,
      *     companies: Collection<int, Company>,
      *     cars: Collection<int, Car>,
@@ -247,28 +249,26 @@ class VehicleCatalogService
             $partsQuery->where('parts_category_id', $filters['category']);
         }
 
+        $hasVehicleContext = $context->company !== null
+            && $context->car !== null
+            && $context->model !== null;
+
         $title = match (true) {
-            $context->company !== null && $context->car !== null && $context->model !== null => 'لوازم یدکی '
+            $hasVehicleContext => 'لوازم یدکی '
                 .$context->company->name.' '
                 .$context->car->name.' '
                 .CarModelLabel::display($context->model),
             default => 'لیست تمام قطعات',
         };
 
-        $parts = $partsQuery->get();
-
-        $parts->transform(function (Part $part) use ($context): Part {
-            $part->setAttribute('catalog_url', $this->partUrl($part, $context));
-            if($context->company !== null && $context->car !== null && $context->model !== null)
-            {
-                $part->setAttribute('title', $this->buildTitle($part, $context->company, $context->car, $context->model));
-            }
-            else
-            {
-                $part->setAttribute('title', $part->name);
-            }
-            return $part;
-        });
+        if ($hasVehicleContext) {
+            $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
+            $parts->getCollection()->transform(fn (Part $part): Part => $this->transformPartForCatalog($part, $context));
+            $title = PageTitle::appendPageNumber($title, $parts->currentPage());
+        } else {
+            $parts = $partsQuery->get();
+            $parts->transform(fn (Part $part): Part => $this->transformPartForCatalog($part, $context));
+        }
 
         $description = match (true) {
             $context->model !== null => 'قطعات موجود برای این خودرو — برای مشاهده فروشگاه‌ها و قیمت کلیک کنید.',
@@ -277,21 +277,44 @@ class VehicleCatalogService
             default => 'فهرست کامل قطعات — برای جزئیات و خودروهای مرتبط روی هر قطعه کلیک کنید.',
         };
 
+        $breadcrumbs = VehicleCatalogBreadcrumbs::build(
+            company: $context->company,
+            car: $context->car,
+            model: $context->model,
+        );
+
+        if ($hasVehicleContext && $parts instanceof LengthAwarePaginator) {
+            $breadcrumbs = Pagination::buildBreadcrumbs(
+                $breadcrumbs,
+                $parts->currentPage(),
+                Pagination::pageUrl($parts, 1),
+            );
+        }
+
         return [
             'parts' => $parts,
             'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
             'companies' => $companies,
             'cars' => $cars,
             'context' => $context,
-            'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
-                company: $context->company,
-                car: $context->car,
-                model: $context->model,
-            ),
+            'breadcrumbs' => $breadcrumbs,
             'title' => $title,
             'description' => $description,
             'filters' => $filters,
         ];
+    }
+
+    private function transformPartForCatalog(Part $part, VehicleCatalogContext $context): Part
+    {
+        $part->setAttribute('catalog_url', $this->partUrl($part, $context));
+
+        if ($context->company !== null && $context->car !== null && $context->model !== null) {
+            $part->setAttribute('title', $this->buildTitle($part, $context->company, $context->car, $context->model));
+        } else {
+            $part->setAttribute('title', $part->name);
+        }
+
+        return $part;
     }
 
     private function buildTitle(Part $part, Company $company, Car $car, CarModel $model): string

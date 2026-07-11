@@ -73,4 +73,24 @@ class PaginationTest extends TestCase
             ['label' => 'صفحه 2', 'active' => true],
         ], $breadcrumbs);
     }
+
+    public function test_compact_page_items_shows_all_pages_for_short_lists(): void
+    {
+        $this->assertSame([1, 2, 3, 4], Pagination::compactPageItems(2, 4));
+    }
+
+    public function test_compact_page_items_shows_leading_window_near_the_start(): void
+    {
+        $this->assertSame([1, 2, 3, '...', 10], Pagination::compactPageItems(2, 10));
+    }
+
+    public function test_compact_page_items_shows_trailing_window_near_the_end(): void
+    {
+        $this->assertSame([1, '...', 8, 9, 10], Pagination::compactPageItems(9, 10));
+    }
+
+    public function test_compact_page_items_shows_current_page_in_the_middle(): void
+    {
+        $this->assertSame([1, '...', 5, '...', 10], Pagination::compactPageItems(5, 10));
+    }
 }
