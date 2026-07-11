@@ -25,54 +25,60 @@
             ])>
                 <div>
                     <label for="listing-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-                    <select
-                        id="listing-state"
-                        name="state_id"
-                        data-listing-state
-                        class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                    >
-                        <option value="">همه استان‌ها</option>
-                        @foreach ($states as $state)
-                            <option value="{{ $state->id }}" @selected(($filters['state_id'] ?? null) == $state->id)>
-                                {{ $state->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="w-full rounded-xl border border-line bg-white px-3 py-2.5">
+                        <select
+                            id="listing-state"
+                            name="state_id"
+                            data-listing-state
+                            class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                        >
+                            <option value="">همه استان‌ها</option>
+                            @foreach ($states as $state)
+                                <option value="{{ $state->id }}" @selected(($filters['state_id'] ?? null) == $state->id)>
+                                    {{ $state->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div>
                     <label for="listing-city" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
+                    <div class="w-full rounded-xl border border-line bg-white px-3 py-2.5">
                     <select
                         id="listing-city"
                         name="city_id"
                         data-listing-city
-                        class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                        class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
                         @disabled(! ($filters['state_id'] ?? null))
-                    >
-                        <option value="">همه شهرها</option>
-                        @foreach ($cities as $city)
-                            <option value="{{ $city->id }}" @selected(($filters['city_id'] ?? null) == $city->id)>
-                                {{ $city->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                        >
+                            <option value="">همه شهرها</option>
+                            @foreach ($cities as $city)
+                                <option value="{{ $city->id }}" @selected(($filters['city_id'] ?? null) == $city->id)>
+                                    {{ $city->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 @if ($showSpecializationFilter)
                     <div>
                         <label for="listing-specialization" class="mb-1.5 block text-xs font-medium text-ink-muted">تخصص‌ها</label>
-                        <select
-                            id="listing-specialization"
-                            name="specialization_id"
-                            class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                        >
-                            <option value="">همه تخصص‌ها</option>
-                            @foreach ($specializations as $specialization)
-                                <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
-                                    {{ $specialization->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="rounded-xl border border-line bg-white px-3 py-2.5 ">
+                            <select
+                                id="listing-specialization"
+                                name="specialization_id"
+                                class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                            >
+                                <option value="">همه تخصص‌ها</option>
+                                @foreach ($specializations as $specialization)
+                                    <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
+                                        {{ $specialization->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 @endif
             </div>
