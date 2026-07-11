@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('hide_floating_call')
+@endsection
+
 @section('title', $title)
 
 @section('content')
@@ -133,7 +136,7 @@
 
         <aside class="space-y-6 lg:col-span-4">
             @if ($shop->phones->isNotEmpty())
-                <section class="ps-card p-5">
+                <section id="shop-phones" class="ps-card ps-shop-phones-section scroll-mt-20 p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">تماس</h2>
                     <x-ui.phone-icons :phones="$shop->phones" />
                 </section>
@@ -193,4 +196,63 @@
             </section>
         </aside>
     </div>
+
+    @if ($shop->phones->isNotEmpty())
+        @push('overlays')
+            <button
+                type="button"
+                data-shop-phones-jump
+                class="ps-shop-phones-jump fixed bottom-5 start-5 z-50 flex size-14 items-center justify-center rounded-full bg-brand text-white shadow-lg ring-1 ring-black/5 transition hover:bg-brand-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 active:scale-95"
+                aria-label="رفتن به شماره تماس"
+            >
+                <i class="fa-solid fa-phone text-lg" aria-hidden="true"></i>
+            </button>
+        @endpush
+
+        @push('scripts')
+            <script>
+                (function () {
+                    const jumpButton = document.querySelector('[data-shop-phones-jump]');
+                    const phonesSection = document.getElementById('shop-phones');
+
+                    if (!jumpButton || !phonesSection) {
+                        return;
+                    }
+
+                    const headerOffset = 80;
+                    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                    jumpButton.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        jumpButton.classList.add('is-scrolling');
+
+                        const top = phonesSection.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+                        const finish = function () {
+                            jumpButton.classList.remove('is-scrolling');
+                            phonesSection.classList.add('ps-shop-phones-section--highlight');
+                            window.setTimeout(function () {
+                                phonesSection.classList.remove('ps-shop-phones-section--highlight');
+                            }, 900);
+                        };
+
+                        if (reducedMotion) {
+                            window.scrollTo(0, top);
+                            finish();
+
+                            return;
+                        }
+
+                        window.scrollTo({ top: top, behavior: 'smooth' });
+
+                        if ('onscrollend' in window) {
+                            window.addEventListener('scrollend', finish, { once: true });
+                        } else {
+                            window.setTimeout(finish, 750);
+                        }
+                    });
+                })();
+            </script>
+        @endpush
+    @endif
 @endsection

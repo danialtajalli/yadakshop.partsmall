@@ -217,6 +217,18 @@
         animation: ps-shops-section-reveal 0.9s ease-out;
     }
 
+    .ps-shop-phones-section--highlight {
+        animation: ps-shops-section-reveal 0.9s ease-out;
+    }
+
+    .ps-shop-phones-jump {
+        animation: ps-shop-phones-jump-glow 2.4s ease-in-out infinite;
+    }
+
+    .ps-shop-phones-jump.is-scrolling {
+        animation: ps-shops-jump-tap 0.35s ease-out;
+    }
+
     .ps-shops-section.is-filter-loading .ps-shops-section__content {
         opacity: 0.45;
         pointer-events: none;
@@ -281,7 +293,10 @@
         .ps-shops-jump.is-scrolling,
         .ps-shops-jump.is-scrolling .ps-shops-jump-chevron,
         .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up,
-        .ps-shops-section--highlight {
+        .ps-shops-section--highlight,
+        .ps-shop-phones-section--highlight,
+        .ps-shop-phones-jump,
+        .ps-shop-phones-jump.is-scrolling {
             animation: none;
         }
 
@@ -382,6 +397,17 @@
     100% {
         outline: 2px solid transparent;
         outline-offset: 12px;
+    }
+}
+
+@keyframes ps-shop-phones-jump-glow {
+    0%,
+    100% {
+        box-shadow: 0 8px 30px rgb(63 72 87 / 0.22), 0 0 0 0 rgb(63 72 87 / 0.18);
+    }
+
+    50% {
+        box-shadow: 0 12px 36px rgb(63 72 87 / 0.28), 0 0 0 6px rgb(63 72 87 / 0);
     }
 }
 

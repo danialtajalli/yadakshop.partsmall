@@ -92,6 +92,9 @@
                 .ps-shops-jump.is-scrolling .ps-shops-jump-chevron { animation: ps-shops-jump-chevron-scroll 0.55s ease-in-out infinite; }
                 .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up { animation: ps-shops-jump-chevron-scroll-up 0.55s ease-in-out infinite; }
                 .ps-shops-section--highlight { animation: ps-shops-section-reveal 0.9s ease-out; }
+                .ps-shop-phones-section--highlight { animation: ps-shops-section-reveal 0.9s ease-out; }
+                .ps-shop-phones-jump { animation: ps-shop-phones-jump-glow 2.4s ease-in-out infinite; }
+                .ps-shop-phones-jump.is-scrolling { animation: ps-shops-jump-tap 0.35s ease-out; }
                 .ps-carousel { @apply relative; }
                 .ps-carousel-viewport { @apply w-full overflow-hidden; direction: ltr; cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; }
                 .ps-carousel-viewport.is-dragging { cursor: grabbing; }
@@ -101,7 +104,7 @@
                 .ps-carousel-nav--prev { @apply -end-3 sm:-end-4; }
                 .ps-carousel-nav--next { @apply -start-3 sm:-start-4; }
                 @media (prefers-reduced-motion: reduce) {
-                    .ps-shops-jump, .ps-shops-jump-chevron, .ps-shops-jump-chevron--up, .ps-shops-jump.is-scrolling, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up, .ps-shops-section--highlight { animation: none; }
+                    .ps-shops-jump, .ps-shops-jump-chevron, .ps-shops-jump-chevron--up, .ps-shops-jump.is-scrolling, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron, .ps-shops-jump.is-scrolling .ps-shops-jump-chevron--up, .ps-shops-section--highlight, .ps-shop-phones-section--highlight, .ps-shop-phones-jump, .ps-shop-phones-jump.is-scrolling { animation: none; }
                     .ps-shops-jump-chevron--up { transform: rotate(180deg); }
                 }
             }
@@ -136,6 +139,10 @@
             @keyframes ps-shops-section-reveal {
                 0% { outline: 2px solid rgb(13 148 136 / 0.45); outline-offset: 6px; }
                 100% { outline: 2px solid transparent; outline-offset: 12px; }
+            }
+            @keyframes ps-shop-phones-jump-glow {
+                0%, 100% { box-shadow: 0 8px 30px rgb(63 72 87 / 0.22), 0 0 0 0 rgb(63 72 87 / 0.18); }
+                50% { box-shadow: 0 12px 36px rgb(63 72 87 / 0.28), 0 0 0 6px rgb(63 72 87 / 0); }
             }
             .ps-comment-star { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
             .ps-comment-star--filled path { fill: #d4a017; }
@@ -181,7 +188,9 @@
 
     @include('layouts.partials.footer')
 
-    <x-ui.floating-call-button />
+    @unless (View::hasSection('hide_floating_call'))
+        <x-ui.floating-call-button />
+    @endunless
 
     @stack('overlays')
     @stack('scripts')

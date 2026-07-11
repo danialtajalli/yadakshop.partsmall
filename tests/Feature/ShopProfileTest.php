@@ -46,6 +46,10 @@ class ShopProfileTest extends TestCase
         $response->assertSee('leaflet@1.9.4', false);
         $response->assertSee('data-lat="35.68843735"', false);
         $response->assertSee('data-lng="51.43004894"', false);
+        $response->assertDontSee('data-floating-call', false);
+        $response->assertSee('data-shop-phones-jump', false);
+        $response->assertSee('ps-shop-phones-jump', false);
+        $response->assertSee('id="shop-phones"', false);
     }
 
     public function test_shop_profile_hides_unconfirmed_comments(): void
