@@ -217,6 +217,24 @@
         animation: ps-shops-section-reveal 0.9s ease-out;
     }
 
+    .ps-shops-section.is-filter-loading .ps-shops-section__content {
+        opacity: 0.45;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .ps-shops-filter-loading {
+        @apply pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-white/75 opacity-0 transition-opacity duration-200;
+    }
+
+    .ps-shops-section.is-filter-loading .ps-shops-filter-loading {
+        @apply pointer-events-auto opacity-100;
+    }
+
+    .ps-shops-filter-spinner {
+        animation: ps-shops-filter-spin 0.75s linear infinite;
+    }
+
     .ps-carousel {
         @apply relative;
     }
@@ -364,6 +382,12 @@
     100% {
         outline: 2px solid transparent;
         outline-offset: 12px;
+    }
+}
+
+@keyframes ps-shops-filter-spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 

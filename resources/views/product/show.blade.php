@@ -160,7 +160,21 @@
             </div>
         </div>
 
-        <div class="px-5 py-5 sm:px-6">
+        <div class="relative px-5 py-5 sm:px-6" data-shops-section-body>
+            <div
+                data-shops-filter-loading
+                class="ps-shops-filter-loading"
+                aria-hidden="true"
+                hidden
+            >
+                <svg class="ps-shops-filter-spinner size-9 text-brand" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                </svg>
+                <span class="sr-only">در حال اعمال فیلتر</span>
+            </div>
+
+            <div class="ps-shops-section__content">
             <div class="mb-5 rounded-xl border border-line bg-surface/60 px-4 py-4 sm:px-5">
                 <p class="text-sm leading-7 text-ink-muted">
                     از آنجایی که تمام قطعات خودرو بر اساس قیمت دلار و موجودی لحظه‌ای شرکت‌های واردکننده قطعات خودرو تعیین می‌شود،
@@ -351,6 +365,7 @@
                 <p class="text-sm text-ink-muted/70">فروشگاهی برای این قطعه یافت نشد.</p>
             </div>
         @endif
+            </div>
         </div>
     </section>
 
@@ -489,11 +504,55 @@
                     const filterState = document.querySelector('[data-shops-filter-state]');
                     const filterVerified = document.querySelector('[data-shops-filter-verified]');
                     const filterEmpty = document.querySelector('[data-shops-filter-empty]');
+                    const shopsSection = document.getElementById('shops');
+                    const filterLoadingOverlay = document.querySelector('[data-shops-filter-loading]');
                     const shopCards = shopsList
                         ? Array.from(shopsList.querySelectorAll('[data-shop-card]'))
                         : [];
                     const initialBatchSize = Number(shopsList?.dataset.batchSize || 10);
                     const mobileMedia = window.matchMedia('(max-width: 639px)');
+                    const filterReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    let filterApplyTimer = null;
+
+                    const randomFilterDelayMs = function () {
+                        if (filterReducedMotion) {
+                            return 0;
+                        }
+
+                        return Math.floor(Math.random() * 1000);
+                    };
+
+                    const setFilterLoading = function (isLoading) {
+                        if (!shopsSection || !filterLoadingOverlay) {
+                            return;
+                        }
+
+                        shopsSection.classList.toggle('is-filter-loading', isLoading);
+                        filterLoadingOverlay.toggleAttribute('hidden', !isLoading);
+                        filterLoadingOverlay.setAttribute('aria-hidden', String(!isLoading));
+
+                        if (filterState) {
+                            filterState.disabled = isLoading;
+                        }
+
+                        if (filterVerified) {
+                            filterVerified.disabled = isLoading;
+                        }
+                    };
+
+                    const scheduleApplyShopFilters = function () {
+                        if (filterApplyTimer !== null) {
+                            window.clearTimeout(filterApplyTimer);
+                        }
+
+                        setFilterLoading(true);
+
+                        filterApplyTimer = window.setTimeout(function () {
+                            filterApplyTimer = null;
+                            applyShopFilters();
+                            setFilterLoading(false);
+                        }, randomFilterDelayMs());
+                    };
 
                     const isFilterActive = function () {
                         return (filterState?.value || '') !== '' || Boolean(filterVerified?.checked);
@@ -574,7 +633,6 @@
 
                         shopCards.forEach(function (card) {
                             const match = shopMatchesFilters(card);
-                            console.log(match, card);
 
                             setCardFilterHidden(card, !match);
 
@@ -609,8 +667,8 @@
                         }
                     });
 
-                    filterState?.addEventListener('change', applyShopFilters);
-                    filterVerified?.addEventListener('change', applyShopFilters);
+                    filterState?.addEventListener('change', scheduleApplyShopFilters);
+                    filterVerified?.addEventListener('change', scheduleApplyShopFilters);
 
                     const inlineLink = document.querySelector('[data-shops-jump]');
                     const fixedBar = document.querySelector('[data-shops-jump-fixed]');
