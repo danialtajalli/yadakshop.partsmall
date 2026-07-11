@@ -62,7 +62,7 @@
                     @if ($isShopsNavActive) aria-current="page" @endif
                 >فروشگاه‌های عضو</a>
                 @foreach ($headerNavigationPages as $navPage)
-                    @if ($navPage->slug == 'terms')
+                    @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                         @continue
                     @endif
                     @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
@@ -162,7 +162,7 @@
                 @if ($isShopsNavActive) aria-current="page" @endif
             >فروشگاه‌ها</a>
             @foreach ($headerNavigationPages as $navPage)
-                @if ($navPage->slug == 'terms')
+                @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                     @continue
                 @endif
                 @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
