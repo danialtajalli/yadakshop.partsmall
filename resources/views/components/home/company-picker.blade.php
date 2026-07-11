@@ -1,10 +1,7 @@
 @props(['companyPicker' => []])
 
 @if ($companyPicker !== [])
-    <dialog
-        id="home-company-picker-modal"
-        class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40"
-    >
+    <x-ui.modal id="home-company-picker-modal" class="max-w-lg">
         <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
             <div class="min-w-0">
                 <p class="text-xs font-medium text-brand">انتخاب خودرو</p>
@@ -39,7 +36,7 @@
                 <div id="company-picker-models-list" class="grid gap-3 sm:grid-cols-2"></div>
             </div>
         </div>
-    </dialog>
+    </x-ui.modal>
 
     @push('scripts')
         <script>
@@ -140,12 +137,6 @@
 
                 closeButton?.addEventListener('click', function () {
                     modal.close();
-                });
-
-                modal.addEventListener('click', function (event) {
-                    if (event.target === modal) {
-                        modal.close();
-                    }
                 });
 
                 modal.addEventListener('close', showCarsStep);

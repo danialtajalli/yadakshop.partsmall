@@ -79,7 +79,7 @@
     @endif
 
     @if ($part->description || $part->category_description)
-        <div class="mb-8 space-y-6">
+        <div class="mb-8 mt-5 space-y-6">
             @if ($part->description)
                 <section class="ps-card px-5 py-6 sm:px-6">
                     <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }}</h2>

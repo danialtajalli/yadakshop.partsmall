@@ -1,8 +1,8 @@
 @if (session('comment_submitted'))
-    <dialog
+    <x-ui.modal
         id="shop-comment-success-modal"
         data-shop-comment-success-modal
-        class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
+        class="max-w-sm"
     >
         <div class="px-6 py-8 text-center">
             <div class="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-sm ring-8 ring-emerald-50">
@@ -24,7 +24,7 @@
                 متوجه شدم
             </button>
         </div>
-    </dialog>
+    </x-ui.modal>
 
     @push('scripts')
         <script>
@@ -39,12 +39,6 @@
 
                 modal.querySelector('[data-shop-comment-success-close]')?.addEventListener('click', function () {
                     modal.close();
-                });
-
-                modal.addEventListener('click', function (event) {
-                    if (event.target === modal) {
-                        modal.close();
-                    }
                 });
             })();
         </script>

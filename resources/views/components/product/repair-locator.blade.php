@@ -23,10 +23,7 @@
     </button>
 </article>
 
-<dialog
-    id="{{ $modalId }}"
-    class="fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
->
+<x-ui.modal id="{{ $modalId }}" class="max-w-md overflow-hidden">
     <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-4">
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
@@ -108,7 +105,7 @@
             </button>
         </div>
     </form>
-</dialog>
+</x-ui.modal>
 
 @once
     @push('scripts')

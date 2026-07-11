@@ -271,10 +271,7 @@
                             <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">مشاهده پروفایل فروشگاه</a>
                         </div>
 
-                        <dialog
-                            id="shop-modal-{{ $shop->id }}"
-                            class="fixed inset-0 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none"
-                        >
+                        <x-ui.modal id="shop-modal-{{ $shop->id }}">
                             <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
                                 <h4 class="font-bold text-ink">{{ $shop->name }}</h4>
                                 <button
@@ -315,7 +312,7 @@
                                     </div>
                                 @endif
                             </div>
-                        </dialog>
+                        </x-ui.modal>
                     </article>
                 @endforeach
                 @if(count($shops) < 10)

@@ -395,6 +395,10 @@
     display: none !important;
 }
 
+body.ps-modal-open {
+    overflow: hidden;
+}
+
 /* Comment stars & form errors — explicit colors, restrained styling */
 :root {
     --ps-star-filled: #d4a017;
