@@ -1,6 +1,8 @@
+
 @props([
-    'title' => 'به گروه تلگرام چری تیگو ۵ سواران بپیوندید',
     'telegramUrl' => config('partsmall.telegram_url'),
+    'telegramName' => 'چری تیگو ۵',
+    'telegramTitle' => "به گروه تلگرام $telegramName سواران بپیوندید",
 ])
 
 @php
@@ -44,7 +46,7 @@
             <span
                 class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-bold backdrop-blur-md"
             >
-                🔥 بزرگ‌ترین جامعه کاربران تیگو ۵
+                🔥 بزرگ‌ترین جامعه کاربران {{ $telegramName }}
             </span>
         </div>
 
@@ -70,12 +72,12 @@
 
             <div>
                 <h3 class="text-xl font-black leading-relaxed">
-                    {{ $title }}
+                    {{ $telegramTitle }}
                 </h3>
 
                 <p class="mt-2 text-sm leading-6 text-sky-100">
                     تبادل تجربه، آموزش تعمیرات، معرفی قطعات و پاسخ به سوالات
-                    توسط هزاران مالک تیگو ۵.
+                    توسط هزاران مالک {{ $telegramName }}.
                 </p>
             </div>
 
@@ -84,7 +86,7 @@
         <!-- Social proof -->
         <div class="mt-5 flex items-center gap-3">
 
-            <div class="flex -space-x-2 rtl:space-x-reverse">
+            <div class="flex -space-x-2">
                 @foreach ($telegramMemberAvatars as $avatar)
                     <img
                         src="{{ $avatar['src'] }}"
