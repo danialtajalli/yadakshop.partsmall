@@ -82,15 +82,18 @@ class PaginationTest extends TestCase
     public function test_compact_page_items_shows_leading_window_near_the_start(): void
     {
         $this->assertSame([1, 2, 3, '...', 10], Pagination::compactPageItems(2, 10));
+        $this->assertSame([1, 2, 3, 4, '...', 10], Pagination::compactPageItems(3, 10));
     }
 
     public function test_compact_page_items_shows_trailing_window_near_the_end(): void
     {
+        $this->assertSame([1, '...', 7, 8, 9, 10], Pagination::compactPageItems(8, 10));
         $this->assertSame([1, '...', 8, 9, 10], Pagination::compactPageItems(9, 10));
     }
 
-    public function test_compact_page_items_shows_current_page_in_the_middle(): void
+    public function test_compact_page_items_shows_neighbors_when_current_page_touches_ellipsis(): void
     {
-        $this->assertSame([1, '...', 5, '...', 10], Pagination::compactPageItems(5, 10));
+        $this->assertSame([1, '...', 3, 4, 5, '...', 10], Pagination::compactPageItems(4, 10));
+        $this->assertSame([1, '...', 4, 5, 6, '...', 10], Pagination::compactPageItems(5, 10));
     }
 }

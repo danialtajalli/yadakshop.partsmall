@@ -52,14 +52,29 @@ class Pagination
         }
 
         if ($currentPage <= 3) {
-            return [1, 2, 3, '...', $lastPage];
+            $items = [1, 2, 3];
+
+            if ($currentPage === 3) {
+                $items[] = 4;
+            }
+
+            $items[] = '...';
+            $items[] = $lastPage;
+
+            return $items;
         }
 
         if ($currentPage >= $lastPage - 2) {
-            return [1, '...', $lastPage - 2, $lastPage - 1, $lastPage];
+            $items = [1, '...'];
+
+            if ($currentPage === $lastPage - 2 && $lastPage - 3 > 3) {
+                $items[] = $lastPage - 3;
+            }
+
+            return array_merge($items, range($lastPage - 2, $lastPage));
         }
 
-        return [1, '...', $currentPage, '...', $lastPage];
+        return [1, '...', $currentPage - 1, $currentPage, $currentPage + 1, '...', $lastPage];
     }
 
     /**
