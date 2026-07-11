@@ -88,10 +88,10 @@
                         description="خودروسازان و برندهایی که این فروشگاه پوشش می‌دهد"
                     />
 
-                    <div class="grid gap-4 @if($shop->companies->count() <= 2) sm:grid-cols-2 @else sm:grid-cols-3 @endif">
+                    <div class="grid gap-4 grid-cols-2 @if($shop->companies->count() <= 2) sm:grid-cols-2 @else sm:grid-cols-4 @endif">
                         @foreach ($shop->companies as $company)
                         <a href="{{ route('cars.index', $company->slug) }}">
-                            <article class="ps-card flex items-center gap-4 p-4">
+                            <article class="ps-card flex items-center gap-4 p-4 sm:p-2">
                                 <x-ui.company-logo
                                     :name="$company->name"
                                     :logo-url="$company->logo_url ?? null"
