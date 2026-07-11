@@ -79,6 +79,7 @@ class ProductService
             'repairLocators' => $this->buildRepairLocatorContext($part, $car),
             'telegramTitle' => $telegramCta['title'],
             'telegramUrl' => $telegramCta['url'],
+            'telegramName' => $telegramCta['name'],
             'signupUrl' => route('page.show', 'register'),
         ];
     }
@@ -89,6 +90,7 @@ class ProductService
     private function buildTelegramCta(Company $company, Car $car): array
     {
         return [
+            'name' => $company->name.' '.$car->name,
             'title' => 'به گروه تلگرام '.$company->name.' '.$car->name.' سواران بپیوندید',
             'url' => $company->links()->where('link_type', LinkType::Telegram)->first()->name??'#',
         ];
