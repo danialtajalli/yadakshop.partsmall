@@ -43,6 +43,26 @@ class Pagination
     }
 
     /**
+     * @return list<int|string>
+     */
+    public static function compactPageItems(int $currentPage, int $lastPage): array
+    {
+        if ($lastPage <= 4) {
+            return range(1, $lastPage);
+        }
+
+        if ($currentPage <= 3) {
+            return [1, 2, 3, '...', $lastPage];
+        }
+
+        if ($currentPage >= $lastPage - 2) {
+            return [1, '...', $lastPage - 2, $lastPage - 1, $lastPage];
+        }
+
+        return [1, '...', $currentPage, '...', $lastPage];
+    }
+
+    /**
      * @param  list<array{label: string, url?: string, active?: bool, emphasized?: bool}>  $baseCrumbs
      * @return list<array{label: string, url?: string, active?: bool, emphasized?: bool}>
      */

@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@if (isset($_GET['page']) && $_GET['page'] > 1 && $parts instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+@push('head')
+<meta name="robots" content="noindex, follow" />
+@endpush
+@endif
+
 @section('title', $title)
 
 @section('content')
@@ -27,6 +33,14 @@
         />
     </form>
 
+    @if ($parts instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+        <div class="mb-4 flex items-center justify-between gap-3">
+            <p class="text-sm text-ink-muted">
+                {{ number_format($parts->total()) }} مورد یافت شد
+            </p>
+        </div>
+    @endif
+
     @if ($parts->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
             <p class="text-sm text-ink-muted">قطعه‌ای با این فیلتر یافت نشد.</p>
@@ -37,5 +51,11 @@
                 <x-ui.part-card :context="$context" :part="$part" :url="$part->catalog_url" />
             @endforeach
         </div>
+
+        @if ($parts instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+            <div class="mt-10">
+                {{ $parts->links() }}
+            </div>
+        @endif
     @endif
 @endsection
