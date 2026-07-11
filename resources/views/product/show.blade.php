@@ -373,6 +373,7 @@
         <a
             href="{{ \App\Support\CatalogUrls::parts($company->slug, $car->slug, $model->slug) }}"
             class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
+            data-shops-below-anchor
         >
             <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} {{ $car->name }}</span>
             <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
@@ -479,7 +480,7 @@
         @push('overlays')
             <div
                 data-shops-jump-fixed
-                class="pointer-events-none fixed inset-x-4 top-20 opacity-0 transition-opacity duration-200 sm:hidden"
+                class="pointer-events-none z-20 fixed inset-x-4 top-20 opacity-0 transition-opacity duration-200 sm:hidden"
                 aria-hidden="true"
             >
                 <x-product.shops-jump-button
@@ -694,6 +695,19 @@
                         fixedBar.setAttribute('aria-hidden', 'false');
                     };
 
+                    function areBelowShopsButtonsVisible () {
+                        let el = document.querySelector('[data-shops-below-anchor]');
+
+                        let rect = el.getBoundingClientRect();
+
+                        return (
+                            rect.top >= 0 &&
+                            rect.left >= 0 &&
+                            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+                            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+                        );
+                    }
+
                     const setJumpVisibility = function () {
                         if (!mobileMedia.matches) {
                             hideFixedBar();
@@ -708,12 +722,11 @@
                         const isOriginalButtonAboveViewport = anchorRect.bottom < 0;
                         const isShopsInMiddle = rect.top <= middleBandBottom && rect.bottom >= middleBandTop;
                         const shouldShowFixed = isOriginalButtonAboveViewport && !isShopsInMiddle;
-                        const isBelowShopsSection = rect.bottom < headerOffset;
+                        const isBelowShopsSection = areBelowShopsButtonsVisible();
                         const fixedChevron = fixedLink.querySelector('.ps-shops-jump-chevron');
                         const inlineChevron = inlineLink.querySelector('.ps-shops-jump-chevron');
 
                         fixedChevron?.classList.toggle('ps-shops-jump-chevron--up', isBelowShopsSection);
-                        inlineChevron?.classList.remove('ps-shops-jump-chevron--up');
 
                         if (shouldShowFixed) {
                             showFixedBar();
