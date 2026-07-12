@@ -2,45 +2,6 @@
 
 @section('title', $title)
 
-@push('head')
-    <style>
-        .contact-survey-embed {
-            overflow: hidden;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .contact-survey-embed *,
-        .contact-survey-embed .porsline_embed,
-        .contact-survey-embed [id^="OrZ"] {
-            box-sizing: border-box;
-            position: relative;
-            width: 100%;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            min-height: 28rem;
-        }
-
-        .contact-survey-embed .porsline_embed > span {
-            display: none !important;
-        }
-
-        .contact-survey-embed .porsline_embed iframe,
-        .contact-survey-embed iframe {
-            position: relative !important;
-            top: auto !important;
-            left: auto !important;
-            display: block;
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            height: 32rem !important;
-            min-height: 28rem;
-            border: 0;
-        }
-    </style>
-@endpush
-
 @section('content')
     <x-site.breadcrumb :items="$breadcrumbs" />
 
@@ -108,14 +69,23 @@
                 </div>
             </div>
 
-            @if (filled($page->content))
+            <div class="ps-card min-w-0 overflow-hidden p-4 sm:p-5">
+                <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
+                <iframe
+                    src="{{ asset('forms/contact.php?embed=1') }}"
+                    title="فرم تماس"
+                    class="block w-full min-h-[32rem] border-0"
+                    loading="lazy"
+                ></iframe>
+            </div>
+
+            {{-- @if (filled($page->content))
                 <div class="ps-card min-w-0 overflow-hidden p-4 sm:p-5">
-                    <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
-                    <div class="contact-survey-embed">
+                    <div class="prose prose-sm max-w-none text-ink-muted">
                         {!! $page->content !!}
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card lg:sticky lg:top-24">
