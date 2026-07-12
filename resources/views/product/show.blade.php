@@ -255,7 +255,7 @@
                                     </div>
                                 </div>
                                 @if ($shop->secondary_name)
-                                    <p class="truncate text-xs text-ink-muted/70">{{ $shop->secondary_name }}</p>
+                                    <p class="truncate text-xs text-ink-muted/70 mt-2">{{ $shop->secondary_name }}</p>
                                 @endif
                             </div>
                         </div>
@@ -268,7 +268,7 @@
                             >
                                 اطلاعات تماس
                             </button>
-                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">مشاهده پروفایل فروشگاه</a>
+                            <a href="{{ route('shop.profile', $shop->slug) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none flex flex-row gap-1"><p class="hidden sm:block m-0 p-0 leading-none">مشاهده</p><p class="m-0 p-0 leading-none">پروفایل فروشگاه</p></a>
                         </div>
 
                         <x-ui.modal id="shop-modal-{{ $shop->id }}">
