@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <div class="grid gap-8 lg:grid-cols-12">
+    <div class="grid gap-8 lg:grid-cols-12 mb-3">
         <div class="space-y-8 lg:col-span-8">
             @if ($shop->latitude && $shop->longitude)
                 <x-ui.location-map
@@ -125,13 +125,14 @@
                     </ul>
                 </section>
             @endif
-
-            <x-shop.comments-section
-                :shop="$shop"
-                :comments="$shop->comments"
-                :comments-count="$commentsCount"
-                :average-rating="$averageRating"
-            />
+            <div class="hidden sm:block">
+                <x-shop.comments-section
+                    :shop="$shop"
+                    :comments="$shop->comments"
+                    :comments-count="$commentsCount"
+                    :average-rating="$averageRating"
+                />
+            </div>
         </div>
 
         <aside class="space-y-6 lg:col-span-4">
@@ -195,6 +196,15 @@
                 </dl>
             </section>
         </aside>
+
+    </div>
+    <div class="sm:hidden sm:mt-4">
+        <x-shop.comments-section
+            :shop="$shop"
+            :comments="$shop->comments"
+            :comments-count="$commentsCount"
+            :average-rating="$averageRating"
+        />
     </div>
 
     @if ($shop->phones->isNotEmpty())
