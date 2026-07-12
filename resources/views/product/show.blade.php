@@ -366,90 +366,92 @@
         </div>
     </section>
 
-    <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <a
-            href="{{ \App\Support\CatalogUrls::parts($company->slug, $car->slug, $model->slug) }}"
-            class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
-            data-shops-below-anchor
-        >
-            <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} {{ $car->name }}</span>
-            <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
-        </a>
-        <a
-            href="{{ route('part.show', $part->slug) }}"
-            class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
-        >
-            <span>مشاهده همه {{ $part->name }} های موجود در بازار</span>
-            <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
-        </a>
-    </div>
-
-    {{-- Part specs --}}
-    <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-        <button
-            type="button"
-            class="group w-full bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
-            data-part-specs-toggle
-            aria-expanded="false"
-            aria-controls="part-specs-panel"
-        >
-            <span class="ps-section-label block">جزئیات</span>
-            <span class="ps-part-specs-toggle__title-row">
-                <span class="block ps-section-title text-2xl tracking-tight sm:text-3xl">مشخصات قطعه</span>
-                <svg
-                    class="size-5 shrink-0 text-bold transition-transform duration-200 group-hover:text-brand sm:size-6"
-                    data-part-specs-chevron
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
-                >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-            </span>
-        </button>
-
-        <div id="part-specs-panel" data-part-specs-panel class="hidden border-t border-line">
-            <dl class="divide-y divide-line">
-                @foreach ([
-                    'نام خودرو' => $car->name,
-                    'نام قطعه' => $part->name,
-                    'مدل خودرو' => $model->name,
-                    'شرکت سازنده' => $company->name,
-                    'کشور سازنده' => $company->country ?? '—',
-                    'نام لاتین خودرو' => $car->slug,
-                    'نام لاتین قطعه' => $part->slug,
-                ] as $label => $value)
-                    <div class="grid gap-1 px-5 py-4 sm:grid-cols-3 sm:gap-4 sm:px-6 even:bg-surface/50">
-                        <dt class="text-sm font-medium text-ink-muted/70">{{ $label }}</dt>
-                        <dd @class([
-                            'text-sm font-semibold text-ink sm:col-span-2',
-                            'font-mono font-normal text-ink-muted/70' => str_contains($label, 'اسلاگ'),
-                        ])>{{ $value }}</dd>
-                    </div>
-                @endforeach
-            </dl>
-
-            @if ($part->description)
-                <div class="border-t border-line px-5 py-6 sm:px-6">
-                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</h2>
-                    <x-ui.expandable-description id="part-description">
-                        {!! $part->description !!}
-                    </x-ui.expandable-description>
-                </div>
-            @endif
-
-            @if ($car->description)
-                <div class="border-t border-line px-5 py-6 sm:px-6">
-                    <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی خودرو {{ $company->name }} {{ $car->name }}</h2>
-                    <x-ui.expandable-description id="car-description">
-                        {!! $car->description !!}
-                    </x-ui.expandable-description>
-                </div>
-            @endif
+    <div id="shops-below-anchor">
+        <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <a
+                href="{{ \App\Support\CatalogUrls::parts($company->slug, $car->slug, $model->slug) }}"
+                class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
+                data-shops-below-anchor
+            >
+                <span>مشاهده تمام قطعات و لوازم یدکی {{ $company->name }} {{ $car->name }}</span>
+                <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
+            </a>
+            <a
+                href="{{ route('part.show', $part->slug) }}"
+                class="ps-btn-secondary inline-flex items-center justify-center gap-2 px-4 py-3 text-center text-sm leading-6"
+            >
+                <span>مشاهده همه {{ $part->name }} های موجود در بازار</span>
+                <i class="fa-solid fa-arrow-left shrink-0 text-xs" aria-hidden="true"></i>
+            </a>
         </div>
-    </section>
+
+        {{-- Part specs --}}
+        <section data-part-specs class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+            <button
+                type="button"
+                class="group w-full bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 text-start transition hover:from-gray-100 hover:via-surface/40 sm:px-6"
+                data-part-specs-toggle
+                aria-expanded="false"
+                aria-controls="part-specs-panel"
+            >
+                <span class="ps-section-label block">جزئیات</span>
+                <span class="ps-part-specs-toggle__title-row">
+                    <span class="block ps-section-title text-2xl tracking-tight sm:text-3xl">مشخصات قطعه</span>
+                    <svg
+                        class="size-5 shrink-0 text-bold transition-transform duration-200 group-hover:text-brand sm:size-6"
+                        data-part-specs-chevron
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </span>
+            </button>
+
+            <div id="part-specs-panel" data-part-specs-panel class="hidden border-t border-line">
+                <dl class="divide-y divide-line">
+                    @foreach ([
+                        'نام خودرو' => $car->name,
+                        'نام قطعه' => $part->name,
+                        'مدل خودرو' => $model->name,
+                        'شرکت سازنده' => $company->name,
+                        'کشور سازنده' => $company->country ?? '—',
+                        'نام لاتین خودرو' => $car->slug,
+                        'نام لاتین قطعه' => $part->slug,
+                    ] as $label => $value)
+                        <div class="grid gap-1 px-5 py-4 sm:grid-cols-3 sm:gap-4 sm:px-6 even:bg-surface/50">
+                            <dt class="text-sm font-medium text-ink-muted/70">{{ $label }}</dt>
+                            <dd @class([
+                                'text-sm font-semibold text-ink sm:col-span-2',
+                                'font-mono font-normal text-ink-muted/70' => str_contains($label, 'اسلاگ'),
+                            ])>{{ $value }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+
+                @if ($part->description)
+                    <div class="border-t border-line px-5 py-6 sm:px-6">
+                        <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی {{ $part->name }} {{ $company->name }} {{ $car->name }}</h2>
+                        <x-ui.expandable-description id="part-description">
+                            {!! $part->description !!}
+                        </x-ui.expandable-description>
+                    </div>
+                @endif
+
+                @if ($car->description)
+                    <div class="border-t border-line px-5 py-6 sm:px-6">
+                        <h2 class="mb-3 text-xs font-semibold uppercase tracking-wider text-brand">معرفی خودرو {{ $company->name }} {{ $car->name }}</h2>
+                        <x-ui.expandable-description id="car-description">
+                            {!! $car->description !!}
+                        </x-ui.expandable-description>
+                    </div>
+                @endif
+            </div>
+        </section>
+    </div>
 
     @push('scripts')
         <script>
@@ -692,17 +694,26 @@
                         fixedBar.setAttribute('aria-hidden', 'false');
                     };
 
-                    function areBelowShopsButtonsVisible () {
-                        let el = document.querySelector('[data-shops-below-anchor]');
+                    function isElementVisible (el) {
+                        if (!el) {
+                            return false;
+                        }
 
-                        let rect = el.getBoundingClientRect();
+                        const rect = el.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
                         return (
-                            rect.top >= 0 &&
-                            rect.left >= 0 &&
-                            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-                            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+                            rect.bottom > 0 &&
+                            rect.top < viewportHeight &&
+                            rect.right > 0 &&
+                            rect.left < viewportWidth
                         );
+                    }
+
+                    function isBelowShopsBelowAnchorVisible () {
+                        let el = document.getElementById('shops-below-anchor');
+                        return isElementVisible(el);
                     }
 
                     const setJumpVisibility = function () {
@@ -719,10 +730,9 @@
                         const isOriginalButtonAboveViewport = anchorRect.bottom < 0;
                         const isShopsInMiddle = rect.top <= middleBandBottom && rect.bottom >= middleBandTop;
                         const shouldShowFixed = isOriginalButtonAboveViewport && !isShopsInMiddle;
-                        const isBelowShopsSection = areBelowShopsButtonsVisible();
+                        const isBelowShopsSection = isBelowShopsBelowAnchorVisible();
                         const fixedChevron = fixedLink.querySelector('.ps-shops-jump-chevron');
                         const inlineChevron = inlineLink.querySelector('.ps-shops-jump-chevron');
-
                         fixedChevron?.classList.toggle('ps-shops-jump-chevron--up', isBelowShopsSection);
 
                         if (shouldShowFixed) {
