@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ImageType;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
@@ -92,17 +93,18 @@ class SearchService
     private function storeGroup(string $query): array
     {
         $shops = Shop::search($query)
-            ->query(fn ($builder) => $builder->with(['city.state', 'images'])->where('name', 'like', '%'.$query.'%'))
-            ->paginate(self::PER_GROUP);
+            ->query(fn ($builder) => $builder
+                ->with(['city.state', 'images'])
+                ->where('name', 'like', '%'.$query.'%')
+                ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
+            );
 
         $representations = Representation::search($query)
-            ->query(fn ($builder) => $builder->with(['company', 'city.state'])->where('name', 'like', '%'.$query.'%'))
-            ->paginate(self::PER_GROUP);
+            ->query(fn ($builder) => $builder->with(['company', 'city.state'])->where('name', 'like', '%'.$query.'%'));
 
-        $items = collect($shops->items())
+        $items = $shops->get()
             ->map(fn (Shop $shop): array => $this->mapResult($shop, 'shops'))
-            ->concat(collect($representations->items())->map(fn (Representation $representation): array => $this->mapResult($representation, 'representations')))
-            ->take(self::PER_GROUP)
+            ->concat($representations->get()->map(fn (Representation $representation): array => $this->mapResult($representation, 'representations')))
             ->values();
 
         return [
@@ -137,13 +139,13 @@ class SearchService
 
                 return $builder;
             })
-            ->paginate(self::PER_GROUP);
+            ->get();
 
         return [
             'key' => $key,
             'label' => $label,
             'total' => $results->count(),
-            'items' => collect($results->items())->map(fn (Model $result): array => $this->mapResult($result, $key)),
+            'items' => $results->map(fn (Model $result): array => $this->mapResult($result, $key)),
         ];
     }
 
@@ -152,14 +154,12 @@ class SearchService
      */
     private function vehicleGroup(string $query): array
     {
-        $companies = Company::search($query)->query(fn ($builder) => $builder->with('cars'))->paginate(self::PER_GROUP);
-        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company']))->paginate(self::PER_GROUP);
-        $items = collect($companies->items())
-            ->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
-            ->concat(collect($cars->items())->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
+        $companies = Company::search($query)->query(fn ($builder) => $builder->with('cars'))->get();
+        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company']))->get();
+        $items = $companies->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
+            ->concat($cars->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
             ->concat($this->contextualVehicleItems($query))
             ->unique(fn (array $item): string => $item['type'].'|'.$item['title'].'|'.$item['url'])
-            ->take(self::PER_GROUP)
             ->values();
 
         return [
@@ -214,7 +214,7 @@ class SearchService
             'key' => 'vehicles',
             'label' => 'خودرو',
             'total' => $items->count(),
-            'items' => $items->take(self::PER_GROUP)->values(),
+            'items' => $items->values(),
         ];
     }
 
@@ -293,7 +293,7 @@ class SearchService
             'key' => 'parts',
             'label' => 'قطعات',
             'total' => $parts->count(),
-            'items' => $parts->take(self::PER_GROUP)->map(fn (Part $part): array => $this->mapResult($part, 'parts'))->values(),
+            'items' => $parts->map(fn (Part $part): array => $this->mapResult($part, 'parts'))->values(),
         ];
     }
 
@@ -309,8 +309,7 @@ class SearchService
 
         $car->loadMissing(['company', 'models']);
         $items = $car->models
-            ->flatMap(fn (CarModel $model) => $parts->take(3)->map(fn (Part $part): array => $this->mapProduct($model, $car, $part)))
-            ->take(self::PER_GROUP)
+            ->flatMap(fn (CarModel $model) => $parts->map(fn (Part $part): array => $this->mapProduct($model, $car, $part)))
             ->values();
 
         return [
