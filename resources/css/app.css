@@ -4,6 +4,10 @@
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 
+[x-cloak] {
+    display: none !important;
+}
+
 /*
  * Partsmall design tokens — reuse on every page:
  *   brand      teal   #0d9488  primary actions, links, logo
