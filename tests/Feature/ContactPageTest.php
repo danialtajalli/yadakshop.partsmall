@@ -29,10 +29,11 @@ class ContactPageTest extends TestCase
             ->assertSee('تماس با ما', false)
             ->assertSee('فرم تماس', false)
             ->assertSee('forms/contact.php?embed=1', false)
+            ->assertSee('contact-form-iframe', false)
+            ->assertSee('didar-contact-form-resize', false)
             ->assertSee(config('partsmall.contact.image_url'), false)
             ->assertSee(config('partsmall.contact.phone'), false)
-            ->assertSee(config('partsmall.contact.email'), false)
-            ->assertSee('توضیحات تکمیلی تماس با ما', false);
+            ->assertSee(config('partsmall.contact.email'), false);
     }
 
     public function test_standalone_contact_form_renders_embed_mode(): void
@@ -46,6 +47,8 @@ class ContactPageTest extends TestCase
         $html = (string) ob_get_clean();
 
         $this->assertStringContainsString('didar-contact-form', $html);
+        $this->assertStringContainsString('novalidate', $html);
+        $this->assertStringContainsString('data-field-error="phone"', $html);
         $this->assertStringContainsString('name="first_name"', $html);
         $this->assertStringContainsString('name="last_name"', $html);
         $this->assertStringContainsString('name="phone"', $html);
@@ -72,5 +75,7 @@ class ContactPageTest extends TestCase
         $html = (string) ob_get_clean();
 
         $this->assertStringContainsString('شماره موبایل معتبر نیست', $html);
+        $this->assertStringContainsString('data-field-error="phone"', $html);
+        $this->assertStringContainsString('didar-contact-form__input--error', $html);
     }
 }

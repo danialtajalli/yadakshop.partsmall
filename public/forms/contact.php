@@ -10,6 +10,8 @@ if (! defined('DIDAR_API_BASE')) {
     define('DIDAR_API_BASE', 'https://app.didar.me/api/');
 }
 
+if (! function_exists('didar_contact_config')) {
+
 /**
  * Self-contained module configuration — edit values here per deployment.
  *
@@ -361,6 +363,11 @@ function didar_contact_e(string $value): string
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function didar_contact_field_has_error(?string $error): bool
+{
+    return $error !== null && $error !== '';
+}
+
 function didar_contact_to_english_digits(string $value): string
 {
     $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
@@ -391,6 +398,8 @@ function didar_contact_is_valid_mobile(string $phone): bool
     return (bool) preg_match('/^09\d{9}$/', $phone);
 }
 
+}
+
 $config = didar_contact_config();
 $apiKey = $config['api_key'];
 $ownerUsername = $config['owner_username'];
@@ -402,6 +411,12 @@ $values = [
     'last_name' => '',
     'phone' => '',
     'message' => '',
+];
+$fieldErrors = [
+    'first_name' => null,
+    'last_name' => null,
+    'phone' => null,
+    'message' => null,
 ];
 $statusMessage = null;
 $statusType = null;
@@ -418,41 +433,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($apiKey === null || $apiKey === '') {
         $statusType = 'error';
         $statusMessage = 'پیکربندی فرم تماس کامل نیست.';
-    } elseif ($values['first_name'] === '' || $values['last_name'] === '' || $values['phone'] === '') {
-        $statusType = 'error';
-        $statusMessage = 'لطفاً نام، نام خانوادگی و شماره موبایل را وارد کنید.';
-    } elseif (mb_strlen($values['first_name']) > 100 || mb_strlen($values['last_name']) > 100) {
-        $statusType = 'error';
-        $statusMessage = 'نام یا نام خانوادگی بیش از حد طولانی است.';
-    } elseif (! didar_contact_is_valid_mobile(didar_contact_normalize_mobile($values['phone']))) {
-        $statusType = 'error';
-        $statusMessage = 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567';
-    } elseif (mb_strlen($values['message']) > 2000) {
-        $statusType = 'error';
-        $statusMessage = 'متن پیام بیش از حد طولانی است.';
     } else {
-        $values['phone'] = didar_contact_normalize_mobile($values['phone']);
+        if ($values['first_name'] === '') {
+            $fieldErrors['first_name'] = 'نام را وارد کنید.';
+        } elseif (mb_strlen($values['first_name']) > 100) {
+            $fieldErrors['first_name'] = 'نام بیش از حد طولانی است.';
+        }
 
-        $result = submit_contact_lead(
-            $apiKey,
-            $ownerUsername,
-            $dealFieldKey,
-            $values['first_name'],
-            $values['last_name'],
-            $values['phone'],
-            $values['message'],
-        );
+        if ($values['last_name'] === '') {
+            $fieldErrors['last_name'] = 'نام خانوادگی را وارد کنید.';
+        } elseif (mb_strlen($values['last_name']) > 100) {
+            $fieldErrors['last_name'] = 'نام خانوادگی بیش از حد طولانی است.';
+        }
 
-        $statusType = $result['success'] ? 'success' : 'error';
-        $statusMessage = $result['message'];
+        if ($values['phone'] === '') {
+            $fieldErrors['phone'] = 'شماره موبایل را وارد کنید.';
+        } elseif (! didar_contact_is_valid_mobile(didar_contact_normalize_mobile($values['phone']))) {
+            $fieldErrors['phone'] = 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567';
+        }
 
-        if ($result['success']) {
-            $values = [
-                'first_name' => '',
-                'last_name' => '',
-                'phone' => '',
-                'message' => '',
-            ];
+        if (mb_strlen($values['message']) > 2000) {
+            $fieldErrors['message'] = 'متن پیام بیش از حد طولانی است.';
+        }
+
+        if (array_filter($fieldErrors) === []) {
+            $values['phone'] = didar_contact_normalize_mobile($values['phone']);
+
+            $result = submit_contact_lead(
+                $apiKey,
+                $ownerUsername,
+                $dealFieldKey,
+                $values['first_name'],
+                $values['last_name'],
+                $values['phone'],
+                $values['message'],
+            );
+
+            $statusType = $result['success'] ? 'success' : 'error';
+            $statusMessage = $result['message'];
+
+            if ($result['success']) {
+                $values = [
+                    'first_name' => '',
+                    'last_name' => '',
+                    'phone' => '',
+                    'message' => '',
+                ];
+            }
         }
     }
 }
@@ -543,6 +570,29 @@ if (! $embed) {
         border-color: #3f4857;
     }
 
+    .didar-contact-form__field input.didar-contact-form__input--error,
+    .didar-contact-form__field textarea.didar-contact-form__input--error {
+        border-color: #f87171;
+        background: #fffafa;
+    }
+
+    .didar-contact-form__field input.didar-contact-form__input--error:focus,
+    .didar-contact-form__field textarea.didar-contact-form__input--error:focus {
+        outline-color: rgb(248 113 113 / 0.25);
+        border-color: #ef4444;
+    }
+
+    .didar-contact-form__error {
+        margin: 0.375rem 0 0;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        color: #dc2626;
+    }
+
+    .didar-contact-form__error[hidden] {
+        display: none;
+    }
+
     .didar-contact-form__submit {
         display: inline-flex;
         align-items: center;
@@ -570,30 +620,80 @@ if (! $embed) {
         </div>
     <?php } ?>
 
-    <form method="post" action="<?= didar_contact_e($embed ? '?embed=1' : '') ?>">
+    <form method="post" action="<?= didar_contact_e($embed ? '?embed=1' : '') ?>" novalidate data-didar-contact-form>
         <input type="hidden" name="csrf_token" value="<?= didar_contact_e($csrf) ?>">
 
         <div class="didar-contact-form__grid didar-contact-form__grid--two">
             <div class="didar-contact-form__field">
                 <label for="first_name">نام</label>
-                <input id="first_name" name="first_name" type="text" value="<?= didar_contact_e($values['first_name']) ?>" required maxlength="100" autocomplete="given-name">
+                <input
+                    id="first_name"
+                    name="first_name"
+                    type="text"
+                    value="<?= didar_contact_e($values['first_name']) ?>"
+                    maxlength="100"
+                    autocomplete="given-name"
+                    aria-describedby="first_name-error"
+                    class="<?= didar_contact_field_has_error($fieldErrors['first_name']) ? 'didar-contact-form__input--error' : '' ?>"
+                >
+                <p class="didar-contact-form__error" id="first_name-error" role="alert" data-field-error="first_name"<?= didar_contact_field_has_error($fieldErrors['first_name']) ? '' : ' hidden' ?>>
+                    <?= didar_contact_e($fieldErrors['first_name'] ?? '') ?>
+                </p>
             </div>
 
             <div class="didar-contact-form__field">
                 <label for="last_name">نام خانوادگی</label>
-                <input id="last_name" name="last_name" type="text" value="<?= didar_contact_e($values['last_name']) ?>" required maxlength="100" autocomplete="family-name">
+                <input
+                    id="last_name"
+                    name="last_name"
+                    type="text"
+                    value="<?= didar_contact_e($values['last_name']) ?>"
+                    maxlength="100"
+                    autocomplete="family-name"
+                    aria-describedby="last_name-error"
+                    class="<?= didar_contact_field_has_error($fieldErrors['last_name']) ? 'didar-contact-form__input--error' : '' ?>"
+                >
+                <p class="didar-contact-form__error" id="last_name-error" role="alert" data-field-error="last_name"<?= didar_contact_field_has_error($fieldErrors['last_name']) ? '' : ' hidden' ?>>
+                    <?= didar_contact_e($fieldErrors['last_name'] ?? '') ?>
+                </p>
             </div>
         </div>
 
         <div class="didar-contact-form__grid" style="margin-top: 1rem;">
             <div class="didar-contact-form__field">
                 <label for="phone">شماره موبایل</label>
-                <input id="phone" name="phone" type="tel" value="<?= didar_contact_e($values['phone']) ?>" required maxlength="15" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="09121234567" pattern="09[0-9]{9}" title="شماره موبایل باید با 09 شروع شود و 11 رقم باشد" style="text-align: right;">
+                <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value="<?= didar_contact_e($values['phone']) ?>"
+                    maxlength="15"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    dir="ltr"
+                    placeholder="09121234567"
+                    style="text-align: right;"
+                    aria-describedby="phone-error"
+                    class="<?= didar_contact_field_has_error($fieldErrors['phone']) ? 'didar-contact-form__input--error' : '' ?>"
+                >
+                <p class="didar-contact-form__error" id="phone-error" role="alert" data-field-error="phone"<?= didar_contact_field_has_error($fieldErrors['phone']) ? '' : ' hidden' ?>>
+                    <?= didar_contact_e($fieldErrors['phone'] ?? '') ?>
+                </p>
             </div>
 
             <div class="didar-contact-form__field">
                 <label for="message">پیام</label>
-                <textarea id="message" name="message" maxlength="2000" placeholder="پیام خود را بنویسید..."><?= didar_contact_e($values['message']) ?></textarea>
+                <textarea
+                    id="message"
+                    name="message"
+                    maxlength="2000"
+                    placeholder="پیام خود را بنویسید..."
+                    aria-describedby="message-error"
+                    class="<?= didar_contact_field_has_error($fieldErrors['message']) ? 'didar-contact-form__input--error' : '' ?>"
+                ><?= didar_contact_e($values['message']) ?></textarea>
+                <p class="didar-contact-form__error" id="message-error" role="alert" data-field-error="message"<?= didar_contact_field_has_error($fieldErrors['message']) ? '' : ' hidden' ?>>
+                    <?= didar_contact_e($fieldErrors['message'] ?? '') ?>
+                </p>
             </div>
         </div>
 
@@ -602,6 +702,162 @@ if (! $embed) {
         </div>
     </form>
 </div>
+
+<script>
+(function () {
+    const form = document.querySelector('[data-didar-contact-form]');
+    if (!form) {
+        return;
+    }
+
+    function toEnglishDigits(value) {
+        const persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        return value
+            .replace(/[۰-۹]/g, (digit) => english[persian.indexOf(digit)])
+            .replace(/[٠-٩]/g, (digit) => english[arabic.indexOf(digit)]);
+    }
+
+    function normalizeMobile(phone) {
+        let value = toEnglishDigits(phone.trim()).replace(/[^\d+]/g, '');
+
+        if (value.startsWith('+98')) {
+            value = '0' + value.slice(3);
+        } else if (value.startsWith('0098')) {
+            value = '0' + value.slice(4);
+        } else if (value.startsWith('98') && value.length === 12) {
+            value = '0' + value.slice(2);
+        }
+
+        return value;
+    }
+
+    function isValidMobile(phone) {
+        return /^09\d{9}$/.test(normalizeMobile(phone));
+    }
+
+    function setFieldError(name, message) {
+        const input = form.querySelector('[name="' + name + '"]');
+        const error = form.querySelector('[data-field-error="' + name + '"]');
+
+        if (!input || !error) {
+            return;
+        }
+
+        if (message) {
+            input.classList.add('didar-contact-form__input--error');
+            input.setAttribute('aria-invalid', 'true');
+            error.textContent = message;
+            error.hidden = false;
+        } else {
+            input.classList.remove('didar-contact-form__input--error');
+            input.removeAttribute('aria-invalid');
+            error.textContent = '';
+            error.hidden = true;
+        }
+    }
+
+    function validateField(name, value) {
+        const trimmed = value.trim();
+
+        if (name === 'first_name') {
+            if (trimmed === '') {
+                return 'نام را وارد کنید.';
+            }
+
+            if (trimmed.length > 100) {
+                return 'نام بیش از حد طولانی است.';
+            }
+
+            return '';
+        }
+
+        if (name === 'last_name') {
+            if (trimmed === '') {
+                return 'نام خانوادگی را وارد کنید.';
+            }
+
+            if (trimmed.length > 100) {
+                return 'نام خانوادگی بیش از حد طولانی است.';
+            }
+
+            return '';
+        }
+
+        if (name === 'phone') {
+            if (trimmed === '') {
+                return 'شماره موبایل را وارد کنید.';
+            }
+
+            if (!isValidMobile(trimmed)) {
+                return 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567';
+            }
+
+            return '';
+        }
+
+        if (name === 'message' && trimmed.length > 2000) {
+            return 'متن پیام بیش از حد طولانی است.';
+        }
+
+        return '';
+    }
+
+    function notifyParentHeight() {
+        if (window.parent === window) {
+            return;
+        }
+
+        const height = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight
+        );
+
+        window.parent.postMessage({
+            type: 'didar-contact-form-resize',
+            height: height,
+        }, window.location.origin);
+    }
+
+    form.addEventListener('submit', function (event) {
+        let valid = true;
+
+        ['first_name', 'last_name', 'phone', 'message'].forEach(function (name) {
+            const input = form.querySelector('[name="' + name + '"]');
+            const message = validateField(name, input ? input.value : '');
+            setFieldError(name, message);
+
+            if (message) {
+                valid = false;
+            }
+        });
+
+        if (!valid) {
+            event.preventDefault();
+        }
+
+        notifyParentHeight();
+    });
+
+    form.querySelectorAll('input, textarea').forEach(function (input) {
+        input.addEventListener('input', function () {
+            setFieldError(input.name, '');
+            notifyParentHeight();
+        });
+    });
+
+    if (window.parent !== window) {
+        notifyParentHeight();
+        window.addEventListener('load', notifyParentHeight);
+
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(notifyParentHeight).observe(document.body);
+        }
+    }
+})();
+</script>
 
 <?php if (! $embed) { ?>
 </body>
