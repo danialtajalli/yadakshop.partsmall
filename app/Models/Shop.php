@@ -68,6 +68,7 @@ class Shop extends Model
             'city_name' => $this->city?->name,
             'parts_categories' => $this->partsCategories->pluck('name')->all(),
             'companies' => $this->companies->pluck('name')->all(),
+            'confirmed' => $this->confirmed,
         ];
     }
 

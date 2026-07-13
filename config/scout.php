@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Part;
+use App\Models\Shop;
 
 return [
 
@@ -159,6 +160,17 @@ return [
                     'id',
                 ],
             ],
+            Shop::class => [
+                'filterableAttributes' => [
+                    'id',
+                    'confirmed',
+                ],
+                'sortableAttributes' => [
+                    'name',
+                    'id',
+                    'confirmed',
+                ],
+            ]
             // 'users' => [
             //     'filterableAttributes'=> ['id', 'name', 'email'],
             // ],
