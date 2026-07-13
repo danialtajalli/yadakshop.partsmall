@@ -452,6 +452,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fieldErrors['phone'] = 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567';
         }
 
+        if (mb_strlen($values['message']) < 5) {
+            $fieldErrors['message'] = 'متن پیام باید حداقل 5 کاراکتر باشد.';
+        }
+
+        if ($values['message'] === '') {
+            $fieldErrors['message'] = 'متن پیام را وارد کنید.';
+        }
+
         if (mb_strlen($values['message']) > 2000) {
             $fieldErrors['message'] = 'متن پیام بیش از حد طولانی است.';
         }
@@ -512,7 +520,7 @@ if (! $embed) {
     }
 
     .didar-contact-form__alert {
-        margin-bottom: 1rem;
+        margin-top: 1rem;
         border-radius: 0.75rem;
         padding: 0.875rem 1rem;
         font-size: 0.875rem;
@@ -614,12 +622,6 @@ if (! $embed) {
 </style>
 
 <div class="didar-contact-form">
-    <?php if ($statusMessage !== null) { ?>
-        <div class="didar-contact-form__alert didar-contact-form__alert--<?= didar_contact_e($statusType ?? 'error') ?>">
-            <?= didar_contact_e($statusMessage) ?>
-        </div>
-    <?php } ?>
-
     <form method="post" action="<?= didar_contact_e($embed ? '?embed=1' : '') ?>" novalidate data-didar-contact-form>
         <input type="hidden" name="csrf_token" value="<?= didar_contact_e($csrf) ?>">
 
@@ -701,6 +703,12 @@ if (! $embed) {
             <button type="submit" class="didar-contact-form__submit">ارسال پیام</button>
         </div>
     </form>
+
+    <?php if ($statusMessage !== null) { ?>
+        <div class="didar-contact-form__alert didar-contact-form__alert--<?= didar_contact_e($statusType ?? 'error') ?>">
+            <?= didar_contact_e($statusMessage) ?>
+        </div>
+    <?php } ?>
 </div>
 
 <script>
@@ -801,6 +809,15 @@ if (! $embed) {
         if (name === 'message' && trimmed.length > 2000) {
             return 'متن پیام بیش از حد طولانی است.';
         }
+
+        if (name === 'message' && trimmed === '') {
+            return 'متن پیام را وارد کنید.';
+        }
+
+        if (name === 'message' && trimmed.length < 5) {
+            return 'متن پیام باید حداقل 5 کاراکتر باشد.';
+        }
+
 
         return '';
     }
