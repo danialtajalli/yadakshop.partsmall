@@ -17,6 +17,8 @@
         "@neshan-maps-platform/mapbox-gl": "^1.1.7",
         "alpinejs": "^3.15.12",
         "embla-carousel": "^8.6.0",
-        "embla-carousel-autoplay": "^8.6.0"
+        "embla-carousel-autoplay": "^8.6.0",
+        "jquery": "^3.7.1",
+        "select2": "^4.1.0"
     }
 }

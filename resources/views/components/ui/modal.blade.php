@@ -5,11 +5,16 @@
 <dialog
     @if ($id) id="{{ $id }}" @endif
     data-ps-modal
-    {{ $attributes->merge([
-        'class' => 'fixed inset-0 z-50 m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border border-line bg-white p-0 shadow-2xl backdrop:bg-ink/40 open:animate-none',
-    ]) }}
+    class="fixed inset-0 z-50 m-0 max-h-none w-full max-w-none border-0 bg-transparent p-4 shadow-none backdrop:bg-ink/40 open:flex open:items-center open:justify-center open:animate-none"
 >
-    {{ $slot }}
+    <div
+        data-ps-modal-panel
+        {{ $attributes->class([
+            'ps-modal-panel relative w-full max-h-[calc(100dvh-2rem)] overflow-visible rounded-2xl border border-line bg-white p-0 shadow-2xl',
+        ]) }}
+    >
+        {{ $slot }}
+    </div>
 </dialog>
 
 @once
@@ -42,7 +47,9 @@
                     };
 
                     dialog.addEventListener('click', function (event) {
-                        if (event.target === dialog) {
+                        const panel = dialog.querySelector('[data-ps-modal-panel]');
+
+                        if (panel && ! panel.contains(event.target)) {
                             dialog.close();
                         }
                     });

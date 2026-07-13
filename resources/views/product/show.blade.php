@@ -143,17 +143,18 @@
 
                             <div>
                                 <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-                                <select
-                                    id="shops-filter-state"
-                                    data-shops-filter-state
-                                    data-searchable-select
-                                    class="w-full text-sm text-ink"
-                                >
-                                    <option value="">همه استان‌ها</option>
-                                    @foreach ($shopFilterStates as $state)
-                                        <option value="{{ $state->id }}">{{ $state->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="ps-searchable-select">
+                                    <select
+                                        id="shops-filter-state"
+                                        data-shops-filter-state
+                                        data-searchable-select
+                                    >
+                                        <option value="">همه استان‌ها</option>
+                                        @foreach ($shopFilterStates as $state)
+                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

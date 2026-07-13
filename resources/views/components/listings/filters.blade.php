@@ -8,7 +8,7 @@
     'showSpecializationFilter' => false,
 ])
 
-<form method="GET" action="{{ $action }}" id="listing-filters-form">
+<form method="GET" action="{{ $action }}" id="listing-filters-form" data-cities-by-state='@json($citiesByState)'>
     <x-catalog.search-bar
         id="listing-search"
         name="q"
@@ -25,12 +25,12 @@
             ])>
                 <div>
                     <label for="listing-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-                    <div class="w-full rounded-xl border border-line bg-white px-3 py-2.5">
+                    <div class="ps-searchable-select">
                         <select
                             id="listing-state"
                             name="state_id"
                             data-listing-state
-                            class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                            data-searchable-select
                         >
                             <option value="">همه استان‌ها</option>
                             @foreach ($states as $state)
@@ -44,13 +44,13 @@
 
                 <div>
                     <label for="listing-city" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
-                    <div class="w-full rounded-xl border border-line bg-white px-3 py-2.5">
-                    <select
-                        id="listing-city"
-                        name="city_id"
-                        data-listing-city
-                        class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                        @disabled(! ($filters['state_id'] ?? null))
+                    <div class="ps-searchable-select">
+                        <select
+                            id="listing-city"
+                            name="city_id"
+                            data-listing-city
+                            data-searchable-select
+                            @disabled(! ($filters['state_id'] ?? null))
                         >
                             <option value="">همه شهرها</option>
                             @foreach ($cities as $city)
@@ -65,65 +65,21 @@
                 @if ($showSpecializationFilter)
                     <div>
                         <label for="listing-specialization" class="mb-1.5 block text-xs font-medium text-ink-muted">تخصص‌ها</label>
-                        <div class="rounded-xl border border-line bg-white px-3 py-2.5 ">
-                            <select
-                                id="listing-specialization"
-                                name="specialization_id"
-                                class="w-full text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                            >
-                                <option value="">همه تخصص‌ها</option>
-                                @foreach ($specializations as $specialization)
-                                    <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
-                                        {{ $specialization->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <select
+                            id="listing-specialization"
+                            name="specialization_id"
+                            class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                        >
+                            <option value="">همه تخصص‌ها</option>
+                            @foreach ($specializations as $specialization)
+                                <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
+                                    {{ $specialization->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 @endif
             </div>
         </x-slot:between>
     </x-catalog.search-bar>
 </form>
-
-@once
-    @push('scripts')
-        <script>
-            (function () {
-                const citiesByState = @json($citiesByState);
-
-                document.querySelectorAll('[data-listing-state]').forEach(function (stateSelect) {
-                    const form = stateSelect.closest('form');
-                    const citySelect = form?.querySelector('[data-listing-city]');
-
-                    if (!citySelect) {
-                        return;
-                    }
-
-                    const selectedCityId = citySelect.value;
-
-                    stateSelect.addEventListener('change', function () {
-                        const stateId = this.value;
-                        const cities = citiesByState[stateId] || [];
-
-                        citySelect.innerHTML = '<option value="">همه شهرها</option>';
-
-                        cities.forEach(function (city) {
-                            const option = document.createElement('option');
-                            option.value = city.id;
-                            option.textContent = city.name;
-
-                            if (String(city.id) === String(selectedCityId)) {
-                                option.selected = true;
-                            }
-
-                            citySelect.appendChild(option);
-                        });
-
-                        citySelect.disabled = !stateId;
-                    });
-                });
-            })();
-        </script>
-    @endpush
-@endonce

@@ -23,8 +23,8 @@
     </button>
 </article>
 
-<x-ui.modal id="{{ $modalId }}" class="max-w-md overflow-hidden">
-    <div class="border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-4">
+<x-ui.modal id="{{ $modalId }}" class="max-w-md">
+    <div class="overflow-hidden rounded-t-2xl border-b border-line bg-linear-to-l from-gray-100 via-white px-5 py-4">
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
                 <p class="text-xs font-semibold text-brand">انتخاب محدوده خدمات</p>
@@ -46,6 +46,7 @@
         action="{{ route('repair-shops.index') }}"
         class="space-y-4 px-5 py-5"
         data-repair-locator-form
+        data-cities-by-state='@json($repairLocator['citiesByState'])'
     >
         <input type="hidden" name="specialization_id" value="{{ $repairLocator['category']->id }}">
 
@@ -59,39 +60,43 @@
 
         <div>
             <label for="{{ $stateId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-            <select
-                id="{{ $stateId }}"
-                name="state_id"
-                required
-                data-repair-locator-state
-                class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-            >
-                <option value="">انتخاب استان</option>
-                @foreach ($repairLocator['states'] as $state)
-                    <option value="{{ $state->id }}" @selected(($repairLocator['defaultStateId'] ?? null) == $state->id)>
-                        {{ $state->name }}
-                    </option>
-                @endforeach
-            </select>
+            <div class="ps-searchable-select">
+                <select
+                    id="{{ $stateId }}"
+                    name="state_id"
+                    required
+                    data-repair-locator-state
+                    data-searchable-select
+                >
+                    <option value="">انتخاب استان</option>
+                    @foreach ($repairLocator['states'] as $state)
+                        <option value="{{ $state->id }}" @selected(($repairLocator['defaultStateId'] ?? null) == $state->id)>
+                            {{ $state->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
         <div>
             <label for="{{ $cityId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
-            <select
-                id="{{ $cityId }}"
-                name="city_id"
-                required
-                data-repair-locator-city
-                class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                @disabled(! ($repairLocator['defaultStateId'] ?? null))
-            >
-                <option value="">انتخاب شهر</option>
-                @if ($repairLocator['defaultStateId'] ?? null)
-                    @foreach ($repairLocator['citiesByState'][$repairLocator['defaultStateId']] ?? [] as $city)
-                        <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
-                    @endforeach
-                @endif
-            </select>
+            <div class="ps-searchable-select">
+                <select
+                    id="{{ $cityId }}"
+                    name="city_id"
+                    required
+                    data-repair-locator-city
+                    data-searchable-select
+                    @disabled(! ($repairLocator['defaultStateId'] ?? null))
+                >
+                    <option value="">انتخاب شهر</option>
+                    @if ($repairLocator['defaultStateId'] ?? null)
+                        @foreach ($repairLocator['citiesByState'][$repairLocator['defaultStateId']] ?? [] as $city)
+                            <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
         </div>
 
         <div class="flex flex-wrap gap-3 pt-1">
@@ -106,38 +111,3 @@
         </div>
     </form>
 </x-ui.modal>
-
-@once
-    @push('scripts')
-        <script>
-            (function () {
-                const citiesByState = @json($repairLocator['citiesByState']);
-
-                document.querySelectorAll('[data-repair-locator-state]').forEach(function (stateSelect) {
-                    const form = stateSelect.closest('[data-repair-locator-form]');
-                    const citySelect = form?.querySelector('[data-repair-locator-city]');
-
-                    if (!citySelect) {
-                        return;
-                    }
-
-                    stateSelect.addEventListener('change', function () {
-                        const stateId = this.value;
-                        const cities = citiesByState[stateId] || [];
-
-                        citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
-
-                        cities.forEach(function (city) {
-                            const option = document.createElement('option');
-                            option.value = city.id;
-                            option.textContent = city.name;
-                            citySelect.appendChild(option);
-                        });
-
-                        citySelect.disabled = !stateId;
-                    });
-                });
-            })();
-        </script>
-    @endpush
-@endonce
