@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 class Shop extends Model
 {
+    use BelongsToCity;
     use Searchable;
 
     protected $fillable = [
@@ -27,7 +28,7 @@ class Shop extends Model
         'order',
         'latitude',
         'longitude',
-        'state_id',
+        'city_id',
         'address',
         'open_time',
         'close_time',
@@ -53,7 +54,7 @@ class Shop extends Model
 
     public function toSearchableArray(): array
     {
-        $this->loadMissing(['partsCategories', 'companies', 'state']);
+        $this->loadMissing(['partsCategories', 'companies', 'city.state']);
 
         return [
             'id' => (int) $this->id,
@@ -63,7 +64,8 @@ class Shop extends Model
             'description' => strip_tags((string) $this->description),
             'person_responsible_name' => $this->person_responsible_name,
             'address' => $this->address,
-            'state_name' => $this->state?->name,
+            'state_name' => $this->city?->state?->name,
+            'city_name' => $this->city?->name,
             'parts_categories' => $this->partsCategories->pluck('name')->all(),
             'companies' => $this->companies->pluck('name')->all(),
         ];
@@ -81,11 +83,6 @@ class Shop extends Model
                 $shop->order = (static::max('order') ?? 0) + 1;
             }
         });
-    }
-
-    public function state(): BelongsTo
-    {
-        return $this->belongsTo(State::class);
     }
 
     public function images(): HasMany

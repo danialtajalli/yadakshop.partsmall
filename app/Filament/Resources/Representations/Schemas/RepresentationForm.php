@@ -39,8 +39,6 @@ class RepresentationForm
                 TextInput::make('telegram_phone')->label('شماره تلگرام')
                     ->tel(),
                 TextInput::make('instagram')->label('اینستاگرام'),
-                Select::make('state_id')
-                    ->relationship('state', 'name')->label('استان')->searchable()->preload(),
                 Select::make('city_id')
                     ->relationship('city', 'name')->label('شهر')->searchable()->preload(),
                 TextInput::make('address')->label('آدرس'),

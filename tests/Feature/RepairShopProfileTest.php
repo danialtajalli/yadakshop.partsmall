@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\ImageType;
 use App\Enums\LinkType;
 use App\Enums\PhoneType;
+use App\Models\City;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\State;
@@ -50,6 +51,7 @@ class RepairShopProfileTest extends TestCase
     private function seedRepairShopProfileGraph(): RepairShop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $repairShop = RepairShop::create([
             'name' => 'تعمیرگاه آریا',
@@ -57,7 +59,7 @@ class RepairShopProfileTest extends TestCase
             'responsible_person_name' => 'علی رضایی',
             'work_description' => 'تعمیر موتور و گیربکس',
             'description' => 'توضیحات تعمیرگاه',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'address' => 'تهران، خیابان نمونه',
             'latitude' => 35.68843735,
             'longitude' => 51.43004894,

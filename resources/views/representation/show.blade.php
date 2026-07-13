@@ -29,8 +29,8 @@
                         @if ($representation->company)
                             <span>{{ $representation->company->name }}</span>
                         @endif
-                        @if ($representation->state)
-                            <span>{{ $representation->state->name }}</span>
+                        @if ($representation->city?->state)
+                            <span>{{ $representation->city->state->name }}</span>
                         @endif
                         @if ($representation->city)
                             <span>{{ $representation->city->name }}</span>

@@ -224,7 +224,7 @@ class ProductService
         $query = fn() =>$query()
             ->visibleUnderProduct()
             ->ordered()
-            ->with(['phones', 'links', 'state', 'images'])
+            ->with(['phones', 'links', 'city.state', 'images'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 
         $shops = $query()
@@ -248,8 +248,8 @@ class ProductService
     private function shopFilterStates(Collection $shops): Collection
     {
         return $shops
-            ->filter(fn (Shop $shop): bool => $shop->state_id !== null)
-            ->map(fn (Shop $shop) => $shop->state)
+            ->filter(fn (Shop $shop): bool => $shop->city_id !== null)
+            ->map(fn (Shop $shop) => $shop->city?->state)
             ->filter()
             ->unique('id')
             ->sortBy('name')

@@ -65,12 +65,10 @@
     @endif
 
     <div class="mt-auto min-w-0 space-y-1 text-sm text-ink-muted">
-        @if ($listing->state)
+        @if ($listing->city)
             <p>
-                {{ $listing->state->name }}
-                @if ($type === 'representation' && $listing->city)
-                    ، {{ $listing->city->name }}
-                @endif
+                {{ $listing->city->state?->name }}
+                ، {{ $listing->city->name }}
             </p>
         @endif
         @if ($listing->address)

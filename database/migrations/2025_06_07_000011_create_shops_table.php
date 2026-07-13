@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('order')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
             $table->time('open_time')->default('09:00');
             $table->time('close_time')->default('18:00');

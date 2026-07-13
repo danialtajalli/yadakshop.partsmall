@@ -42,7 +42,7 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = Shop::query()
-            ->with(['state', 'images'])
+            ->with(['city.state', 'images'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 
         $this->applyCommonFilters($query, $filters, [
@@ -87,7 +87,7 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = RepairShop::query()
-            ->with(['state', 'images', 'repairCategories']);
+            ->with(['city.state', 'images', 'repairCategories']);
 
         $this->applyCommonFilters($query, $filters, [
             'name',
@@ -138,7 +138,7 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = Representation::query()
-            ->with(['state', 'city', 'company']);
+            ->with(['city.state', 'company']);
 
         $this->applyCommonFilters($query, $filters, [
             'name',
@@ -146,7 +146,7 @@ class DirectoryListingService
             'responsible_person_name',
             'service_type',
             'work_fields',
-        ], matchCityById: true, searchCompanyName: true);
+        ], searchCompanyName: true);
 
         $listings = $query
             ->orderBy('name')
@@ -173,7 +173,6 @@ class DirectoryListingService
         Builder $query,
         array $filters,
         array $searchColumns,
-        bool $matchCityById = false,
         bool $searchCompanyName = false,
     ): void {
         if ($filters['q']) {
@@ -194,21 +193,14 @@ class DirectoryListingService
         }
 
         if ($filters['state_id']) {
-            $query->where('state_id', $filters['state_id']);
+            $query->whereHas(
+                'city',
+                fn (Builder $relation) => $relation->where('state_id', $filters['state_id']),
+            );
         }
 
         if ($filters['city_id']) {
-            if ($matchCityById) {
-                $query->where('city_id', $filters['city_id']);
-            } else {
-                $city = City::query()->find($filters['city_id']);
-
-                if ($city) {
-                    $query
-                        ->where('state_id', $city->state_id)
-                        ->where('address', 'like', '%'.$city->name.'%');
-                }
-            }
+            $query->where('city_id', $filters['city_id']);
         }
     }
 

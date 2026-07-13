@@ -142,13 +142,14 @@
                             </label>
 
                             <div>
-                                <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
+                                <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
                                 <select
                                     id="shops-filter-state"
                                     data-shops-filter-state
-                                    class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
+                                    data-searchable-select
+                                    class="w-full text-sm text-ink"
                                 >
-                                    <option value="">همه شهرها</option>
+                                    <option value="">همه استان‌ها</option>
                                     @foreach ($shopFilterStates as $state)
                                         <option value="{{ $state->id }}">{{ $state->name }}</option>
                                     @endforeach
@@ -230,7 +231,7 @@
                     <article
                         class="ps-card-interactive relative flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $shopIndex >= 10 ? 'hidden sm:flex' : '' }}"
                         data-shop-card
-                        data-shop-state-id="{{ $shop->state_id }}"
+                        data-shop-state-id="{{ $shop->city?->state_id }}"
                         data-shop-verified="{{ $shop->verified ? '1' : '0' }}"
                     >
                         <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -533,6 +534,10 @@
 
                         if (filterState) {
                             filterState.disabled = isLoading;
+
+                            if (window.jQuery?.(filterState).hasClass('select2-hidden-accessible')) {
+                                window.jQuery(filterState).prop('disabled', isLoading).trigger('change.select2');
+                            }
                         }
 
                         if (filterVerified) {

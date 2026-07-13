@@ -51,8 +51,8 @@
                             <span class="text-ink-muted">{{ number_format($commentsCount) }} نظر</span>
                         @endif
 
-                        @if ($shop->state)
-                            <span class="text-ink-muted">{{ $shop->state->name }}</span>
+                        @if ($shop->city?->state)
+                            <span class="text-ink-muted">{{ $shop->city->state->name }}</span>
                         @endif
                     </div>
 

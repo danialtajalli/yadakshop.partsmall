@@ -40,7 +40,9 @@ class ShopsTable
                 TextColumn::make('longitude')
                     ->numeric()
                     ->sortable()->label('عرض جغرافیایی'),
-                TextColumn::make('state.name')->label('استان')
+                TextColumn::make('city.name')->label('شهر')
+                    ->searchable(),
+                TextColumn::make('city.state.name')->label('استان')
                     ->searchable(),
                 TextColumn::make('address')->label('آدرس')
                     ->searchable(),

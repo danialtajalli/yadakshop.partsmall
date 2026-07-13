@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Support\Legacy\LegacyCityResolver;
 use App\Support\Legacy\LegacyInsertParser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -24,12 +25,10 @@ class RepresentationSeeder extends Seeder
 
         $parser = new LegacyInsertParser(file_get_contents($sqlPath) ?: '');
         $companyIds = array_flip(DB::table('companies')->pluck('id')->all());
-        $stateIds = array_flip(DB::table('states')->pluck('id')->all());
-        $cityIds = array_flip(DB::table('cities')->pluck('id')->all());
         $rows = [];
 
         foreach ($parser->rows('representation') as $legacyRow) {
-            $rows[] = $this->mapRow($legacyRow, $companyIds, $stateIds, $cityIds);
+            $rows[] = $this->mapRow($legacyRow, $companyIds);
         }
 
         DB::table('representations')->truncate();
@@ -44,11 +43,9 @@ class RepresentationSeeder extends Seeder
     /**
      * @param  array<string, mixed>  $row
      * @param  array<int, int>  $companyIds
-     * @param  array<int, int>  $stateIds
-     * @param  array<int, int>  $cityIds
      * @return array<string, mixed>
      */
-    private function mapRow(array $row, array $companyIds, array $stateIds, array $cityIds): array
+    private function mapRow(array $row, array $companyIds): array
     {
         $legacyStateId = (int) ($row['state'] ?? 0);
         $legacyCityId = (int) ($row['city'] ?? 0);
@@ -72,8 +69,7 @@ class RepresentationSeeder extends Seeder
             'telegram' => $this->nullableString($row['telegram'] ?? null),
             'telegram_phone' => $this->nullableString($row['tel_telegram'] ?? null),
             'instagram' => $this->nullableString($row['instagram'] ?? null),
-            'state_id' => isset($stateIds[$legacyStateId]) ? $legacyStateId : null,
-            'city_id' => isset($cityIds[$legacyCityId]) ? $legacyCityId : null,
+            'city_id' => LegacyCityResolver::resolve($legacyCityId ?: null, $legacyStateId ?: null, $row['address'] ?? null),
             'address' => $this->nullableString($row['address'] ?? null),
             'latitude' => $this->nullableCoordinate($row['latitude'] ?? null),
             'longitude' => $this->nullableCoordinate($row['longitude'] ?? null),

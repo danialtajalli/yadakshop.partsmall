@@ -32,8 +32,8 @@
                     @endif
 
                     <div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
-                        @if ($repairShop->state)
-                            <span class="text-ink-muted">{{ $repairShop->state->name }}</span>
+                        @if ($repairShop->city?->state)
+                            <span class="text-ink-muted">{{ $repairShop->city->state->name }}</span>
                         @endif
                     </div>
 

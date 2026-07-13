@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCity;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 class RepairShop extends Model
 {
+    use BelongsToCity;
     use Searchable;
 
     protected $fillable = [
@@ -17,7 +18,7 @@ class RepairShop extends Model
         'slug',
         'responsible_person_name',
         'work_description',
-        'state_id',
+        'city_id',
         'address',
         'latitude',
         'longitude',
@@ -34,7 +35,7 @@ class RepairShop extends Model
 
     public function toSearchableArray(): array
     {
-        $this->loadMissing(['repairCategories', 'state']);
+        $this->loadMissing(['repairCategories', 'city.state']);
 
         return [
             'id' => (int) $this->id,
@@ -44,7 +45,8 @@ class RepairShop extends Model
             'work_description' => strip_tags((string) $this->work_description),
             'description' => strip_tags((string) $this->description),
             'address' => $this->address,
-            'state_name' => $this->state?->name,
+            'state_name' => $this->city?->state?->name,
+            'city_name' => $this->city?->name,
             'repair_categories' => $this->repairCategories->pluck('name')->all(),
         ];
     }
@@ -52,11 +54,6 @@ class RepairShop extends Model
     public function searchableAs(): string
     {
         return 'repair_shops';
-    }
-
-    public function state(): BelongsTo
-    {
-        return $this->belongsTo(State::class);
     }
 
     public function phones(): HasMany

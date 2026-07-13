@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\City;
 use App\Models\Shop;
 use App\Models\State;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -207,11 +208,12 @@ class ShopCommentTest extends TestCase
     private function createShop(): Shop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         return Shop::create([
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'order' => 1,
         ]);
     }

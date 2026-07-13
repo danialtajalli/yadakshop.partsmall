@@ -23,7 +23,7 @@ class DirectoryListingTest extends TestCase
         $this->createListedShop([
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'address' => 'تهران، خیابان نمونه',
             'order' => 1,
         ]);
@@ -44,12 +44,13 @@ class DirectoryListingTest extends TestCase
     public function test_repair_shops_index_returns_successful_response_with_specialization_filter(): void
     {
         $state = State::create(['name' => 'اصفهان', 'slug' => 'isfahan', 'tel_prefix' => '031']);
+        $city = City::create(['name' => 'اصفهان', 'slug' => 'isfahan-city', 'state_id' => $state->id]);
         $specialization = RepairCategory::create(['name' => 'جلوبندی']);
 
         $shop = RepairShop::create([
             'name' => 'تعمیرگاه آریا',
             'slug' => 'aria-repair',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'address' => 'اصفهان، خیابان چهارباغ',
         ]);
         $shop->repairCategories()->attach($specialization);
@@ -57,7 +58,7 @@ class DirectoryListingTest extends TestCase
         RepairShop::create([
             'name' => 'تعمیرگاه دیگر',
             'slug' => 'other-repair',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'address' => 'اصفهان',
         ]);
 
@@ -76,12 +77,13 @@ class DirectoryListingTest extends TestCase
     public function test_shops_index_paginates_results(): void
     {
         $state = State::create(['name' => 'فارس', 'slug' => 'fars', 'tel_prefix' => '071']);
+        $city = City::create(['name' => 'شیراز', 'slug' => 'shiraz-city', 'state_id' => $state->id]);
 
         foreach (range(1, 15) as $index) {
             $this->createListedShop([
                 'name' => "فروشگاه {$index}",
                 'slug' => "shop-{$index}",
-                'state_id' => $state->id,
+                'city_id' => $city->id,
                 'order' => $index,
             ]);
         }
@@ -95,12 +97,13 @@ class DirectoryListingTest extends TestCase
     public function test_shops_index_title_includes_page_number_on_later_pages(): void
     {
         $state = State::create(['name' => 'فارس', 'slug' => 'fars', 'tel_prefix' => '071']);
+        $city = City::create(['name' => 'شیراز', 'slug' => 'shiraz-city', 'state_id' => $state->id]);
 
         foreach (range(1, 25) as $index) {
             $this->createListedShop([
                 'name' => "فروشگاه {$index}",
                 'slug' => "shop-{$index}",
-                'state_id' => $state->id,
+                'city_id' => $city->id,
                 'order' => $index,
             ]);
         }

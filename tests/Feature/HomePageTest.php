@@ -49,7 +49,7 @@ class HomePageTest extends TestCase
         $shop = Shop::create([
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'order' => 1,
         ]);
         $shop->images()->create([
@@ -60,14 +60,13 @@ class HomePageTest extends TestCase
         RepairShop::create([
             'name' => 'تعمیرگاه آریا',
             'slug' => 'aria-repair',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
         ]);
 
         Representation::create([
             'name' => 'نمایندگی آسان',
             'slug' => 'asan-rep',
             'company_id' => $company->id,
-            'state_id' => $state->id,
             'city_id' => $city->id,
             'logo' => 'rep-logo.webp',
         ]);

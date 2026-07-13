@@ -45,9 +45,9 @@ class RepresentationsTable
                     ->searchable(),
                 TextColumn::make('instagram')->label('اینستاگرام')
                     ->searchable(),
-                TextColumn::make('state.name')->label('استان')
-                    ->searchable(),
                 TextColumn::make('city.name')->label('شهر')
+                    ->searchable(),
+                TextColumn::make('city.state.name')->label('استان')
                     ->searchable(),
                 TextColumn::make('address')->label('آدرس')
                     ->searchable(),

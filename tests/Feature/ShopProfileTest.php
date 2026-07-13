@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\ImageType;
 use App\Enums\LinkType;
 use App\Enums\PhoneType;
+use App\Models\City;
 use App\Models\Comment;
 use App\Models\Company;
 use App\Models\PartsCategory;
@@ -75,11 +76,12 @@ class ShopProfileTest extends TestCase
     public function test_shop_profile_shows_empty_comments_state(): void
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
             'name' => 'بدون نظر',
             'slug' => 'no-comments-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'order' => 1,
         ]);
 
@@ -93,11 +95,12 @@ class ShopProfileTest extends TestCase
     public function test_shop_profile_formats_telegram_t_me_links_with_at_prefix(): void
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
             'name' => 'فروشگاه تلگرام',
             'slug' => 'telegram-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'order' => 1,
         ]);
 
@@ -125,6 +128,7 @@ class ShopProfileTest extends TestCase
     private function seedShopProfileGraph(): Shop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
             'name' => 'یدک شاپ',
@@ -134,7 +138,7 @@ class ShopProfileTest extends TestCase
             'person_responsible_name' => 'بابک صفری',
             'person_responsible_email' => 'info@yadak.shop',
             'website_show' => 'www.yadak.shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'address' => 'تهران، خیابان نمونه',
             'latitude' => 35.68843735,
             'longitude' => 51.43004894,

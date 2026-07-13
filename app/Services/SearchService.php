@@ -77,7 +77,7 @@ class SearchService
     {
         $groups = collect([
             $this->storeGroup($query),
-            $this->buildGroup('repair_shops', 'تعمیرگاه‌ها', RepairShop::class, $query, ['state', 'repairCategories'], searchableFields: ['name']),
+            $this->buildGroup('repair_shops', 'تعمیرگاه‌ها', RepairShop::class, $query, ['city.state', 'repairCategories'], searchableFields: ['name']),
             $this->vehicleGroup($query),
             $this->buildGroup('parts', 'قطعات', Part::class, $query, ['partsCategory'], ['name', 'description']),
         ])->filter(fn (?array $group): bool => $group !== null && $group['total'] > 0)->values();
@@ -91,11 +91,11 @@ class SearchService
     private function storeGroup(string $query): array
     {
         $shops = Shop::search($query)
-            ->query(fn ($builder) => $builder->with('state')->where('name', 'like', '%'.$query.'%'))
+            ->query(fn ($builder) => $builder->with('city.state')->where('name', 'like', '%'.$query.'%'))
             ->paginate(self::PER_GROUP);
 
         $representations = Representation::search($query)
-            ->query(fn ($builder) => $builder->with(['company', 'state', 'city'])->where('name', 'like', '%'.$query.'%'))
+            ->query(fn ($builder) => $builder->with(['company', 'city.state'])->where('name', 'like', '%'.$query.'%'))
             ->paginate(self::PER_GROUP);
 
         $items = collect($shops->items())

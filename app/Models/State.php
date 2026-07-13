@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class State extends Model
 {
@@ -18,13 +19,18 @@ class State extends Model
         return $this->hasMany(City::class);
     }
 
-    public function repairShops(): HasMany
+    public function shops(): HasManyThrough
     {
-        return $this->hasMany(RepairShop::class);
+        return $this->hasManyThrough(Shop::class, City::class, 'state_id', 'city_id');
     }
 
-    public function shops(): HasMany
+    public function repairShops(): HasManyThrough
     {
-        return $this->hasMany(Shop::class);
+        return $this->hasManyThrough(RepairShop::class, City::class, 'state_id', 'city_id');
+    }
+
+    public function representations(): HasManyThrough
+    {
+        return $this->hasManyThrough(Representation::class, City::class, 'state_id', 'city_id');
     }
 }

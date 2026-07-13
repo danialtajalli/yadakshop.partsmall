@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Enums\ImageType;
+use App\Models\City;
 use App\Models\Comment;
 use App\Models\Company;
 use App\Models\Shop;
@@ -95,11 +96,12 @@ class ShopProfileServiceTest extends TestCase
     private function createShopWithRelations(): Shop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'show_under_product' => true,
             'order' => 1,
         ]);

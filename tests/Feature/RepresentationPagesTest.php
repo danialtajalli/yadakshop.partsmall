@@ -29,13 +29,13 @@ class RepresentationPagesTest extends TestCase
 
     public function test_representations_index_filters_by_state_and_search(): void
     {
-        [$state, $company] = $this->seedRepresentationGraph();
+        [$state, $company, $city] = $this->seedRepresentationGraph();
 
         Representation::create([
             'name' => 'نمایندگی دیگر',
             'slug' => 'other-rep',
             'company_id' => $company->id,
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'service_type' => 'خدمات پس از فروش',
         ]);
 
@@ -76,7 +76,7 @@ class RepresentationPagesTest extends TestCase
     }
 
     /**
-     * @return array{0: State, 1: Company}
+     * @return array{0: State, 1: Company, 2: City}
      */
     private function seedRepresentationGraph(): array
     {
@@ -95,7 +95,6 @@ class RepresentationPagesTest extends TestCase
             'telephone' => '۰۲۱۳۷۶۰۶۰۰۰',
             'company_id' => $company->id,
             'service_type' => 'فروش خودرو,خدمات پس از فروش',
-            'state_id' => $state->id,
             'city_id' => $city->id,
             'address' => 'تهران، خیابان نمونه',
             'latitude' => 35.70626415,
@@ -104,6 +103,6 @@ class RepresentationPagesTest extends TestCase
             'show_under_product' => true,
         ]);
 
-        return [$state, $company];
+        return [$state, $company, $city];
     }
 }

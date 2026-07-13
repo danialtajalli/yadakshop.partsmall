@@ -37,6 +37,7 @@ class DirectoryListingServiceTest extends TestCase
                 'listings',
                 'type',
                 'title',
+                'breadcrumbs',
                 'states',
                 'cities',
                 'citiesByState',
@@ -69,17 +70,18 @@ class DirectoryListingServiceTest extends TestCase
         $tehran = $this->createState('تهران', 'tehran', '021');
         $isfahan = $this->createState('اصفهان', 'isfahan', '031');
         $tehranCity = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $tehran->id]);
+        $isfahanCity = City::create(['name' => 'اصفهان', 'slug' => 'isfahan-city', 'state_id' => $isfahan->id]);
 
         $this->createShopWithLogo([
             'name' => 'فروشگاه تهران',
             'slug' => 'tehran-shop',
-            'state_id' => $tehran->id,
+            'city_id' => $tehranCity->id,
             'address' => 'تهران، خیابان ولیعصر',
         ]);
         $this->createShopWithLogo([
             'name' => 'فروشگاه اصفهان',
             'slug' => 'isfahan-shop',
-            'state_id' => $isfahan->id,
+            'city_id' => $isfahanCity->id,
             'address' => 'اصفهان، چهارباغ',
         ]);
 

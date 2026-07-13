@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Models\City;
 use App\Models\Company;
 use App\Models\Representation;
 use App\Models\State;
@@ -47,6 +48,7 @@ class RepresentationProfileServiceTest extends TestCase
     private function createRepresentation(): Representation
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
         $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai', 'wage_strike' => 2.5]);
 
         return Representation::create([
@@ -54,7 +56,7 @@ class RepresentationProfileServiceTest extends TestCase
             'slug' => 'test-representation',
             'telephone' => '۰۲۱۱۲۳۴۵۶۷۸',
             'company_id' => $company->id,
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'service_type' => 'فروش خودرو,خدمات پس از فروش',
         ]);
     }

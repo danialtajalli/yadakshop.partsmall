@@ -3,6 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Enums\ImageType;
+use App\Models\City;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\State;
@@ -70,11 +71,12 @@ class RepairShopProfileServiceTest extends TestCase
     private function createRepairShopWithRelations(): RepairShop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $repairShop = RepairShop::create([
             'name' => 'تعمیرگاه آریا',
             'slug' => 'aria-repair',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
         ]);
 
         $repairShop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.webp']);

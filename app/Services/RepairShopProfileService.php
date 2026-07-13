@@ -21,7 +21,7 @@ class RepairShopProfileService
     {
         $repairShop = RepairShop::query()
             ->with([
-                'state',
+                'city.state',
                 'images',
                 'phones',
                 'links',

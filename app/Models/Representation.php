@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,7 @@ use Laravel\Scout\Searchable;
 
 class Representation extends Model
 {
+    use BelongsToCity;
     use Searchable;
 
     protected $fillable = [
@@ -27,7 +29,6 @@ class Representation extends Model
         'telegram',
         'telegram_phone',
         'instagram',
-        'state_id',
         'city_id',
         'address',
         'latitude',
@@ -56,7 +57,7 @@ class Representation extends Model
 
     public function toSearchableArray(): array
     {
-        $this->loadMissing(['company', 'state', 'city']);
+        $this->loadMissing(['company', 'city.state']);
 
         return [
             'id' => (int) $this->id,
@@ -68,7 +69,7 @@ class Representation extends Model
             'description' => strip_tags((string) $this->description),
             'address' => $this->address,
             'company_name' => $this->company?->name,
-            'state_name' => $this->state?->name,
+            'state_name' => $this->city?->state?->name,
             'city_name' => $this->city?->name,
         ];
     }
@@ -81,16 +82,6 @@ class Representation extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
-    }
-
-    public function state(): BelongsTo
-    {
-        return $this->belongsTo(State::class);
-    }
-
-    public function city(): BelongsTo
-    {
-        return $this->belongsTo(City::class);
     }
 
     public function scopeVisibleUnderProduct(Builder $query): void

@@ -25,7 +25,6 @@ return new class extends Migration
             $table->string('telegram')->nullable();
             $table->string('telegram_phone')->nullable();
             $table->string('instagram')->nullable();
-            $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();

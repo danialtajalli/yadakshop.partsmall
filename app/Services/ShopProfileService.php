@@ -26,7 +26,7 @@ class ShopProfileService
     {
         $shop = Shop::query()
             ->with([
-                'state',
+                'city.state',
                 'images',
                 'phones',
                 'links',

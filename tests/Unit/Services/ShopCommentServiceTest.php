@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Models\City;
 use App\Models\Shop;
 use App\Models\State;
 use App\Services\ShopCommentService;
@@ -24,11 +25,12 @@ class ShopCommentServiceTest extends TestCase
     public function test_it_stores_unconfirmed_shop_comment(): void
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
-            'state_id' => $state->id,
+            'city_id' => $city->id,
             'order' => 1,
         ]);
 

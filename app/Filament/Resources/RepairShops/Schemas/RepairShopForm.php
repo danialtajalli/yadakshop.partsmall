@@ -21,8 +21,8 @@ class RepairShopForm
                 TextInput::make('responsible_person_name')->label('نام مسئول'),
                 Textarea::make('work_description')
                     ->columnSpanFull()->label('توضیحات کاری'),
-                Select::make('state_id')
-                    ->relationship('state', 'name')->label('استان')->searchable()->preload(),
+                Select::make('city_id')
+                    ->relationship('city', 'name')->label('شهر')->searchable()->preload(),
                 TextInput::make('address')->label('آدرس'),
                 TextInput::make('latitude')->label('عرض جغرافیایی')
                     ->numeric(),

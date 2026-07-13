@@ -48,9 +48,9 @@ class ShopForm
                 TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز پنجشنبه'),
                 Toggle::make('off')
                     ->required()->label('ایا فروشگاه تخفیف دارد؟'),
-                Select::make('state')
-                    ->relationship('state', 'name')
-                    ->searchable()->preload()->label('استان'),
+                Select::make('city_id')
+                    ->relationship('city', 'name')
+                    ->searchable()->preload()->label('شهر'),
                 Select::make('parts_categories_id')->relationship('partsCategories', 'name')->label('دسته بندی های قطعات')->searchable()->preload()->multiple(),
                 Select::make('parts_id')->relationship('parts', 'name')->label('قطعات')->searchable()->preload()->multiple(),
                 Select::make('companies_id')->relationship('companies', 'name')->label('شرکت ها')->searchable()->preload()->multiple(),

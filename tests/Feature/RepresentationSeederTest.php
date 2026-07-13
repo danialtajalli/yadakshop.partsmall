@@ -61,7 +61,6 @@ class RepresentationSeederTest extends TestCase
             'slug' => 'asanmotor',
             'name' => 'شركت آسان موتور',
             'company_id' => 1,
-            'state_id' => 8,
             'city_id' => 301,
         ]);
     }

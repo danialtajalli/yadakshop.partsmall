@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('responsible_person_name')->nullable();
             $table->text('work_description')->nullable();
-            $table->foreignId('state_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
             $table->string('address')->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
