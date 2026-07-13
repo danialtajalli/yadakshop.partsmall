@@ -64,7 +64,6 @@
                 type="text"
                 name="fullname"
                 id="{{ $nameId }}"
-                required
                 autocomplete="name"
                 x-model="form.fullname"
                 :class="hasFieldError('fullname') ? '{{ $errorClass }}' : ''"
@@ -73,7 +72,7 @@
         </div>
 
         <div>
-            <label for="{{ $mobileId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">شماره موبایل (اختیاری)</label>
+            <label for="{{ $mobileId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">شماره موبایل</label>
             <input
                 type="tel"
                 name="mobile"
@@ -127,7 +126,6 @@
             name="body"
             id="{{ $bodyId }}"
             rows="4"
-            required
             x-model="form.body"
             :class="hasFieldError('body') ? '{{ $errorClass }}' : ''"
             class="{{ $inputClass }} min-h-28 resize-y"
