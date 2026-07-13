@@ -58,44 +58,46 @@
             را ببینید.
         </p>
 
-        <div>
-            <label for="{{ $stateId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-            <div class="ps-searchable-select">
-                <select
-                    id="{{ $stateId }}"
-                    name="state_id"
-                    required
-                    data-repair-locator-state
-                    data-searchable-select
-                >
-                    <option value="">انتخاب استان</option>
-                    @foreach ($repairLocator['states'] as $state)
-                        <option value="{{ $state->id }}" @selected(($repairLocator['defaultStateId'] ?? null) == $state->id)>
-                            {{ $state->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        <div>
-            <label for="{{ $cityId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
-            <div class="ps-searchable-select">
-                <select
-                    id="{{ $cityId }}"
-                    name="city_id"
-                    required
-                    data-repair-locator-city
-                    data-searchable-select
-                    @disabled(! ($repairLocator['defaultStateId'] ?? null))
-                >
-                    <option value="">انتخاب شهر</option>
-                    @if ($repairLocator['defaultStateId'] ?? null)
-                        @foreach ($repairLocator['citiesByState'][$repairLocator['defaultStateId']] ?? [] as $city)
-                            <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+                <label for="{{ $stateId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
+                <div class="ps-searchable-select">
+                    <select
+                        id="{{ $stateId }}"
+                        name="state_id"
+                        required
+                        data-repair-locator-state
+                        data-searchable-select
+                    >
+                        <option value="">انتخاب استان</option>
+                        @foreach ($repairLocator['states'] as $state)
+                            <option value="{{ $state->id }}" @selected(($repairLocator['defaultStateId'] ?? null) == $state->id)>
+                                {{ $state->name }}
+                            </option>
                         @endforeach
-                    @endif
-                </select>
+                    </select>
+                </div>
+            </div>
+
+            <div class="min-w-0">
+                <label for="{{ $cityId }}" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
+                <div class="ps-searchable-select">
+                    <select
+                        id="{{ $cityId }}"
+                        name="city_id"
+                        required
+                        data-repair-locator-city
+                        data-searchable-select
+                        @disabled(! ($repairLocator['defaultStateId'] ?? null))
+                    >
+                        <option value="">انتخاب شهر</option>
+                        @if ($repairLocator['defaultStateId'] ?? null)
+                            @foreach ($repairLocator['citiesByState'][$repairLocator['defaultStateId']] ?? [] as $city)
+                                <option value="{{ $city['id'] }}">{{ $city['name'] }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
             </div>
         </div>
 

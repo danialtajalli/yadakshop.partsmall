@@ -19,11 +19,10 @@
     >
         <x-slot:between>
             <div @class([
-                'grid gap-4',
-                'sm:grid-cols-2 lg:grid-cols-3' => $showSpecializationFilter,
-                'sm:grid-cols-2' => ! $showSpecializationFilter,
+                'grid grid-cols-2 gap-3 sm:gap-4',
+                'lg:grid-cols-3' => $showSpecializationFilter,
             ])>
-                <div>
+                <div class="min-w-0">
                     <label for="listing-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
                     <div class="ps-searchable-select">
                         <select
@@ -42,7 +41,7 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label for="listing-city" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
                     <div class="ps-searchable-select">
                         <select
@@ -63,7 +62,7 @@
                 </div>
 
                 @if ($showSpecializationFilter)
-                    <div>
+                    <div class="col-span-2 min-w-0 lg:col-span-1">
                         <label for="listing-specialization" class="mb-1.5 block text-xs font-medium text-ink-muted">تخصص‌ها</label>
                         <select
                             id="listing-specialization"

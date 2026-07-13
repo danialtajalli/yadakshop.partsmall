@@ -1,3 +1,7 @@
+function toPersianDigits(value) {
+    return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+}
+
 export default function shopCommentForm({ action, csrf }) {
     return {
         action,
@@ -20,7 +24,7 @@ export default function shopCommentForm({ action, csrf }) {
 
         get ratingLabel() {
             return this.form.rating > 0
-                ? `امتیاز انتخاب‌شده: ${this.form.rating} از ۵`
+                ? `امتیاز انتخاب‌شده: ${toPersianDigits(this.form.rating)} از ۵`
                 : 'یک امتیاز انتخاب کنید';
         },
 
@@ -31,6 +35,10 @@ export default function shopCommentForm({ action, csrf }) {
 
         starFill(star) {
             return this.displayRating >= star ? '#d4a017' : '#e2e8f0';
+        },
+
+        toPersianDigits(value) {
+            return toPersianDigits(value);
         },
 
         hasFieldError(field) {

@@ -2,11 +2,17 @@
     'rating' => null,
 ])
 
+@php
+    use App\Support\PersianDigits;
+
+    $ratingLabel = $rating ? PersianDigits::convert($rating) : null;
+@endphp
+
 @if ($rating)
     <div
         {{ $attributes->merge(['class' => 'inline-flex items-center gap-0.5']) }}
         role="img"
-        aria-label="امتیاز {{ $rating }} از ۵"
+        aria-label="امتیاز {{ $ratingLabel }} از ۵"
     >
         @for ($star = 1; $star <= 5; $star++)
             <svg
@@ -24,6 +30,6 @@
                 />
             </svg>
         @endfor
-        <span class="ps-comment-star-score">{{ $rating }}/5</span>
+        <span class="ps-comment-star-score">{{ $ratingLabel }}/۵</span>
     </div>
 @endif

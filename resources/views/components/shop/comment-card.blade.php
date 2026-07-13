@@ -3,7 +3,12 @@
 ])
 
 @php
+    use App\Support\PersianDigits;
+
     $authorName = $comment->fullname ?: 'کاربر';
+    $commentDate = $comment->created_at
+        ? PersianDigits::convert(jdate($comment->created_at)->format('j F Y'))
+        : null;
 @endphp
 
 <article {{ $attributes->merge(['class' => 'ps-card p-5']) }}>
@@ -16,12 +21,12 @@
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="font-semibold text-ink">{{ $authorName }}</p>
-                    @if ($comment->created_at)
+                    @if ($commentDate)
                         <time
                             datetime="{{ $comment->created_at->toIso8601String() }}"
                             class="mt-0.5 block text-xs text-ink-muted"
                         >
-                            {{ $comment->created_at->format('Y/m/d') }}
+                            {{ $commentDate }}
                         </time>
                     @endif
                 </div>

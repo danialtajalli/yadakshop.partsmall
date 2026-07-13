@@ -13,7 +13,8 @@
         "laravel/framework": "^13.8",
         "laravel/scout": "^11.3",
         "laravel/tinker": "^3.0",
-        "meilisearch/meilisearch-php": "^1.16"
+        "meilisearch/meilisearch-php": "^1.16",
+        "morilog/jalali": "^3.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -7,6 +7,8 @@
 ])
 
 @php
+    use App\Support\PersianDigits;
+
     $commentsCount = $commentsCount ?? $comments->count();
 @endphp
 
@@ -27,7 +29,7 @@
             </svg>
             <span>
                 میانگین امتیاز
-                <span class="ps-comment-rating-summary__value">{{ number_format($averageRating, 1) }}</span>
+                <span class="ps-comment-rating-summary__value">{{ PersianDigits::convert(number_format($averageRating, 1)) }}</span>
                 از ۵
             </span>
         </div>
