@@ -147,6 +147,50 @@ class ShopCommentTest extends TestCase
         $response->assertSee('پس از تایید در این صفحه نمایش داده می‌شود', false);
     }
 
+    public function test_shop_comment_store_returns_json_for_ajax_requests(): void
+    {
+        $shop = $this->createShop();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->post(route('api.shop.comments.store', $shop->slug), [
+            'fullname' => 'علی رضایی',
+            'mobile' => '09121234567',
+            'body' => 'خرید خوبی بود و برخورد مناسبی داشتند.',
+            'rating' => 4,
+        ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'message' => 'نظر شما با موفقیت ثبت شد و پس از تایید در این صفحه نمایش داده می‌شود.',
+        ]);
+
+        $this->assertDatabaseHas('comments', [
+            'shop_id' => $shop->id,
+            'fullname' => 'علی رضایی',
+            'confirmed' => false,
+        ]);
+    }
+
+    public function test_shop_comment_ajax_validation_returns_json_errors(): void
+    {
+        $shop = $this->createShop();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->post(route('api.shop.comments.store', $shop->slug), [
+            'fullname' => '',
+            'body' => 'کوتاه',
+            'rating' => 9,
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['fullname', 'body', 'rating']);
+        $this->assertDatabaseCount('comments', 0);
+    }
+
     public function test_shop_profile_displays_comment_form(): void
     {
         $shop = $this->createShop();
@@ -155,7 +199,8 @@ class ShopCommentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('ثبت نظر شما', false);
-        $response->assertSee(route('shop.comments.store', $shop->slug), false);
+        $response->assertSee('shopCommentForm', false);
+        $response->assertSee('profile/'.$shop->slug.'/comments', false);
         $response->assertSee('data-rating-picker', false);
     }
 

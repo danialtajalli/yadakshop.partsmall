@@ -131,6 +131,7 @@
                     :comments="$shop->comments"
                     :comments-count="$commentsCount"
                     :average-rating="$averageRating"
+                    id-suffix="desktop"
                 />
             </div>
         </div>
@@ -204,6 +205,7 @@
             :comments="$shop->comments"
             :comments-count="$commentsCount"
             :average-rating="$averageRating"
+            id-suffix="mobile"
         />
     </div>
 

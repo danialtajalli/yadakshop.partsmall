@@ -3,6 +3,7 @@
     'comments',
     'commentsCount' => null,
     'averageRating' => null,
+    'idSuffix' => 'default',
 ])
 
 @php
@@ -44,5 +45,5 @@
         </div>
     @endif
 
-    <x-shop.comment-form :shop="$shop" />
+    <x-shop.comment-form :shop="$shop" :id-suffix="$idSuffix" />
 </section>

@@ -1,8 +1,10 @@
-@if (session('comment_submitted'))
+@once
     <x-ui.modal
         id="shop-comment-success-modal"
         data-shop-comment-success-modal
         class="max-w-sm"
+        x-data
+        @shop-comment-submitted.window="$el.showModal()"
     >
         <div class="px-6 py-8 text-center">
             <div class="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-sm ring-8 ring-emerald-50">
@@ -20,27 +22,26 @@
                 type="button"
                 class="ps-btn-primary mt-6 w-full"
                 data-shop-comment-success-close
+                @click="$el.closest('dialog')?.close()"
             >
                 متوجه شدم
             </button>
         </div>
     </x-ui.modal>
 
-    @push('scripts')
-        <script>
-            (function () {
-                const modal = document.querySelector('[data-shop-comment-success-modal]');
+    @if (session('comment_submitted'))
+        @push('scripts')
+            <script>
+                (function () {
+                    const modal = document.querySelector('[data-shop-comment-success-modal]');
 
-                if (!modal || typeof modal.showModal !== 'function') {
-                    return;
-                }
+                    if (!modal || typeof modal.showModal !== 'function') {
+                        return;
+                    }
 
-                modal.showModal();
-
-                modal.querySelector('[data-shop-comment-success-close]')?.addEventListener('click', function () {
-                    modal.close();
-                });
-            })();
-        </script>
-    @endpush
-@endif
+                    modal.showModal();
+                })();
+            </script>
+        @endpush
+    @endif
+@endonce

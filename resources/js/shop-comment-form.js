@@ -1,0 +1,112 @@
+export default function shopCommentForm({ action, csrf }) {
+    return {
+        action,
+        csrf,
+        submitting: false,
+        errors: [],
+        fieldErrors: {},
+        form: {
+            fullname: '',
+            mobile: '',
+            body: '',
+            rating: 0,
+            company_url: '',
+        },
+        hoverRating: 0,
+
+        get displayRating() {
+            return this.hoverRating || this.form.rating || 0;
+        },
+
+        get ratingLabel() {
+            return this.form.rating > 0
+                ? `امتیاز انتخاب‌شده: ${this.form.rating} از ۵`
+                : 'یک امتیاز انتخاب کنید';
+        },
+
+        setRating(value) {
+            this.form.rating = value;
+            delete this.fieldErrors.rating;
+        },
+
+        starFill(star) {
+            return this.displayRating >= star ? '#d4a017' : '#e2e8f0';
+        },
+
+        hasFieldError(field) {
+            return Boolean(this.fieldErrors[field]);
+        },
+
+        resetForm() {
+            this.form = {
+                fullname: '',
+                mobile: '',
+                body: '',
+                rating: 0,
+                company_url: '',
+            };
+            this.hoverRating = 0;
+            this.errors = [];
+            this.fieldErrors = {};
+        },
+
+        async submit() {
+            if (this.submitting) {
+                return;
+            }
+
+            this.submitting = true;
+            this.errors = [];
+            this.fieldErrors = {};
+
+            try {
+                const body = new FormData();
+                body.set('_token', this.csrf);
+                body.set('fullname', this.form.fullname);
+                body.set('mobile', this.form.mobile);
+                body.set('body', this.form.body);
+                body.set('rating', this.form.rating ? String(this.form.rating) : '');
+
+                if (this.form.company_url) {
+                    body.set('company_url', this.form.company_url);
+                }
+
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': this.csrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body,
+                });
+
+                const payload = await response.json().catch(() => ({}));
+
+                if (response.status === 422) {
+                    this.fieldErrors = payload.errors ?? {};
+                    this.errors = Object.values(this.fieldErrors).flat();
+
+                    return;
+                }
+
+                if (! response.ok) {
+                    this.errors = [payload.message ?? 'ارسال نظر با خطا مواجه شد. لطفاً دوباره تلاش کنید.'];
+
+                    return;
+                }
+
+                this.resetForm();
+                window.dispatchEvent(new CustomEvent('shop-comment-submitted', {
+                    detail: {
+                        message: payload.message ?? null,
+                    },
+                }));
+            } catch {
+                this.errors = ['ارتباط با سرور برقرار نشد. لطفاً دوباره تلاش کنید.'];
+            } finally {
+                this.submitting = false;
+            }
+        },
+    };
+}
