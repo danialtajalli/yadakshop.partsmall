@@ -10,6 +10,7 @@ use App\Models\PartsCategory;
 use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
+use App\Enums\ImageType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Scout\EngineManager;
 use Tests\TestCase;
@@ -204,6 +205,49 @@ class SearchPageTest extends TestCase
         $this->get(route('search.index'))
             ->assertOk()
             ->assertSee('برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، کمپانی، خودرو یا مدل را وارد کنید.', false);
+    }
+
+    public function test_search_page_shows_photo_cards_for_directory_results(): void
+    {
+        config(['scout.driver' => 'collection']);
+        app(EngineManager::class)->forgetDrivers();
+
+        $company = Company::create([
+            'name' => 'کمپانی تصویر',
+            'slug' => 'image-company',
+        ]);
+
+        $shop = Shop::create([
+            'name' => 'فروشگاه تصویر',
+            'slug' => 'image-shop',
+        ]);
+        $shop->images()->create([
+            'type' => ImageType::Logo,
+            'path' => 'shop-logo.webp',
+        ]);
+
+        $repairShop = RepairShop::create([
+            'name' => 'تعمیرگاه تصویر',
+            'slug' => 'image-repair-shop',
+        ]);
+        $repairShop->images()->create([
+            'type' => ImageType::Logo,
+            'path' => 'repair-logo.webp',
+        ]);
+
+        Representation::create([
+            'name' => 'نمایندگی تصویر',
+            'slug' => 'image-representation',
+            'company_id' => $company->id,
+            'logo' => 'rep-logo.webp',
+        ]);
+
+        $this->get(route('search.index', ['q' => 'تصویر']))
+            ->assertOk()
+            ->assertSee('shop/logo/'.$shop->id.'/shop-logo.webp', false)
+            ->assertSee('repair/logo/'.$repairShop->id.'/repair-logo.webp', false)
+            ->assertSee('representation/logo/', false)
+            ->assertSee('rep-logo.webp', false);
     }
 
     /**

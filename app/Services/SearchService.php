@@ -13,6 +13,7 @@ use App\Services\Search\SearchIntentDetector;
 use App\Support\CarModelLabel;
 use App\Support\CatalogUrls;
 use App\Support\Search\SearchTextNormalizer;
+use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -27,7 +28,7 @@ class SearchService
 
     /**
      * @return array{
-     *     groups: Collection<int, array{key: string, label: string, total: int, items: Collection<int, array{title: string, subtitle: ?string, url: string, type: string}>}>,
+     *     groups: Collection<int, array{key: string, label: string, total: int, items: Collection<int, array{title: string, subtitle: ?string, url: string, type: string, image_url: ?string}>}>,
      *     total: int,
      * }
      */
@@ -77,7 +78,7 @@ class SearchService
     {
         $groups = collect([
             $this->storeGroup($query),
-            $this->buildGroup('repair_shops', 'تعمیرگاه‌ها', RepairShop::class, $query, ['city.state', 'repairCategories'], searchableFields: ['name']),
+            $this->buildGroup('repair_shops', 'تعمیرگاه‌ها', RepairShop::class, $query, ['city.state', 'repairCategories', 'images'], searchableFields: ['name']),
             $this->vehicleGroup($query),
             $this->buildGroup('parts', 'قطعات', Part::class, $query, ['partsCategory'], ['name', 'description']),
         ])->filter(fn (?array $group): bool => $group !== null && $group['total'] > 0)->values();
@@ -91,7 +92,7 @@ class SearchService
     private function storeGroup(string $query): array
     {
         $shops = Shop::search($query)
-            ->query(fn ($builder) => $builder->with('city.state')->where('name', 'like', '%'.$query.'%'))
+            ->query(fn ($builder) => $builder->with(['city.state', 'images'])->where('name', 'like', '%'.$query.'%'))
             ->paginate(self::PER_GROUP);
 
         $representations = Representation::search($query)
@@ -331,30 +332,35 @@ class SearchService
                 'subtitle' => $result->partsCategory?->name,
                 'url' => route('part.show', $result->slug),
                 'type' => 'قطعه',
+                'image_url' => null,
             ],
             $result instanceof Shop => [
                 'title' => $result->name,
                 'subtitle' => $result->secondary_name ?: $result->state?->name,
                 'url' => route('shop.profile', $result->slug),
                 'type' => 'فروشگاه',
+                'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof RepairShop => [
                 'title' => $result->name,
                 'subtitle' => $result->work_description ?: $result->state?->name,
                 'url' => $result->profileUrl(),
                 'type' => 'تعمیرگاه',
+                'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof Representation => [
                 'title' => $result->name,
                 'subtitle' => $result->company?->name ?: $result->city?->name,
                 'url' => route('representation.profile', $result->slug),
                 'type' => 'نمایندگی',
+                'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof Company => [
                 'title' => $result->name,
                 'subtitle' => $result->country,
                 'url' => route('cars.index', ['company' => $result->slug]),
                 'type' => 'کمپانی',
+                'image_url' => null,
             ],
             $result instanceof Car => [
                 'title' => $result->name,
@@ -363,6 +369,7 @@ class SearchService
                     ? route('models.index', ['company' => $result->company->slug, 'car' => $result->slug])
                     : CatalogUrls::companies(),
                 'type' => 'خودرو',
+                'image_url' => null,
             ],
             // $result instanceof CarModel => $this->mapCarModel($result),
             default => [
@@ -370,8 +377,42 @@ class SearchService
                 'subtitle' => null,
                 'url' => route('search.index', ['q' => $result->getAttribute('name')]),
                 'type' => $key,
+                'image_url' => null,
             ],
         };
+    }
+
+    private function imageUrlFor(Model $result): ?string
+    {
+        return match (true) {
+            $result instanceof Shop => $this->shopImageUrl($result),
+            $result instanceof RepairShop => $this->repairShopImageUrl($result),
+            $result instanceof Representation => $this->representationImageUrl($result),
+            default => null,
+        };
+    }
+
+    private function shopImageUrl(Shop $shop): ?string
+    {
+        $shop->loadMissing('images');
+        ShopImageUrlBuilder::attachShopMedia($shop);
+
+        return $shop->logo ?? null;
+    }
+
+    private function repairShopImageUrl(RepairShop $repairShop): ?string
+    {
+        $repairShop->loadMissing('images');
+        ShopImageUrlBuilder::attachRepairShopMedia($repairShop);
+
+        return $repairShop->logo ?? null;
+    }
+
+    private function representationImageUrl(Representation $representation): ?string
+    {
+        ShopImageUrlBuilder::attachRepresentationMedia($representation);
+
+        return $representation->logo ?? null;
     }
 
     /**
@@ -399,6 +440,7 @@ class SearchService
                 ])
                 : ($company ? CatalogUrls::parts($company->slug, $car->slug, $model->slug) : CatalogUrls::companies()),
             'type' => 'محصول',
+            'image_url' => null,
         ];
     }
 
