@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Log;
 
 class DidarApiClient
 {
+    public function __construct(
+        private readonly DidarHttpSsl $ssl,
+    ) {}
+
     public function post(string $endpoint, array|object $body): DidarApiResponse
     {
         $apiKey = (string) config('contact.didar.api_key');
@@ -39,6 +43,9 @@ class DidarApiClient
         return Http::acceptJson()
             ->asJson()
             ->timeout(30)
+            ->withOptions([
+                'verify' => $this->ssl->verifyOption(),
+            ])
             ->withQueryParameters([
                 'apikey' => (string) config('contact.didar.api_key'),
             ]);
