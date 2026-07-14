@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartController;
@@ -41,6 +42,11 @@ Route::get('part/{part}', [PartController::class, 'show'])->name('part.show');
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');
+
+Route::get('forms/contact', [ContactFormController::class, 'create'])->name('forms.contact.create');
+Route::post('forms/contact', [ContactFormController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('forms.contact.store');
 
 Route::get('page/contact', [ContactController::class, 'show']);
 Route::get('page/{slug}', [PageController::class, 'show'])

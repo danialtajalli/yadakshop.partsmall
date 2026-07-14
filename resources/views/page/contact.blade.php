@@ -73,7 +73,7 @@
                 <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
                 <iframe
                     id="contact-form-iframe"
-                    src="{{ asset('forms/contact.php?embed=1') }}"
+                    src="{{ route('forms.contact.create', ['embed' => 1]) }}"
                     title="فرم تماس"
                     class="block w-full border-0"
                     style="min-height: 28rem; height: 28rem;"

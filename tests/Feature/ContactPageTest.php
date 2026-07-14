@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\ContactLead;
 use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ContactPageTest extends TestCase
@@ -28,7 +31,7 @@ class ContactPageTest extends TestCase
             ->assertViewIs('page.contact')
             ->assertSee('تماس با ما', false)
             ->assertSee('فرم تماس', false)
-            ->assertSee('forms/contact.php?embed=1', false)
+            ->assertSee(route('forms.contact.create', ['embed' => 1]), false)
             ->assertSee('contact-form-iframe', false)
             ->assertSee('didar-contact-form-resize', false)
             ->assertSee(config('partsmall.contact.image_url'), false)
@@ -36,46 +39,37 @@ class ContactPageTest extends TestCase
             ->assertSee(config('partsmall.contact.email'), false);
     }
 
-    public function test_standalone_contact_form_renders_embed_mode(): void
+    public function test_contact_form_renders_embed_mode(): void
     {
-        $_GET = ['embed' => '1'];
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_POST = [];
-
-        ob_start();
-        require public_path('forms/contact.php');
-        $html = (string) ob_get_clean();
-
-        $this->assertStringContainsString('didar-contact-form', $html);
-        $this->assertStringContainsString('novalidate', $html);
-        $this->assertStringContainsString('data-field-error="phone"', $html);
-        $this->assertStringContainsString('name="first_name"', $html);
-        $this->assertStringContainsString('name="last_name"', $html);
-        $this->assertStringContainsString('name="phone"', $html);
-        $this->assertStringContainsString('name="message"', $html);
-        $this->assertStringContainsString('ارسال پیام', $html);
-        $this->assertStringContainsString('name="csrf_token"', $html);
+        $this->get(route('forms.contact.create', ['embed' => 1]))
+            ->assertOk()
+            ->assertSee('didar-contact-form', false)
+            ->assertSee('novalidate', false)
+            ->assertSee('data-field-error="phone"', false)
+            ->assertSee('name="first_name"', false)
+            ->assertSee('name="last_name"', false)
+            ->assertSee('name="phone"', false)
+            ->assertSee('name="message"', false)
+            ->assertSee('ارسال پیام', false)
+            ->assertSee('name="_token"', false);
     }
 
-    public function test_standalone_contact_form_rejects_invalid_mobile(): void
+    public function test_contact_form_rejects_invalid_mobile(): void
     {
-        $_SESSION['didar_contact_csrf'] = 'test-token';
-        $_GET = ['embed' => '1'];
-        $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_POST = [
-            'csrf_token' => 'test-token',
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'phone' => '12345',
-            'message' => '',
-        ];
+        $response = $this->from(route('forms.contact.create', ['embed' => 1]))
+            ->post(route('forms.contact.store', ['embed' => 1]), [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'phone' => '12345',
+                'message' => 'hello world',
+            ]);
 
-        ob_start();
-        require public_path('forms/contact.php');
-        $html = (string) ob_get_clean();
+        $response->assertRedirect(route('forms.contact.create', ['embed' => 1]))
+            ->assertSessionHasErrors('phone');
 
-        $this->assertStringContainsString('شماره موبایل معتبر نیست', $html);
-        $this->assertStringContainsString('data-field-error="phone"', $html);
-        $this->assertStringContainsString('didar-contact-form__input--error', $html);
+        $this->followRedirects($response)
+            ->assertSee('شماره موبایل معتبر نیست', false)
+            ->assertSee('data-field-error="phone"', false)
+            ->assertSee('didar-contact-form__input--error', false);
     }
 }
