@@ -92,10 +92,17 @@
 
         <button
             type="submit"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-brand-dark active:scale-[0.98]"
+            data-contact-submit
+            class="ps-contact-submit inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark"
         >
-            <i class="fa-solid fa-paper-plane text-xs opacity-90" aria-hidden="true"></i>
-            <span>ارسال پیام</span>
+            <span data-submit-idle class="inline-flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane text-xs opacity-90" aria-hidden="true"></i>
+                <span>ارسال پیام</span>
+            </span>
+            <span data-submit-loading class="hidden inline-flex items-center justify-center gap-2" aria-hidden="true">
+                <i class="fa-solid fa-spinner ps-contact-submit__spinner text-xs" aria-hidden="true"></i>
+                <span>در حال ارسال...</span>
+            </span>
         </button>
     </form>
 
@@ -149,6 +156,26 @@
 
     function isValidMobile(phone) {
         return /^09\d{9}$/.test(normalizeMobile(phone));
+    }
+
+    function setSubmitting(isSubmitting) {
+        const button = form.querySelector('[data-contact-submit]');
+        const idle = form.querySelector('[data-submit-idle]');
+        const loading = form.querySelector('[data-submit-loading]');
+
+        if (!button || !idle || !loading) {
+            return;
+        }
+
+        button.disabled = isSubmitting;
+        button.setAttribute('aria-busy', isSubmitting ? 'true' : 'false');
+        idle.classList.toggle('hidden', isSubmitting);
+        loading.classList.toggle('hidden', !isSubmitting);
+        loading.setAttribute('aria-hidden', isSubmitting ? 'false' : 'true');
+
+        if (isSubmitting && typeof window.startContactNavigationProgress === 'function') {
+            window.startContactNavigationProgress();
+        }
     }
 
     function setFieldError(name, message) {
@@ -257,8 +284,12 @@
 
         if (!valid) {
             event.preventDefault();
+            notifyParentHeight();
+
+            return;
         }
 
+        setSubmitting(true);
         notifyParentHeight();
     });
 

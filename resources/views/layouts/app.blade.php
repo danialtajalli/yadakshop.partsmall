@@ -66,9 +66,12 @@
                 .ps-container { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
                 .ps-card { @apply rounded-2xl border border-line bg-white shadow-card; }
                 .ps-card-interactive { @apply ps-card transition duration-200 hover:border-brand/20 hover:shadow-card-hover; }
-                .ps-btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition duration-150; }
-                .ps-btn-primary { @apply ps-btn bg-brand text-white hover:bg-brand-dark active:scale-[0.98]; }
-                .ps-btn-secondary { @apply ps-btn border border-line bg-white text-ink hover:border-brand/30 hover:bg-brand-soft/50; }
+                .ps-btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition duration-150 select-none; }
+                .ps-btn-primary { @apply ps-btn bg-brand text-white hover:bg-brand-dark active:scale-[0.96] active:bg-brand-dark active:shadow-inner; }
+                .ps-btn-primary.ps-touch-pressed { transform: scale(0.96); background-color: #222c3d; box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.22); }
+                .ps-btn-secondary { @apply ps-btn border border-line bg-white text-ink hover:border-brand/30 hover:bg-brand-soft/50 active:scale-[0.98] active:bg-surface active:border-brand/40; }
+                .ps-btn-secondary.ps-touch-pressed { transform: scale(0.98); background-color: #f1f5f9; border-color: rgb(63 72 87 / 0.35); }
+                a.rounded-lg.ps-touch-pressed, a.rounded-lg:active { background-color: #f1f5f9; transform: scale(0.98); }
                 .ps-section-label { @apply text-xs font-semibold uppercase tracking-wider text-brand; }
                 .ps-section-title { @apply text-xl font-bold text-ink sm:text-2xl; }
                 .ps-scrollbar { scrollbar-width: thin; scrollbar-color: rgb(148 163 184 / 0.5) transparent; }
@@ -165,12 +168,15 @@
             .ps-form-errors__list { margin: 0; padding: 0; list-style: none; }
             .ps-form-errors__item { position: relative; padding-block: 0.2rem; padding-inline-start: 0.875rem; font-size: 0.8125rem; line-height: 1.55; color: #be123c; }
             .ps-form-errors__item::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.65em; width: 0.25rem; height: 0.25rem; border-radius: 9999px; background: #e11d48; opacity: 0.45; }
+            #ps-navigation-progress { position: fixed; inset-inline-start: 0; top: 0; z-index: 9999; height: 3px; width: 0; pointer-events: none; opacity: 0; background: linear-gradient(90deg, #3f4857 0%, #f27c22 100%); box-shadow: 0 0 10px rgb(63 72 87 / 0.35); transition: width 0.28s ease, opacity 0.2s ease; }
+            #ps-navigation-progress.is-active { opacity: 1; }
         </style>
     @endif
 
     @stack('head')
 </head>
 <body class="flex min-h-screen overflow-x-hidden flex-col font-sans antialiased bg-gray-50">
+    <div id="ps-navigation-progress" role="progressbar" aria-hidden="true" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
     @include('layouts.partials.header')
 
     <main class="min-w-0 flex-1 overflow-x-clip py-8 sm:py-10">

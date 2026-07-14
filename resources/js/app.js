@@ -1,6 +1,8 @@
 import './entity-carousel';
 import './map/imports';
 import './location-selects';
+import './touch-feedback';
+import './navigation-progress';
 
 const isFilamentPanel = () => {
     const path = window.location.pathname;
