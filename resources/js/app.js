@@ -2,11 +2,12 @@ import './entity-carousel';
 import './map/imports';
 import './location-selects';
 
-import Alpine from 'alpinejs';
-import shopCommentForm from './shop-comment-form';
+const isFilamentPanel = () => {
+    const path = window.location.pathname;
 
-window.Alpine = Alpine;
+    return path === '/admin' || path.startsWith('/admin/');
+};
 
-Alpine.data('shopCommentForm', shopCommentForm);
-
-Alpine.start();
+if (! isFilamentPanel()) {
+    import('./alpine-public.js');
+}
