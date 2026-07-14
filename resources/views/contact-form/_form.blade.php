@@ -7,128 +7,17 @@
     ];
     $statusMessage = session('contact_status_message');
     $statusType = session('contact_status_type');
+    $inputClass = 'w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20';
+    $labelClass = 'mb-1.5 block text-sm font-medium text-ink';
 @endphp
 
-<style>
-    .didar-contact-form {
-        font-family: Tahoma, Arial, sans-serif;
-        color: #0f172a;
-        direction: rtl;
-    }
-
-    .didar-contact-form * {
-        box-sizing: border-box;
-    }
-
-    .didar-contact-form__alert {
-        margin-top: 1rem;
-        border-radius: 0.75rem;
-        padding: 0.875rem 1rem;
-        font-size: 0.875rem;
-        line-height: 1.6;
-    }
-
-    .didar-contact-form__alert--success {
-        background: #ecfdf5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-    }
-
-    .didar-contact-form__alert--error {
-        background: #fef2f2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
-
-    .didar-contact-form__grid {
-        display: grid;
-        gap: 1rem;
-    }
-
-    @media (min-width: 640px) {
-        .didar-contact-form__grid--two {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    .didar-contact-form__field label {
-        display: block;
-        margin-bottom: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-
-    .didar-contact-form__field input,
-    .didar-contact-form__field textarea {
-        width: 100%;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        padding: 0.75rem 0.875rem;
-        font: inherit;
-        background: #fff;
-    }
-
-    .didar-contact-form__field textarea {
-        min-height: 8rem;
-        resize: vertical;
-    }
-
-    .didar-contact-form__field input:focus,
-    .didar-contact-form__field textarea:focus {
-        outline: 2px solid rgb(63 72 87 / 0.25);
-        border-color: #3f4857;
-    }
-
-    .didar-contact-form__field input.didar-contact-form__input--error,
-    .didar-contact-form__field textarea.didar-contact-form__input--error {
-        border-color: #f87171;
-        background: #fffafa;
-    }
-
-    .didar-contact-form__field input.didar-contact-form__input--error:focus,
-    .didar-contact-form__field textarea.didar-contact-form__input--error:focus {
-        outline-color: rgb(248 113 113 / 0.25);
-        border-color: #ef4444;
-    }
-
-    .didar-contact-form__error {
-        margin: 0.375rem 0 0;
-        font-size: 0.75rem;
-        line-height: 1.5;
-        color: #dc2626;
-    }
-
-    .didar-contact-form__error[hidden] {
-        display: none;
-    }
-
-    .didar-contact-form__submit {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        border: 0;
-        border-radius: 0.75rem;
-        padding: 0.875rem 1rem;
-        background: #3f4857;
-        color: #fff;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .didar-contact-form__submit:hover {
-        background: #222c3d;
-    }
-</style>
-
-<div class="didar-contact-form">
-    <form method="post" action="{{ $formAction }}" novalidate data-didar-contact-form>
+<div class="didar-contact-form font-sans text-ink">
+    <form method="post" action="{{ $formAction }}" novalidate data-didar-contact-form class="space-y-4">
         @csrf
 
-        <div class="didar-contact-form__grid didar-contact-form__grid--two">
-            <div class="didar-contact-form__field">
-                <label for="first_name">نام</label>
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="first_name" class="{{ $labelClass }}">نام</label>
                 <input
                     id="first_name"
                     name="first_name"
@@ -136,16 +25,17 @@
                     value="{{ $values['first_name'] }}"
                     maxlength="100"
                     autocomplete="given-name"
+                    placeholder="نام خود را وارد کنید"
                     aria-describedby="first_name-error"
-                    @class(['didar-contact-form__input--error' => $errors->has('first_name')])
+                    class="{{ $inputClass }} {{ $errors->has('first_name') ? 'didar-contact-form__input--error' : '' }}"
                 >
-                <p class="didar-contact-form__error" id="first_name-error" role="alert" data-field-error="first_name" @if (! $errors->has('first_name')) hidden @endif>
+                <p class="mt-1.5 text-xs leading-5 text-red-600" id="first_name-error" role="alert" data-field-error="first_name" @if (! $errors->has('first_name')) hidden @endif>
                     {{ $errors->first('first_name') }}
                 </p>
             </div>
 
-            <div class="didar-contact-form__field">
-                <label for="last_name">نام خانوادگی</label>
+            <div>
+                <label for="last_name" class="{{ $labelClass }}">نام خانوادگی</label>
                 <input
                     id="last_name"
                     name="last_name"
@@ -153,61 +43,75 @@
                     value="{{ $values['last_name'] }}"
                     maxlength="100"
                     autocomplete="family-name"
+                    placeholder="نام خانوادگی خود را وارد کنید"
                     aria-describedby="last_name-error"
-                    @class(['didar-contact-form__input--error' => $errors->has('last_name')])
+                    class="{{ $inputClass }} {{ $errors->has('last_name') ? 'didar-contact-form__input--error' : '' }}"
                 >
-                <p class="didar-contact-form__error" id="last_name-error" role="alert" data-field-error="last_name" @if (! $errors->has('last_name')) hidden @endif>
+                <p class="mt-1.5 text-xs leading-5 text-red-600" id="last_name-error" role="alert" data-field-error="last_name" @if (! $errors->has('last_name')) hidden @endif>
                     {{ $errors->first('last_name') }}
                 </p>
             </div>
         </div>
 
-        <div class="didar-contact-form__grid" style="margin-top: 1rem;">
-            <div class="didar-contact-form__field">
-                <label for="phone">شماره موبایل</label>
-                <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value="{{ $values['phone'] }}"
-                    maxlength="15"
-                    inputmode="tel"
-                    autocomplete="tel"
-                    dir="ltr"
-                    placeholder="09121234567"
-                    style="text-align: right;"
-                    aria-describedby="phone-error"
-                    @class(['didar-contact-form__input--error' => $errors->has('phone')])
-                >
-                <p class="didar-contact-form__error" id="phone-error" role="alert" data-field-error="phone" @if (! $errors->has('phone')) hidden @endif>
-                    {{ $errors->first('phone') }}
-                </p>
-            </div>
-
-            <div class="didar-contact-form__field">
-                <label for="message">پیام</label>
-                <textarea
-                    id="message"
-                    name="message"
-                    maxlength="2000"
-                    placeholder="پیام خود را بنویسید..."
-                    aria-describedby="message-error"
-                    @class(['didar-contact-form__input--error' => $errors->has('message')])
-                >{{ $values['message'] }}</textarea>
-                <p class="didar-contact-form__error" id="message-error" role="alert" data-field-error="message" @if (! $errors->has('message')) hidden @endif>
-                    {{ $errors->first('message') }}
-                </p>
-            </div>
+        <div>
+            <label for="phone" class="{{ $labelClass }}">شماره موبایل</label>
+            <input
+                id="phone"
+                name="phone"
+                type="tel"
+                value="{{ $values['phone'] }}"
+                maxlength="15"
+                inputmode="tel"
+                autocomplete="tel"
+                dir="ltr"
+                placeholder="09121234567"
+                aria-describedby="phone-error phone-hint"
+                class="{{ $inputClass }} text-left tabular-nums tracking-wide {{ $errors->has('phone') ? 'didar-contact-form__input--error' : '' }}"
+            >
+            <p id="phone-hint" class="mt-1.5 text-xs text-ink-muted">نمونه صحیح: 09121234567</p>
+            <p class="mt-1.5 text-xs leading-5 text-red-600" id="phone-error" role="alert" data-field-error="phone" @if (! $errors->has('phone')) hidden @endif>
+                {{ $errors->first('phone') }}
+            </p>
         </div>
 
-        <div style="margin-top: 1rem;">
-            <button type="submit" class="didar-contact-form__submit">ارسال پیام</button>
+        <div>
+            <label for="message" class="{{ $labelClass }}">پیام</label>
+            <textarea
+                id="message"
+                name="message"
+                maxlength="2000"
+                rows="5"
+                placeholder="پیام خود را بنویسید..."
+                aria-describedby="message-error"
+                class="{{ $inputClass }} min-h-[8rem] resize-y leading-6 {{ $errors->has('message') ? 'didar-contact-form__input--error' : '' }}"
+            >{{ $values['message'] }}</textarea>
+            <p class="mt-1.5 text-xs leading-5 text-red-600" id="message-error" role="alert" data-field-error="message" @if (! $errors->has('message')) hidden @endif>
+                {{ $errors->first('message') }}
+            </p>
         </div>
+
+        <button
+            type="submit"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-brand-dark active:scale-[0.98]"
+        >
+            <i class="fa-solid fa-paper-plane text-xs opacity-90" aria-hidden="true"></i>
+            <span>ارسال پیام</span>
+        </button>
     </form>
 
     @if ($statusMessage)
-        <div class="didar-contact-form__alert didar-contact-form__alert--{{ $statusType ?? 'error' }}">
-            {{ $statusMessage }}
+        <div
+            class="mt-4 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm leading-6
+                {{ ($statusType ?? 'error') === 'success'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                    : 'border-red-200 bg-red-50 text-red-800' }}"
+            role="status"
+        >
+            <i
+                class="mt-0.5 {{ ($statusType ?? 'error') === 'success' ? 'fa-solid fa-circle-check text-emerald-600' : 'fa-solid fa-circle-exclamation text-red-500' }}"
+                aria-hidden="true"
+            ></i>
+            <span>{{ $statusMessage }}</span>
         </div>
     @endif
 </div>
