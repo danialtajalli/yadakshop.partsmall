@@ -24,8 +24,10 @@ class DidarApiClient
         $url = rtrim((string) config('contact.didar.base_url'), '/').'/'.ltrim($endpoint, '/');
 
         try {
+            // Encode ourselves so empty stdClass values stay `{}` (Didar/.NET rejects `[]` for Criteria).
             $response = $this->request()
-                ->post($url, $this->normalizeBody($body));
+                ->withBody($this->encodeBody($body), 'application/json')
+                ->post($url);
         } catch (\Throwable $exception) {
             Log::error('Didar API request failed.', [
                 'endpoint' => $endpoint,
@@ -41,7 +43,6 @@ class DidarApiClient
     private function request(): PendingRequest
     {
         return Http::acceptJson()
-            ->asJson()
             ->timeout(30)
             ->withOptions([
                 'verify' => $this->ssl->verifyOption(),
@@ -51,20 +52,26 @@ class DidarApiClient
             ]);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function normalizeBody(array|object $body): array
+    private function encodeBody(array|object $body): string
     {
-        return json_decode(json_encode($body, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
+        return json_encode($body, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
     private function toApiResponse(string $endpoint, Response $response): DidarApiResponse
     {
         $decoded = $response->json();
+        $body = $response->body();
 
         if (! is_array($decoded)) {
-            Log::error('Didar API returned invalid JSON.', ['endpoint' => $endpoint]);
+            Log::error('Didar API returned a non-JSON response.', [
+                'endpoint' => $endpoint,
+                'status' => $response->status(),
+                'body' => $body === '' ? null : mb_substr($body, 0, 500),
+            ]);
+
+            if ($response->status() === 401) {
+                return DidarApiResponse::failure(401, null, 'didar_unauthorized');
+            }
 
             return DidarApiResponse::failure($response->status(), null, 'invalid_json');
         }
