@@ -85,7 +85,6 @@
                     <select
                         id="{{ $cityId }}"
                         name="city_id"
-                        required
                         data-repair-locator-city
                         data-searchable-select
                         @disabled(! ($repairLocator['defaultStateId'] ?? null))
