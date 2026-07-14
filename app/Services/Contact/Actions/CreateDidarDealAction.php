@@ -1,48 +1,46 @@
 <?php
 
-namespace App\Services\Contact\Pipeline\Steps;
+namespace App\Services\Contact\Actions;
 
-use App\DataTransferObjects\Contact\ContactLeadContext;
+use App\Exceptions\ContactLeadPipelineException;
+use App\Models\ContactLead;
 use App\Services\Contact\Didar\DidarApiClient;
 use App\Services\Contact\Didar\DidarResponseParser;
-use App\Services\Contact\Pipeline\ContactLeadStepDecorator;
 use Illuminate\Support\Facades\Log;
 
-class CreateDidarDealStep extends ContactLeadStepDecorator
+class CreateDidarDealAction
 {
     public function __construct(
         private readonly DidarApiClient $client,
         private readonly DidarResponseParser $parser,
-        ?\App\Services\Contact\Pipeline\ContactLeadStep $next = null,
-    ) {
-        parent::__construct($next);
-    }
+    ) {}
 
-    protected function process(ContactLeadContext $context): void
+    public function execute(ContactLead $lead): void
     {
         $dealFieldKey = (string) config('contact.didar.deal_field_key');
-        $dealTitle = 'معامله تماس — '.$context->lead->fullName();
-        $dealDescription = $context->lead->message !== ''
-            ? $context->lead->message
+        $fullName = trim($lead->first_name.' '.$lead->last_name);
+        $dealTitle = 'معامله تماس — '.$fullName;
+        $dealDescription = $lead->message !== ''
+            ? $lead->message
             : 'درخواست تماس از وب‌سایت';
 
         $response = $this->client->post('deal/save', [
             'Deal' => [
-                'PersonId' => $context->personId,
+                'PersonId' => $lead->didar_person_id,
                 'Title' => $dealTitle,
-                'OwnerId' => $context->ownerId,
-                'PipelineStageId' => $context->pipelineStageId,
+                'OwnerId' => $lead->didar_owner_id,
+                'PipelineStageId' => $lead->didar_pipeline_stage_id,
                 'SegmentIds' => [],
                 'Description' => $dealDescription,
                 'VisibilityType' => 'All',
                 'Fields' => [
-                    $dealFieldKey => $context->lead->message !== '' ? $context->lead->message : $dealDescription,
+                    $dealFieldKey => $lead->message !== '' ? $lead->message : $dealDescription,
                 ],
             ],
             'DealItems' => [
                 [
                     'Quantity' => 1,
-                    'ProductId' => $context->productId,
+                    'ProductId' => $lead->didar_product_id,
                 ],
             ],
             'IsWon' => false,
@@ -51,15 +49,14 @@ class CreateDidarDealStep extends ContactLeadStepDecorator
 
         if (! $response->ok) {
             Log::error('Didar deal/save failed.', ['error' => $response->error]);
-            $context->fail('didar_deal_save_failed');
 
-            return;
+            throw new ContactLeadPipelineException('didar_deal_save_failed');
         }
 
         $dealId = $this->parser->extractDealId($response->data ?? []);
 
         if ($dealId !== null) {
-            $context->dealId = $dealId;
+            $lead->update(['didar_deal_id' => $dealId]);
         }
     }
 }

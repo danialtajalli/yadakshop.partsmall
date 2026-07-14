@@ -23,6 +23,9 @@ class ContactLead extends Model
         'didar_person_id',
         'didar_deal_id',
         'didar_product_id',
+        'didar_owner_id',
+        'didar_pipeline_id',
+        'didar_pipeline_stage_id',
         'failure_reason',
     ];
 }

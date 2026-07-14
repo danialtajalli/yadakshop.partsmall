@@ -2,41 +2,49 @@
 
 namespace App\Services\Contact;
 
-use App\Services\Contact\Pipeline\ContactLeadStep;
-use App\Services\Contact\Pipeline\Steps\CreateDidarDealStep;
-use App\Services\Contact\Pipeline\Steps\FindOrCreateDidarContactStep;
-use App\Services\Contact\Pipeline\Steps\PersistContactLeadStep;
-use App\Services\Contact\Pipeline\Steps\ResolveDidarOwnerStep;
-use App\Services\Contact\Pipeline\Steps\ResolveDidarPipelineStep;
-use App\Services\Contact\Pipeline\Steps\ResolveDidarProductStep;
+use App\Jobs\Contact\ContactLeadFailureHandler;
+use App\Jobs\Contact\CreateDidarDealJob;
+use App\Jobs\Contact\FinalizeContactLeadJob;
+use App\Jobs\Contact\FindOrCreateDidarContactJob;
+use App\Jobs\Contact\ResolveDidarOwnerJob;
+use App\Jobs\Contact\ResolveDidarPipelineJob;
+use App\Jobs\Contact\ResolveDidarProductJob;
+use App\Models\ContactLead;
+use Illuminate\Support\Facades\Bus;
 use InvalidArgumentException;
+use Throwable;
 
 class ContactLeadPipelineFactory
 {
-    public function make(?string $pipeline = null): ContactLeadStep
+    public function dispatch(ContactLead $lead): void
     {
-        $pipeline ??= (string) config('contact.pipeline');
-
-        return match ($pipeline) {
-            'database_only' => app(PersistContactLeadStep::class, ['next' => null]),
-            'didar' => $this->didarChain(null),
-            'didar_with_database' => app(PersistContactLeadStep::class, [
-                'next' => $this->didarChain(null),
-            ]),
-            default => throw new InvalidArgumentException("Unsupported contact pipeline [{$pipeline}]."),
+        $jobs = match ($lead->pipeline) {
+            'database_only' => [
+                new FinalizeContactLeadJob($lead->id),
+            ],
+            'didar', 'didar_with_database' => $this->didarJobs($lead->id),
+            default => throw new InvalidArgumentException("Unsupported contact pipeline [{$lead->pipeline}]."),
         };
+
+        Bus::chain($jobs)
+            ->catch(function (Throwable $exception) use ($lead): void {
+                ContactLeadFailureHandler::markFailed($lead->id, $exception);
+            })
+            ->dispatch();
     }
 
-    private function didarChain(?ContactLeadStep $tail): ContactLeadStep
+    /**
+     * @return list<object>
+     */
+    private function didarJobs(int $contactLeadId): array
     {
-        return app(ResolveDidarProductStep::class, [
-            'next' => app(FindOrCreateDidarContactStep::class, [
-                'next' => app(ResolveDidarOwnerStep::class, [
-                    'next' => app(ResolveDidarPipelineStep::class, [
-                        'next' => app(CreateDidarDealStep::class, ['next' => $tail]),
-                    ]),
-                ]),
-            ]),
-        ]);
+        return [
+            new ResolveDidarProductJob($contactLeadId),
+            new FindOrCreateDidarContactJob($contactLeadId),
+            new ResolveDidarOwnerJob($contactLeadId),
+            new ResolveDidarPipelineJob($contactLeadId),
+            new CreateDidarDealJob($contactLeadId),
+            new FinalizeContactLeadJob($contactLeadId),
+        ];
     }
 }

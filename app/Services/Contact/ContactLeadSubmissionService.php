@@ -2,12 +2,9 @@
 
 namespace App\Services\Contact;
 
-use App\DataTransferObjects\Contact\ContactLeadContext;
 use App\DataTransferObjects\Contact\ContactLeadData;
 use App\DataTransferObjects\Contact\ContactLeadResult;
-use App\Events\ContactLeadSubmitted;
 use App\Models\ContactLead;
-use Illuminate\Support\Facades\Event;
 
 class ContactLeadSubmissionService
 {
@@ -23,24 +20,20 @@ class ContactLeadSubmissionService
             return ContactLeadResult::failure((string) config('contact.messages.misconfigured'));
         }
 
-        $context = new ContactLeadContext($lead, $pipeline);
-        $head = $this->pipelineFactory->make($pipeline);
+        $leadRecord = ContactLead::query()->create([
+            'first_name' => $lead->firstName,
+            'last_name' => $lead->lastName,
+            'phone' => $lead->phone,
+            'message' => $lead->message,
+            'status' => ContactLead::STATUS_PENDING,
+            'pipeline' => $pipeline,
+        ]);
 
-        $head->handle($context);
-        $this->finalizeLeadRecord($context);
-
-        if ($context->failed) {
-            return ContactLeadResult::failure(
-                (string) config('contact.messages.failure'),
-                $context->leadRecord,
-            );
-        }
-
-        Event::dispatch(new ContactLeadSubmitted($lead, $context));
+        $this->pipelineFactory->dispatch($leadRecord);
 
         return ContactLeadResult::success(
             (string) config('contact.messages.success'),
-            $context->leadRecord,
+            $leadRecord,
         );
     }
 
@@ -53,32 +46,5 @@ class ContactLeadSubmissionService
     {
         return filled(config('contact.didar.api_key'))
             && filled(config('contact.didar.owner_username'));
-    }
-
-    private function finalizeLeadRecord(ContactLeadContext $context): void
-    {
-        if ($context->leadRecord === null) {
-            return;
-        }
-
-        if ($context->failed) {
-            $context->leadRecord->update([
-                'status' => ContactLead::STATUS_FAILED,
-                'failure_reason' => $context->failureReason,
-                'didar_product_id' => $context->productId,
-                'didar_person_id' => $context->personId,
-                'didar_deal_id' => $context->dealId,
-            ]);
-
-            return;
-        }
-
-        $context->leadRecord->update([
-            'status' => ContactLead::STATUS_COMPLETED,
-            'didar_product_id' => $context->productId,
-            'didar_person_id' => $context->personId,
-            'didar_deal_id' => $context->dealId,
-            'failure_reason' => null,
-        ]);
     }
 }

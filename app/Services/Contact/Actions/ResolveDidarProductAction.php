@@ -1,25 +1,21 @@
 <?php
 
-namespace App\Services\Contact\Pipeline\Steps;
+namespace App\Services\Contact\Actions;
 
-use App\DataTransferObjects\Contact\ContactLeadContext;
+use App\Exceptions\ContactLeadPipelineException;
 use App\Models\ContactLead;
 use App\Services\Contact\Didar\DidarApiClient;
 use App\Services\Contact\Didar\DidarResponseParser;
-use App\Services\Contact\Pipeline\ContactLeadStepDecorator;
 use Illuminate\Support\Facades\Log;
 
-class ResolveDidarProductStep extends ContactLeadStepDecorator
+class ResolveDidarProductAction
 {
     public function __construct(
         private readonly DidarApiClient $client,
         private readonly DidarResponseParser $parser,
-        ?\App\Services\Contact\Pipeline\ContactLeadStep $next = null,
-    ) {
-        parent::__construct($next);
-    }
+    ) {}
 
-    protected function process(ContactLeadContext $context): void
+    public function execute(ContactLead $lead): void
     {
         $response = $this->client->post('product/search', [
             'Criteria' => new \stdClass(),
@@ -29,20 +25,18 @@ class ResolveDidarProductStep extends ContactLeadStepDecorator
 
         if (! $response->ok) {
             Log::error('Didar product/search failed.', ['error' => $response->error]);
-            $context->fail('didar_product_search_failed');
 
-            return;
+            throw new ContactLeadPipelineException('didar_product_search_failed');
         }
 
         $productId = $this->parser->extractFirstProductId($response->data ?? []);
 
         if ($productId === null) {
             Log::error('Didar product/search returned no products.');
-            $context->fail('didar_product_missing');
 
-            return;
+            throw new ContactLeadPipelineException('didar_product_missing');
         }
 
-        $context->productId = $productId;
+        $lead->update(['didar_product_id' => $productId]);
     }
 }

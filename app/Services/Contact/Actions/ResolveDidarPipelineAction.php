@@ -1,44 +1,41 @@
 <?php
 
-namespace App\Services\Contact\Pipeline\Steps;
+namespace App\Services\Contact\Actions;
 
-use App\DataTransferObjects\Contact\ContactLeadContext;
+use App\Exceptions\ContactLeadPipelineException;
+use App\Models\ContactLead;
 use App\Services\Contact\Didar\DidarApiClient;
 use App\Services\Contact\Didar\DidarResponseParser;
-use App\Services\Contact\Pipeline\ContactLeadStepDecorator;
 use Illuminate\Support\Facades\Log;
 
-class ResolveDidarPipelineStep extends ContactLeadStepDecorator
+class ResolveDidarPipelineAction
 {
     public function __construct(
         private readonly DidarApiClient $client,
         private readonly DidarResponseParser $parser,
-        ?\App\Services\Contact\Pipeline\ContactLeadStep $next = null,
-    ) {
-        parent::__construct($next);
-    }
+    ) {}
 
-    protected function process(ContactLeadContext $context): void
+    public function execute(ContactLead $lead): void
     {
         $response = $this->client->post('pipeline/list/0', new \stdClass());
 
         if (! $response->ok) {
             Log::error('Didar pipeline/list/0 failed.', ['error' => $response->error]);
-            $context->fail('didar_pipeline_list_failed');
 
-            return;
+            throw new ContactLeadPipelineException('didar_pipeline_list_failed');
         }
 
         $pipeline = $this->parser->extractFirstPipelineStage($response->data ?? []);
 
         if ($pipeline['pipeline_stage_id'] === null) {
             Log::error('Didar pipeline/list/0 returned no stage id.');
-            $context->fail('didar_pipeline_stage_missing');
 
-            return;
+            throw new ContactLeadPipelineException('didar_pipeline_stage_missing');
         }
 
-        $context->pipelineStageId = $pipeline['pipeline_stage_id'];
-        $context->pipelineId = $pipeline['pipeline_id'];
+        $lead->update([
+            'didar_pipeline_id' => $pipeline['pipeline_id'],
+            'didar_pipeline_stage_id' => $pipeline['pipeline_stage_id'],
+        ]);
     }
 }
