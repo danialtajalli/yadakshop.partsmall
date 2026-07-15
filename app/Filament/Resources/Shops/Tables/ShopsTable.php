@@ -14,6 +14,7 @@ class ShopsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
                     ->searchable()->label('نام فروشگاه'),
@@ -69,11 +70,11 @@ class ShopsTable
                 TextColumn::make('created_at')
                     ->dateTime()->label('تاریخ ایجاد')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->dateTime()->label('تاریخ بروزرسانی')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
                 //
