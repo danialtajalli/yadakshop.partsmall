@@ -48,6 +48,6 @@ Route::post('forms/contact', [ContactFormController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('forms.contact.store');
 
-Route::get('page/contact', [ContactController::class, 'show']);
+Route::get('page/contact', [ContactController::class, 'show'])->name('page.contact');
 Route::get('page/{slug}', [PageController::class, 'show'])
     ->name('page.show');
