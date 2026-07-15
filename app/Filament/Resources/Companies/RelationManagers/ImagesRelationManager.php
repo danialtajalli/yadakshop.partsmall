@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources\Companies\RelationManagers;
 
+use App\Filament\Resources\Images\Concerns\ConfiguresImagesRelationManager;
 use App\Filament\Resources\Images\ImageResource;
-use Filament\Actions\AssociateAction;
-use Filament\Actions\CreateAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DissociateAction;
 use Filament\Actions\DissociateBulkAction;
-use Filament\Actions\BulkActionGroup;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 
 class ImagesRelationManager extends RelationManager
 {
+    use ConfiguresImagesRelationManager;
+
     protected static ?string $title = 'تصاویر';
     protected static string $relationship = 'images';
 
@@ -22,11 +23,7 @@ class ImagesRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('ساخت تصویر جدید')
-                ->url(fn () => ImageResource::getUrl('create', [
-                    'company_id' => $this->getOwnerRecord()->id,
-                ])),
-                AssociateAction::make()->label('اضافه کردن تصویر'),
+                $this->makeCreateImageAction('company_id', 'ساخت تصویر جدید'),
             ])
             ->actions([
                 DissociateAction::make()->label('حذف تصویر'),
