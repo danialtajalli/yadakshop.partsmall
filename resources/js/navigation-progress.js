@@ -1,10 +1,150 @@
 const STORAGE_KEY = 'ps-nav-progress';
+const VALUE_KEY = 'ps-nav-progress-value';
 const BAR_ID = 'ps-navigation-progress';
 
 let trickleTimer = null;
+let completeTimer = null;
+let resumeStarted = false;
 
 function getBar() {
     return document.getElementById(BAR_ID);
+}
+
+function readStoredProgress() {
+    const raw = sessionStorage.getItem(VALUE_KEY);
+    const value = raw ? Number.parseFloat(raw) : 0;
+
+    return Number.isFinite(value) ? value : 0;
+}
+
+function persistProgress(value) {
+    sessionStorage.setItem(STORAGE_KEY, 'active');
+    sessionStorage.setItem(VALUE_KEY, String(Math.round(value * 10) / 10));
+}
+
+function clearProgressStorage() {
+    sessionStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(VALUE_KEY);
+}
+
+function isBackForwardNavigation() {
+    const navigationEntry = performance.getEntriesByType('navigation')[0];
+
+    return navigationEntry?.type === 'back_forward';
+}
+
+function shouldResumeNavigationProgress() {
+    return sessionStorage.getItem(STORAGE_KEY) === 'active' && !isBackForwardNavigation();
+}
+
+function resetNavigationProgress() {
+    clearTrickle();
+    clearCompleteTimer();
+    removeBootStyle();
+    resumeStarted = false;
+    clearProgressStorage();
+
+    const bar = getBar();
+
+    if (!bar) {
+        return;
+    }
+
+    bar.classList.remove('is-active', 'is-complete');
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    bar.style.opacity = '';
+    bar.setAttribute('aria-valuenow', '0');
+    bar.getBoundingClientRect();
+    bar.style.transition = '';
+}
+
+function removeBootStyle() {
+    document.getElementById('ps-nav-progress-boot')?.remove();
+}
+
+function setProgress(value, { animate = true } = {}) {
+    const bar = getBar();
+
+    if (!bar) {
+        return;
+    }
+
+    const clamped = Math.max(0, Math.min(100, value));
+
+    if (!animate) {
+        bar.style.transition = 'none';
+    }
+
+    bar.style.width = `${clamped}%`;
+    bar.setAttribute('aria-valuenow', String(Math.round(clamped)));
+
+    if (!animate) {
+        bar.getBoundingClientRect();
+        bar.style.transition = '';
+    }
+
+    if (sessionStorage.getItem(STORAGE_KEY) === 'active' && clamped < 100) {
+        persistProgress(clamped);
+    }
+}
+
+function clearTrickle() {
+    if (trickleTimer !== null) {
+        window.clearInterval(trickleTimer);
+        trickleTimer = null;
+    }
+}
+
+function clearCompleteTimer() {
+    if (completeTimer !== null) {
+        window.clearTimeout(completeTimer);
+        completeTimer = null;
+    }
+}
+
+function beginTrickle(from) {
+    clearTrickle();
+
+    let progress = from;
+
+    trickleTimer = window.setInterval(() => {
+        progress = Math.min(progress + Math.random() * 2.5 + 0.8, 94);
+        setProgress(progress);
+
+        if (progress >= 94) {
+            clearTrickle();
+        }
+    }, 450);
+}
+
+function startNavigationProgress() {
+    const bar = getBar() ?? ensureBar();
+
+    clearCompleteTimer();
+    clearTrickle();
+    removeBootStyle();
+
+    bar.classList.add('is-active');
+    bar.classList.remove('is-complete');
+
+    const stored = readStoredProgress();
+    const isContinuing = sessionStorage.getItem(STORAGE_KEY) === 'active' && stored > 0;
+
+    if (isContinuing) {
+        setProgress(stored, { animate: false });
+        beginTrickle(stored);
+
+        return;
+    }
+
+    setProgress(4, { animate: false });
+    persistProgress(4);
+
+    window.requestAnimationFrame(() => {
+        setProgress(18);
+        beginTrickle(18);
+    });
 }
 
 function ensureBar() {
@@ -26,63 +166,68 @@ function ensureBar() {
     return bar;
 }
 
-function setProgress(value) {
-    const bar = ensureBar();
-    const clamped = Math.max(0, Math.min(100, value));
-
-    bar.style.width = `${clamped}%`;
-    bar.setAttribute('aria-valuenow', String(Math.round(clamped)));
-}
-
-function clearTrickle() {
-    if (trickleTimer !== null) {
-        window.clearInterval(trickleTimer);
-        trickleTimer = null;
-    }
-}
-
-function startNavigationProgress() {
-    const bar = ensureBar();
-
-    clearTrickle();
-    bar.classList.add('is-active');
-    bar.classList.remove('is-complete');
-    setProgress(8);
-    sessionStorage.setItem(STORAGE_KEY, 'active');
-
-    window.requestAnimationFrame(() => {
-        setProgress(35);
-    });
-
-    let progress = 35;
-
-    trickleTimer = window.setInterval(() => {
-        progress = Math.min(progress + Math.random() * 8, 88);
-        setProgress(progress);
-
-        if (progress >= 88) {
-            clearTrickle();
-        }
-    }, 350);
-}
-
 function finishNavigationProgress() {
     const bar = getBar();
 
     if (!bar) {
-        sessionStorage.removeItem(STORAGE_KEY);
+        clearProgressStorage();
         return;
     }
 
     clearTrickle();
-    bar.classList.add('is-complete');
+    clearCompleteTimer();
+    removeBootStyle();
+
+    bar.classList.add('is-active', 'is-complete');
     setProgress(100);
 
-    window.setTimeout(() => {
-        bar.classList.remove('is-active', 'is-complete');
-        setProgress(0);
-        sessionStorage.removeItem(STORAGE_KEY);
-    }, 280);
+    completeTimer = window.setTimeout(() => {
+        bar.classList.remove('is-active');
+
+        window.setTimeout(() => {
+            bar.classList.remove('is-complete');
+            setProgress(0, { animate: false });
+            clearProgressStorage();
+        }, 220);
+    }, 260);
+}
+
+function resumeNavigationProgress() {
+    if (!shouldResumeNavigationProgress() || resumeStarted) {
+        return;
+    }
+
+    resumeStarted = true;
+
+    const bar = getBar();
+
+    if (!bar) {
+        return;
+    }
+
+    const stored = readStoredProgress();
+    const start = stored > 0 ? stored : 28;
+
+    removeBootStyle();
+    bar.classList.add('is-active');
+    bar.classList.remove('is-complete');
+    setProgress(start, { animate: false });
+    beginTrickle(start);
+
+    const complete = () => {
+        if (sessionStorage.getItem(STORAGE_KEY) !== 'active') {
+            return;
+        }
+
+        finishNavigationProgress();
+    };
+
+    if (document.readyState === 'complete') {
+        window.setTimeout(complete, 160);
+    } else {
+        window.addEventListener('load', () => window.setTimeout(complete, 160), { once: true });
+        completeTimer = window.setTimeout(complete, 12000);
+    }
 }
 
 function shouldTrackLink(link) {
@@ -184,9 +329,15 @@ function bindNavigationProgress() {
         true,
     );
 
-    window.addEventListener('pageshow', () => {
-        if (sessionStorage.getItem(STORAGE_KEY) === 'active') {
-            finishNavigationProgress();
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted || isBackForwardNavigation()) {
+            resetNavigationProgress();
+
+            return;
+        }
+
+        if (shouldResumeNavigationProgress() && !resumeStarted) {
+            resumeNavigationProgress();
         }
     });
 
@@ -200,11 +351,10 @@ function bindNavigationProgress() {
         }
     });
 
-    if (sessionStorage.getItem(STORAGE_KEY) === 'active') {
-        const bar = ensureBar();
-        bar.classList.add('is-active');
-        setProgress(72);
-        finishNavigationProgress();
+    if (shouldResumeNavigationProgress()) {
+        resumeNavigationProgress();
+    } else if (sessionStorage.getItem(STORAGE_KEY) === 'active') {
+        resetNavigationProgress();
     }
 }
 
@@ -212,4 +362,4 @@ if (typeof window !== 'undefined') {
     bindNavigationProgress();
 }
 
-export { finishNavigationProgress, startNavigationProgress };
+export { finishNavigationProgress, resetNavigationProgress, startNavigationProgress };

@@ -99,13 +99,19 @@
         opacity: 0;
         background: linear-gradient(90deg, #3f4857 0%, #f27c22 100%);
         box-shadow: 0 0 10px rgb(63 72 87 / 0.35);
-        transition: width 0.28s ease, opacity 0.2s ease;
+        transition: width 0.4s ease, opacity 0.22s ease;
     }
 
     #ps-navigation-progress.is-active {
         opacity: 1;
     }
+
+    #ps-navigation-progress.is-complete {
+        transition: width 0.22s ease-out, opacity 0.22s ease;
+    }
 </style>
+
+<x-site.navigation-progress-boot />
 
 <script>
 (function () {
@@ -134,15 +140,107 @@
     document.addEventListener('touchcancel', clearPressed, { passive: true });
 
     var progressKey = 'ps-nav-progress';
+    var valueKey = 'ps-nav-progress-value';
+    var trickleTimer = null;
+    var resumeStarted = false;
 
-    function setBarWidth(value) {
+    function readStoredProgress() {
+        var raw = sessionStorage.getItem(valueKey);
+        var value = raw ? parseFloat(raw) : 0;
+        return isFinite(value) ? value : 0;
+    }
+
+    function persistProgress(value) {
+        sessionStorage.setItem(progressKey, 'active');
+        sessionStorage.setItem(valueKey, String(Math.round(value * 10) / 10));
+    }
+
+    function clearProgressStorage() {
+        sessionStorage.removeItem(progressKey);
+        sessionStorage.removeItem(valueKey);
+    }
+
+    function isBackForwardNavigation() {
+        var navigationEntry = performance.getEntriesByType('navigation')[0];
+
+        return navigationEntry && navigationEntry.type === 'back_forward';
+    }
+
+    function shouldResumeNavigationProgress() {
+        return sessionStorage.getItem(progressKey) === 'active' && !isBackForwardNavigation();
+    }
+
+    function resetContactNavigationProgress() {
+        clearTrickle();
+        removeBootStyle();
+        resumeStarted = false;
+        clearProgressStorage();
+
         var bar = document.getElementById('ps-navigation-progress');
         if (!bar) {
             return;
         }
 
-        bar.style.width = value + '%';
-        bar.setAttribute('aria-valuenow', String(Math.round(value)));
+        bar.classList.remove('is-active', 'is-complete');
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+        bar.style.opacity = '';
+        bar.setAttribute('aria-valuenow', '0');
+        bar.getBoundingClientRect();
+        bar.style.transition = '';
+    }
+
+    function removeBootStyle() {
+        var boot = document.getElementById('ps-nav-progress-boot');
+        if (boot) {
+            boot.remove();
+        }
+    }
+
+    function setBarWidth(value, animate) {
+        var bar = document.getElementById('ps-navigation-progress');
+        if (!bar) {
+            return;
+        }
+
+        var clamped = Math.max(0, Math.min(100, value));
+
+        if (animate === false) {
+            bar.style.transition = 'none';
+        }
+
+        bar.style.width = clamped + '%';
+        bar.setAttribute('aria-valuenow', String(Math.round(clamped)));
+
+        if (animate === false) {
+            bar.getBoundingClientRect();
+            bar.style.transition = '';
+        }
+
+        if (sessionStorage.getItem(progressKey) === 'active' && clamped < 100) {
+            persistProgress(clamped);
+        }
+    }
+
+    function clearTrickle() {
+        if (trickleTimer !== null) {
+            window.clearInterval(trickleTimer);
+            trickleTimer = null;
+        }
+    }
+
+    function beginTrickle(from) {
+        clearTrickle();
+        var progress = from;
+
+        trickleTimer = window.setInterval(function () {
+            progress = Math.min(progress + Math.random() * 2.5 + 0.8, 94);
+            setBarWidth(progress, true);
+
+            if (progress >= 94) {
+                clearTrickle();
+            }
+        }, 450);
     }
 
     window.startContactNavigationProgress = function () {
@@ -151,17 +249,24 @@
             return;
         }
 
+        removeBootStyle();
         bar.classList.add('is-active');
-        setBarWidth(12);
-        sessionStorage.setItem(progressKey, 'active');
+        bar.classList.remove('is-complete');
+
+        var stored = readStoredProgress();
+        var start = stored > 0 ? stored : 4;
+
+        setBarWidth(start, false);
+        persistProgress(start);
 
         window.requestAnimationFrame(function () {
-            setBarWidth(38);
+            if (start < 18) {
+                setBarWidth(18, true);
+                beginTrickle(18);
+            } else {
+                beginTrickle(start);
+            }
         });
-
-        window.setTimeout(function () {
-            setBarWidth(72);
-        }, 180);
 
         if (window.parent !== window) {
             window.parent.postMessage({ type: 'didar-contact-form-submit' }, window.location.origin);
@@ -171,33 +276,66 @@
     function finishContactNavigationProgress() {
         var bar = document.getElementById('ps-navigation-progress');
         if (!bar) {
-            sessionStorage.removeItem(progressKey);
+            clearProgressStorage();
             return;
         }
 
-        setBarWidth(100);
+        clearTrickle();
+        removeBootStyle();
+        bar.classList.add('is-active', 'is-complete');
+        setBarWidth(100, true);
 
         window.setTimeout(function () {
             bar.classList.remove('is-active');
-            setBarWidth(0);
-            sessionStorage.removeItem(progressKey);
-        }, 280);
+
+            window.setTimeout(function () {
+                bar.classList.remove('is-complete');
+                setBarWidth(0, false);
+                clearProgressStorage();
+            }, 220);
+        }, 260);
     }
 
-    window.addEventListener('pageshow', function () {
-        if (sessionStorage.getItem(progressKey) === 'active') {
-            setBarWidth(72);
-            finishContactNavigationProgress();
+    function resumeContactNavigationProgress() {
+        if (!shouldResumeNavigationProgress() || resumeStarted) {
+            return;
+        }
+
+        resumeStarted = true;
+
+        var bar = document.getElementById('ps-navigation-progress');
+        if (!bar) {
+            return;
+        }
+
+        var stored = readStoredProgress();
+        var start = stored > 0 ? stored : 28;
+
+        removeBootStyle();
+        bar.classList.add('is-active');
+        bar.classList.remove('is-complete');
+        setBarWidth(start, false);
+        beginTrickle(start);
+
+        window.setTimeout(finishContactNavigationProgress, 160);
+    }
+
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted || isBackForwardNavigation()) {
+            resetContactNavigationProgress();
+
+            return;
+        }
+
+        if (shouldResumeNavigationProgress() && !resumeStarted) {
+            resumeContactNavigationProgress();
         }
     });
 
-    if (sessionStorage.getItem(progressKey) === 'active') {
-        var bar = document.getElementById('ps-navigation-progress');
-        if (bar) {
-            bar.classList.add('is-active');
-            setBarWidth(72);
-        }
-        finishContactNavigationProgress();
+    if (shouldResumeNavigationProgress()) {
+        resumeContactNavigationProgress();
+    } else if (sessionStorage.getItem(progressKey) === 'active') {
+        resetContactNavigationProgress();
     }
 })();
 </script>

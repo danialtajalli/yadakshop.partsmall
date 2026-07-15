@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <div class="ps-card min-w-0 p-4 sm:p-5">
+            {{-- <div class="ps-card min-w-0 p-4 sm:p-5">
                 <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
                 <iframe
                     id="contact-form-iframe"
@@ -80,7 +80,7 @@
                     scrolling="no"
                     loading="lazy"
                 ></iframe>
-            </div>
+            </div> --}}
 
             {{-- @if (filled($page->content))
                 <div class="ps-card min-w-0 overflow-hidden p-4 sm:p-5">

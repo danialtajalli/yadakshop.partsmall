@@ -132,7 +132,7 @@
         opacity: 0;
         background: linear-gradient(90deg, var(--color-brand) 0%, var(--color-brand-soft) 100%);
         box-shadow: 0 0 10px rgb(63 72 87 / 0.35);
-        transition: width 0.28s ease, opacity 0.2s ease;
+        transition: width 0.4s ease, opacity 0.22s ease;
     }
 
     #ps-navigation-progress.is-active {
@@ -140,7 +140,7 @@
     }
 
     #ps-navigation-progress.is-complete {
-        transition: width 0.18s ease, opacity 0.2s ease;
+        transition: width 0.22s ease-out, opacity 0.22s ease;
     }
 
     .ps-btn-primary:disabled,

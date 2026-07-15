@@ -168,12 +168,15 @@
             .ps-form-errors__list { margin: 0; padding: 0; list-style: none; }
             .ps-form-errors__item { position: relative; padding-block: 0.2rem; padding-inline-start: 0.875rem; font-size: 0.8125rem; line-height: 1.55; color: #be123c; }
             .ps-form-errors__item::before { content: ''; position: absolute; inset-inline-start: 0; top: 0.65em; width: 0.25rem; height: 0.25rem; border-radius: 9999px; background: #e11d48; opacity: 0.45; }
-            #ps-navigation-progress { position: fixed; inset-inline-start: 0; top: 0; z-index: 9999; height: 3px; width: 0; pointer-events: none; opacity: 0; background: linear-gradient(90deg, #3f4857 0%, #f27c22 100%); box-shadow: 0 0 10px rgb(63 72 87 / 0.35); transition: width 0.28s ease, opacity 0.2s ease; }
+            #ps-navigation-progress { position: fixed; inset-inline-start: 0; top: 0; z-index: 9999; height: 3px; width: 0; pointer-events: none; opacity: 0; background: linear-gradient(90deg, #3f4857 0%, #f27c22 100%); box-shadow: 0 0 10px rgb(63 72 87 / 0.35); transition: width 0.4s ease, opacity 0.22s ease; }
             #ps-navigation-progress.is-active { opacity: 1; }
+            #ps-navigation-progress.is-complete { transition: width 0.22s ease-out, opacity 0.22s ease; }
         </style>
     @endif
 
     @stack('head')
+
+    <x-site.navigation-progress-boot />
 </head>
 <body class="flex min-h-screen overflow-x-hidden flex-col font-sans antialiased bg-gray-50">
     <div id="ps-navigation-progress" role="progressbar" aria-hidden="true" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
