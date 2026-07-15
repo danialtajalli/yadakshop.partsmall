@@ -340,8 +340,8 @@
                     </div>
 
                     <div class="flex gap-2 sm:w-auto sm:shrink-0">
-                        <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 py-1.5 text-center text-xs sm:flex-none">
-                            ثبت نام
+                        <a href="{{ route('page.show', ['slug' => 'register']) }}" class="ps-btn-primary relative z-20 flex-1 px-2.5 text-center text-xs sm:flex-none" style="padding-block: calc(var(--spacing) * 1.75)">
+                            <p class="z-20 ">ثبت نام</p>
                         </a>
                     </div>
                 </article>
