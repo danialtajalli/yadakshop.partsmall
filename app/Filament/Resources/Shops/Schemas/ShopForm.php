@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 
@@ -38,16 +39,21 @@ class ShopForm
                 TextInput::make('longitude')
                     ->numeric()->label('عرض جغرافیایی'),
                 TextInput::make('address')->label('آدرس'),
-                TimePicker::make('open_time')
-                    ->required()->label('ساعت شروع کار'),
-                TimePicker::make('close_time')
-                    ->required()->label('ساعت پایان کار'),
-                TimePicker::make('open_time_friday')->label('ساعت شروع کار روز جمعه'),
-                TimePicker::make('close_time_friday')->label('جمعهساعت پایان کار روز جمعه'),
-                TimePicker::make('open_time_thursday')->label('ساعت شروع کار روز پنجشنبه'),
-                TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز پنجشنبه'),
-                Toggle::make('off')
-                    ->required()->label('ایا فروشگاه تخفیف دارد؟'),
+                Section::make('ساعات کاری')
+                    ->schema([
+                        TimePicker::make('open_time')
+                            ->required()->label('ساعت شروع کار'),
+                        TimePicker::make('close_time')
+                            ->required()->label('ساعت پایان کار'),
+                        TimePicker::make('open_time_friday')->label('ساعت شروع کار روز جمعه'),
+                        TimePicker::make('close_time_friday')->label('ساعت پایان کار روز جمعه'),
+                        TimePicker::make('open_time_thursday')->label('ساعت شروع کار روز پنجشنبه'),
+                        TimePicker::make('close_time_thursday')->label('ساعت پایان کار روز پنجشنبه'),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+                // Toggle::make('off')
+                //     ->required()->label('ایا فروشگاه تخفیف دارد؟'),
                 Select::make('city_id')
                     ->relationship('city', 'name')
                     ->searchable()->preload()->label('شهر'),
