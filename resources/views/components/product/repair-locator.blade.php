@@ -51,11 +51,11 @@
         <input type="hidden" name="specialization_id" value="{{ $repairLocator['category']->id }}">
 
         <p class="rounded-xl bg-surface px-4 py-3 text-sm leading-7 text-ink-muted">
-            استان و شهر خود را انتخاب کنید تا تعمیرگاه‌های مرتبط با
+            استان و شهر خود را انتخاب کنید تا تعمیرگاه‌هایی که خدمات مرتبط با
             <span class="font-medium text-ink">{{ $repairLocator['category']->name }}</span>
-            برای
+            برای خودروی
             <span class="font-medium text-ink">{{ $repairLocator['carName'] }}</span>
-            را ببینید.
+            شما ارائه می دهند را ببینید.
         </p>
 
         <div class="grid grid-cols-2 gap-3">
