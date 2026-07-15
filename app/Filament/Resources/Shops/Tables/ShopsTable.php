@@ -65,8 +65,8 @@ class ShopsTable
                 TextColumn::make('close_time_thursday')->label('ساعت پایان کار روز جمعه')
                     ->time()
                     ->sortable()->toggleable(),
-                IconColumn::make('off')->label('غیر فعال')
-                    ->boolean()->toggleable(),
+                // IconColumn::make('off')->label('غیر فعال')
+                //     ->boolean()->toggleable(),
                 TextColumn::make('created_at')
                     ->jalaliDateTime()->label('تاریخ ایجاد')
                     ->sortable()->toggleable(),
