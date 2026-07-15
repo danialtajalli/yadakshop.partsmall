@@ -29,11 +29,11 @@ class CommentsTable
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
                 //
