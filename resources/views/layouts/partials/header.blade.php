@@ -65,7 +65,7 @@
                     @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                         @continue
                     @endif
-                    @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
+                    @php($isPageNavActive = (request()->routeIs('page.show') && request()->route('slug') === $navPage->slug) || request()->routeIs('page.contact') && $navPage->slug === 'contact')
                     <a
                         href="{{ route('page.show', $navPage->slug) }}"
                         @class([
@@ -165,7 +165,7 @@
                 @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                     @continue
                 @endif
-                @php($isPageNavActive = request()->routeIs('page.show') && request()->route('slug') === $navPage->slug)
+                @php($isPageNavActive = (request()->routeIs('page.show') && request()->route('slug') === $navPage->slug) || request()->routeIs('page.contact') && $navPage->slug === 'contact')
                 <a
                     href="{{ route('page.show', $navPage->slug) }}"
                     @class([
