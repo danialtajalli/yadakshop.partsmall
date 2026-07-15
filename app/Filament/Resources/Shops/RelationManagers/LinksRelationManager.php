@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\Shops\RelationManagers;
 
+use App\Filament\Concerns\ConfiguresModalRelationCreate;
 use App\Filament\Resources\Links\LinkResource;
-use Filament\Actions\AssociateAction;
 use Filament\Actions\DissociateAction;
-use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
 
 class LinksRelationManager extends RelationManager
 {
+    use ConfiguresModalRelationCreate;
+
     protected static string $relationship = 'links';
 
     protected static ?string $relatedResource = LinkResource::class;
@@ -21,11 +22,7 @@ class LinksRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن لینک')
-                ->url(fn () => LinkResource::getUrl('create', [
-                    'shop_id' => $this->getOwnerRecord()->id,
-                ])),
-                AssociateAction::make()->label('اضافه کردن لینک'),
+                $this->makeModalCreateAction('shop_id', 'افزودن لینک'),
             ])
             ->actions([
                 DissociateAction::make()->label('حذف لینک'),

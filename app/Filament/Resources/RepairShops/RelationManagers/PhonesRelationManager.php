@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\RepairShops\RelationManagers;
 
+use App\Filament\Concerns\ConfiguresModalRelationCreate;
 use App\Filament\Resources\Phones\PhoneResource;
-use Filament\Actions\CreateAction;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\DissociateAction;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -11,6 +11,8 @@ use Filament\Tables\Table;
 
 class PhonesRelationManager extends RelationManager
 {
+    use ConfiguresModalRelationCreate;
+
     protected static ?string $title = 'تلفن ها';
     protected static string $relationship = 'phones';
 
@@ -20,10 +22,7 @@ class PhonesRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                CreateAction::make()->label('افزودن تلفن')->url(fn () => PhoneResource::getUrl('create', [
-                    'repair_shop_id' => $this->getOwnerRecord()->id,
-                ])),
-                AssociateAction::make()->label('اضافه کردن تلفن'),
+                $this->makeModalCreateAction('repair_shop_id', 'افزودن تلفن'),
             ])
             ->actions([
                 DissociateAction::make()->label('حذف تلفن'),
