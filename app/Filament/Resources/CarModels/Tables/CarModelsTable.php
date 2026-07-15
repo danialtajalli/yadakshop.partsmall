@@ -21,11 +21,11 @@ class CarModelsTable
                 TextColumn::make('category.name')->label('دسته بندی')
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->dateTime()->label('تاریخ ایجاد')
+                    ->jalaliDateTime()->label('تاریخ ایجاد')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

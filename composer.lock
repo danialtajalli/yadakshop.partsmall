@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f25b7db835cf7c65e5bc48d7200c396",
+    "content-hash": "51419d93156e4018957869728064988f",
     "packages": [
         {
             "name": "amidesfahani/filament-tinyeditor",
@@ -64,6 +64,150 @@
                 "source": "https://github.com/amidesfahani/filament-tinyeditor/tree/v5.0.0"
             },
             "time": "2026-05-22T00:48:35+00:00"
+        },
+        {
+            "name": "ariaieboy/filament-jalali",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ariaieboy/filament-jalali.git",
+                "reference": "4d166e89cb293559a4bb690b01865245e1da751b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ariaieboy/filament-jalali/zipball/4d166e89cb293559a4bb690b01865245e1da751b",
+                "reference": "4d166e89cb293559a4bb690b01865245e1da751b",
+                "shasum": ""
+            },
+            "require": {
+                "ariaieboy/jalali": "^1.0.1",
+                "filament/filament": "^5",
+                "php": "~8.2.0|~8.3|~8.4|~8.5",
+                "spatie/laravel-package-tools": "^1.13.5"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.11",
+                "larastan/larastan": "^3",
+                "nunomaduro/collision": "^8",
+                "orchestra/testbench": "^10",
+                "pestphp/pest": "^3",
+                "pestphp/pest-plugin-laravel": "^3",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^2",
+                "phpstan/phpstan-phpunit": "^2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ariaieboy\\FilamentJalali\\FilamentJalaliServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ariaieboy\\FilamentJalali\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "ariaieboy",
+                    "email": "ariaieboy.ir@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Add Jalali/Shamsi support for FilamentPHP",
+            "homepage": "https://github.com/ariaieboy/filament-jalali",
+            "keywords": [
+                "ariaieboy",
+                "filament-jalali-datetimepicker",
+                "filament-jalali-support",
+                "filament-shamsi-calendar",
+                "filament-shamsi-support",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/ariaieboy/filament-jalali/issues",
+                "source": "https://github.com/ariaieboy/filament-jalali/tree/3.0.0"
+            },
+            "time": "2026-01-28T11:26:25+00:00"
+        },
+        {
+            "name": "ariaieboy/jalali",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ariaieboy/jalali.git",
+                "reference": "7be4ad94a29cc5e4896cc9782deafba92c9752a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ariaieboy/jalali/zipball/7be4ad94a29cc5e4896cc9782deafba92c9752a9",
+                "reference": "7be4ad94a29cc5e4896cc9782deafba92c9752a9",
+                "shasum": ""
+            },
+            "require": {
+                "nesbot/carbon": "^2||^3",
+                "php": "~8.3|~8.4|~8.5"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "pestphp/pest": "^4",
+                "phpstan/phpstan": "^2",
+                "phpstan/phpstan-deprecation-rules": "^2",
+                "phpstan/phpstan-strict-rules": "^2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Ariaieboy\\Jalali\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milad Rey",
+                    "email": "miladr@gmail.com"
+                },
+                {
+                    "name": "Morteza Parvini",
+                    "email": "m.parvini@outlook.com"
+                },
+                {
+                    "name": "AriaieBOY",
+                    "email": "ariaieboy.ir@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This Package helps developers to easily work with Jalali (Shamsi or Iranian) dates in php appliations, based on Jalali (Shamsi) DateTime class.",
+            "homepage": "https://github.com/ariaieboy/jalali",
+            "keywords": [
+                "Jalali",
+                "ariaieboy",
+                "persian-calendar",
+                "shamsi"
+            ],
+            "support": {
+                "issues": "https://github.com/ariaieboy/jalali/issues",
+                "source": "https://github.com/ariaieboy/jalali/tree/1.2.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ariaieboy",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-01-28T08:12:54+00:00"
         },
         {
             "name": "beberlei/assert",

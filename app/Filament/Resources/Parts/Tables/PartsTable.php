@@ -22,11 +22,11 @@ class PartsTable
                 TextColumn::make('partsCategory.name')->label('دسته بندی قطعه')
                     ->searchable()->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()->label('تاریخ ایجاد')
+                    ->jalaliDateTime()->label('تاریخ ایجاد')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

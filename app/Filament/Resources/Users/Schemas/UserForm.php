@@ -17,7 +17,7 @@ class UserForm
                 TextInput::make('email')
                     ->label('Email address')
                     ->email(),
-                DateTimePicker::make('email_verified_at'),
+                DateTimePicker::make('email_verified_at')->jalali(),
                 TextInput::make('password')
                     ->password(),
                 TextInput::make('username'),

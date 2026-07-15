@@ -30,12 +30,12 @@ class PhonesTable
                     ->badge()
                     ->label('نوع تلفن'),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->label('تاریخ ایجاد')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->label('تاریخ بروزرسانی')
                     ->toggleable(isToggledHiddenByDefault: true),

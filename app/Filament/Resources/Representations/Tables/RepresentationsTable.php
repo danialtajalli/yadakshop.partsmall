@@ -76,11 +76,11 @@ class RepresentationsTable
                 IconColumn::make('show_under_product')->label('نمایش در محصول')
                     ->boolean(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

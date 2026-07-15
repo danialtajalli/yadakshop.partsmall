@@ -34,11 +34,11 @@ class RepairShopsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

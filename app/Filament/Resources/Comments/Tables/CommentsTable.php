@@ -27,13 +27,11 @@ class CommentsTable
                 IconColumn::make('confirmed')->label('تایید شده')
                     ->boolean(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
+                    ->jalaliDateTime()
+                    ->sortable(),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
+                    ->jalaliDateTime()
+                    ->sortable(),
             ])
             ->filters([
                 //

@@ -21,7 +21,7 @@ class UsersTable
                     ->label('Email address')
                     ->searchable(),
                 TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->searchable()

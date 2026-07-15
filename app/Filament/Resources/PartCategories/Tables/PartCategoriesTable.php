@@ -18,11 +18,11 @@ class PartCategoriesTable
                 TextColumn::make('name')->label('نام')
                     ->searchable(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -25,11 +25,11 @@ class ImagesTable
                 TextColumn::make('shop.name')
                     ->searchable()->label('نام فروشگاه')->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()->label('تاریخ ایجاد')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()->label('تاریخ بروزرسانی')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -30,11 +30,11 @@ class CompaniesTable
                 TextColumn::make('links.name')->label('لینک‌ تلگرام')
                     ->numeric(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

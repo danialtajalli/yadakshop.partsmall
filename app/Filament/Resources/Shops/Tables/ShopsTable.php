@@ -68,11 +68,11 @@ class ShopsTable
                 IconColumn::make('off')->label('غیر فعال')
                     ->boolean(),
                 TextColumn::make('created_at')
-                    ->dateTime()->label('تاریخ ایجاد')
+                    ->jalaliDateTime()->label('تاریخ ایجاد')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->dateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(),
             ])
