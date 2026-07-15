@@ -32,8 +32,8 @@ new class extends Component
                 }
             });
 
-            let longitude = {{ $get('longitude') }};
-            let latitude = {{ $get('latitude') }};
+            let longitude = {{ json_encode(filled($get('longitude')) ? (float) $get('longitude') : 51.389) }};
+            let latitude = {{ json_encode(filled($get('latitude')) ? (float) $get('latitude') : 35.6892) }};
             let marker;
             map.setCenter([longitude, latitude]);
 
