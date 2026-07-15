@@ -40,10 +40,15 @@
     @endif
 
     @if ($emptyMessage)
-        <p id="{{ $emptyId }}" class="mt-3 hidden text-sm text-ink-muted">{{ $emptyMessage }}</p>
+        <x-catalog.search-empty
+            :id="$emptyId"
+            :message="$emptyMessage"
+            :clear-button="$useClearButton"
+            hidden
+        />
     @endif
 
-    @if ($showSubmit || $useClearLink || $useClearButton)
+    @if ($showSubmit || $useClearLink || ($useClearButton && blank($emptyMessage)))
         <div class="mt-4 flex flex-wrap items-center gap-3">
             @if ($showSubmit)
                 <button type="submit" class="ps-btn-primary">{{ $submitLabel }}</button>
@@ -51,7 +56,7 @@
             @if ($useClearLink)
                 <a href="{{ $clearUrl }}" class="ps-btn-secondary">پاک کردن</a>
             @endif
-            @if ($useClearButton)
+            @if ($useClearButton && blank($emptyMessage))
                 <button type="button" data-catalog-search-clear class="ps-btn-secondary">پاک کردن</button>
             @endif
         </div>

@@ -85,7 +85,13 @@
                         class="w-full rounded-2xl border border-line bg-white py-3.5 pe-4 ps-12 text-sm text-ink shadow-card outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
                     >
                 </div>
-                <p id="home-company-search-empty" class="mt-3 hidden text-sm text-ink-muted">برند ماشینی با این نام یافت نشد.</p>
+                <x-catalog.search-empty
+                    id="home-company-search-empty"
+                    message="برند ماشینی با این نام یافت نشد."
+                    clear-button
+                    clear-data-attribute="data-home-company-search-clear"
+                    hidden
+                />
             </div>
 
             <div id="home-companies-grid" class="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
@@ -146,7 +152,13 @@
                         class="w-full rounded-2xl border border-line bg-white py-3.5 pe-4 ps-12 text-sm text-ink shadow-card outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
                     >
                 </div>
-                <p id="home-part-search-empty" class="mt-3 hidden text-sm text-ink-muted">قطعه‌ای با این نام یافت نشد.</p>
+                <x-catalog.search-empty
+                    id="home-part-search-empty"
+                    message="قطعه‌ای با این نام یافت نشد."
+                    clear-button
+                    clear-data-attribute="data-home-part-search-clear"
+                    hidden
+                />
             </div>
 
             <div id="home-parts-grid" class="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
@@ -178,32 +190,46 @@
         (function () {
             const companySearchInput = document.getElementById('home-company-search');
             const companyEmptyMessage = document.getElementById('home-company-search-empty');
+            const companySearchClear = document.querySelector('[data-home-company-search-clear]');
             const companyCards = Array.from(document.querySelectorAll('.home-company-card'));
 
-            if (companySearchInput && companyCards.length > 0) {
-                companySearchInput.addEventListener('input', function () {
-                    const query = this.value.trim().toLowerCase();
-                    let visibleCount = 0;
+            const applyCompanySearch = function () {
+                if (!companySearchInput) {
+                    return;
+                }
 
-                    companyCards.forEach(function (card) {
-                        const name = (card.dataset.companyName || '').toLowerCase();
-                        const matches = query === '' || name.includes(query);
+                const query = companySearchInput.value.trim().toLowerCase();
+                let visibleCount = 0;
 
-                        card.classList.toggle('hidden', !matches);
+                companyCards.forEach(function (card) {
+                    const name = (card.dataset.companyName || '').toLowerCase();
+                    const matches = query === '' || name.includes(query);
 
-                        if (matches) {
-                            visibleCount++;
-                        }
-                    });
+                    card.classList.toggle('hidden', !matches);
 
-                    if (companyEmptyMessage) {
-                        companyEmptyMessage.classList.toggle('hidden', query === '' || visibleCount > 0);
+                    if (matches) {
+                        visibleCount++;
                     }
+                });
+
+                if (companyEmptyMessage) {
+                    companyEmptyMessage.classList.toggle('hidden', query === '' || visibleCount > 0);
+                }
+            };
+
+            if (companySearchInput && companyCards.length > 0) {
+                companySearchInput.addEventListener('input', applyCompanySearch);
+
+                companySearchClear?.addEventListener('click', function () {
+                    companySearchInput.value = '';
+                    applyCompanySearch();
+                    companySearchInput.focus();
                 });
             }
 
             const partSearchInput = document.getElementById('home-part-search');
             const partEmptyMessage = document.getElementById('home-part-search-empty');
+            const partSearchClear = document.querySelector('[data-home-part-search-clear]');
             const partsGrid = document.getElementById('home-parts-grid');
             const partCards = Array.from(document.querySelectorAll('.home-part-card'));
             const partsLoadMore = document.getElementById('home-parts-load-more');
@@ -261,6 +287,15 @@
                 if (partSearchInput) {
                     partSearchInput.addEventListener('input', applyPartVisibility);
                 }
+
+                partSearchClear?.addEventListener('click', function () {
+                    if (partSearchInput) {
+                        partSearchInput.value = '';
+                    }
+
+                    applyPartVisibility();
+                    partSearchInput?.focus();
+                });
 
                 if (partsLoadMore) {
                     partsLoadMore.addEventListener('click', function () {

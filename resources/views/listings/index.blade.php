@@ -90,9 +90,15 @@
     </div>
 
     @if ($listings->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">موردی با این فیلترها یافت نشد.</p>
-        </div>
+        <x-catalog.search-empty
+            message="موردی با این فیلترها یافت نشد."
+            :clear-url="route(match ($type) {
+                'repair_shop' => 'repair-shops.index',
+                'representation' => 'representations.index',
+                default => 'shops.index',
+            })"
+            boxed
+        />
     @else
         <h2 class="sr-only">نتایج جستجو</h2>
         <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">

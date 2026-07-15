@@ -185,12 +185,15 @@
             </div>
 
         @if ($shops->isNotEmpty())
-            <div
+            <x-catalog.search-empty
                 data-shops-filter-empty
-                class="mb-4 hidden rounded-xl border border-dashed border-line bg-white px-6 py-10 text-center"
-            >
-                <p class="text-sm text-ink-muted">فروشگاهی با این فیلتر یافت نشد.</p>
-            </div>
+                class="mb-4 rounded-xl py-10"
+                message="فروشگاهی با این فیلتر یافت نشد."
+                clear-button
+                clear-data-attribute="data-shops-filter-clear"
+                boxed
+                hidden
+            />
 
             <div class="grid gap-2.5 sm:grid-cols-1 lg:grid-cols-1" data-shops-list data-initial-visible="10" data-batch-size="10">
                 @php
@@ -675,6 +678,25 @@
 
                     filterState?.addEventListener('change', scheduleApplyShopFilters);
                     filterVerified?.addEventListener('change', scheduleApplyShopFilters);
+
+                    const filterClear = document.querySelector('[data-shops-filter-clear]');
+
+                    filterClear?.addEventListener('click', function () {
+                        if (filterState) {
+                            filterState.value = '';
+
+                            if (window.jQuery?.(filterState).hasClass('select2-hidden-accessible')) {
+                                window.jQuery(filterState).val('').trigger('change');
+                            } else {
+                                filterState.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+
+                        if (filterVerified) {
+                            filterVerified.checked = false;
+                            filterVerified.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    });
 
                     const inlineLink = document.querySelector('[data-shops-jump]');
                     const fixedBar = document.querySelector('[data-shops-jump-fixed]');

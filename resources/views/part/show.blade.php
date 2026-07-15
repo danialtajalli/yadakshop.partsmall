@@ -57,9 +57,12 @@
         </div>
 
         @if ($vehicleApplications->isEmpty())
-            <div class="mb-6 rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-                <p class="text-sm text-ink-muted">خودرویی با این نام یافت نشد.</p>
-            </div>
+            <x-catalog.search-empty
+                class="mb-6"
+                message="خودرویی با این نام یافت نشد."
+                :clear-url="route('part.show', $part->slug)"
+                boxed
+            />
         @else
             <div
                 class="mb-6 columns-2 gap-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"

@@ -48,9 +48,11 @@
     @endif
 
     @if ($parts->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">قطعه‌ای با این فیلتر یافت نشد.</p>
-        </div>
+        <x-catalog.search-empty
+            message="قطعه‌ای با این فیلتر یافت نشد."
+            :clear-url="request()->url()"
+            boxed
+        />
     @else
         <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
             @foreach ($parts as $part)
