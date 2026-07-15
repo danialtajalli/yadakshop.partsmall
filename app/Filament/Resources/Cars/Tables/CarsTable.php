@@ -19,18 +19,21 @@ class CarsTable
             ->columns([
                 TextColumn::make('name')
                     ->label('نام ماشین')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('slug')
                     ->label('نام لاتین ماشین')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('company.name')
                     ->label('شرکت')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('تاریخ ایجاد')
                     ->jalaliDateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label('تاریخ بروزرسانی')
                     ->jalaliDateTime()

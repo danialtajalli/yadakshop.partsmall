@@ -8,9 +8,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Filters\Filter;
 
 class CompaniesTable
 {
@@ -19,20 +19,25 @@ class CompaniesTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('نام شرکت')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('slug')->label('نام لاتین شرکت')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('country')->label('کشور')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('wage_strike')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('links.name')->label('لینک‌ تلگرام')
-                    ->numeric(),
+                    ->numeric()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->jalaliDateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->jalaliDateTime()
                     ->sortable()
@@ -53,5 +58,4 @@ class CompaniesTable
                 ]),
             ]);
     }
-
 }

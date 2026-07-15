@@ -16,22 +16,33 @@ class CommentsTable
         return $table
             ->columns([
                 TextColumn::make('fullname')->label('نام و نام خانوادگی')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('shop.name')->label('فروشگاه')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('body')
+                    ->label('نظر')
+                    ->wrap()
+                    ->toggleable(),
                 TextColumn::make('mobile')->label('شماره تلفن')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('rating')->label('امتیاز')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 IconColumn::make('confirmed')->label('تایید شده')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->jalaliDateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->jalaliDateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

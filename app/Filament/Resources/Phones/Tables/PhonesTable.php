@@ -16,24 +16,29 @@ class PhonesTable
             ->columns([
                 TextColumn::make('shop.name')
                     ->searchable()
-                    ->label('فروشگاه'),
+                    ->label('فروشگاه')
+                    ->toggleable(),
                 TextColumn::make('repairShop.name')
                     ->searchable()
-                    ->label('تعمیر گاه'),
+                    ->label('تعمیر گاه')
+                    ->toggleable(),
                 TextColumn::make('user.name')
                     ->searchable()
-                    ->label('کاربر'),
+                    ->label('کاربر')
+                    ->toggleable(),
                 TextColumn::make('phone_number')
                     ->searchable()
-                    ->label('شماره تلفن'),
+                    ->label('شماره تلفن')
+                    ->toggleable(),
                 TextColumn::make('type')
                     ->badge()
-                    ->label('نوع تلفن'),
+                    ->label('نوع تلفن')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->jalaliDateTime()
                     ->sortable()
                     ->label('تاریخ ایجاد')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->jalaliDateTime()
                     ->sortable()

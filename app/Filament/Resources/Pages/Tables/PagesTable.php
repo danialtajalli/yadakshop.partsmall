@@ -15,13 +15,15 @@ class PagesTable
         return $table
             ->columns([
                 TextColumn::make('title')->label('عنوان')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('slug')->label('نام لاتین')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('created_at')->label('تاریخ ایجاد')
                     ->jalaliDateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')->label('تاریخ بروزرسانی')
                     ->jalaliDateTime()
                     ->sortable()

@@ -15,22 +15,38 @@ class ImagesTable
         return $table
             ->columns([
                 TextColumn::make('type')
-                    ->badge()->label('نوع'),
+                    ->badge()
+                    ->label('نوع')
+                    ->toggleable(),
                 TextColumn::make('path')
-                    ->searchable()->label('آدرس')->sortable(),
+                    ->searchable()
+                    ->label('آدرس')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('company.name')
-                    ->searchable()->label('نام شرکت')->sortable(),
+                    ->searchable()
+                    ->label('نام شرکت')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('repairShop.name')
-                    ->searchable()->label('نام تعمیرگاه')->sortable(),
+                    ->searchable()
+                    ->label('نام تعمیرگاه')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('shop.name')
-                    ->searchable()->label('نام فروشگاه')->sortable(),
+                    ->searchable()
+                    ->label('نام فروشگاه')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->jalaliDateTime()
-                    ->sortable()->label('تاریخ ایجاد')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->label('تاریخ ایجاد')
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->jalaliDateTime()
-                    ->sortable()->label('تاریخ بروزرسانی')
+                    ->sortable()
+                    ->label('تاریخ بروزرسانی')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

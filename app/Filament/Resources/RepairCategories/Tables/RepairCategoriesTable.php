@@ -15,13 +15,17 @@ class RepairCategoriesTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('نام دسته بندی')
-                    ->searchable()->sortable(),
-                TextColumn::make('created_at')
-                    ->jalaliDateTime()->label('تاریخ ایجاد')
+                    ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
+                TextColumn::make('created_at')
+                    ->jalaliDateTime()
+                    ->label('تاریخ ایجاد')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()
+                    ->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -15,19 +15,28 @@ class WagesTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('نام اجرت')
-                    ->searchable()->sortable(),
-                TextColumn::make('variable')
-                    ->numeric()->label('متغیر')
-                    ->sortable()->searchable(),
-                TextColumn::make('coefficient')
-                    ->numeric()->label('ضریب')
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->jalaliDateTime()->label('تاریخ ایجاد')
+                    ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
+                TextColumn::make('variable')
+                    ->numeric()
+                    ->label('متغیر')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('coefficient')
+                    ->numeric()
+                    ->label('ضریب')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('created_at')
+                    ->jalaliDateTime()
+                    ->label('تاریخ ایجاد')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()
+                    ->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

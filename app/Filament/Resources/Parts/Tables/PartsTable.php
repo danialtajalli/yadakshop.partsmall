@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Parts\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class PartsTable
@@ -16,17 +16,25 @@ class PartsTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('نام قطعه')
-                    ->searchable()->sortable(),
-                TextColumn::make('slug')->label('نام لاتین قطعه')
-                    ->searchable()->sortable(),
-                TextColumn::make('partsCategory.name')->label('دسته بندی قطعه')
-                    ->searchable()->sortable(),
-                TextColumn::make('created_at')
-                    ->jalaliDateTime()->label('تاریخ ایجاد')
+                    ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
+                TextColumn::make('slug')->label('نام لاتین قطعه')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('partsCategory.name')->label('دسته بندی قطعه')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('created_at')
+                    ->jalaliDateTime()
+                    ->label('تاریخ ایجاد')
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()
+                    ->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

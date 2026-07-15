@@ -5,6 +5,15 @@
 
     RewriteEngine On
 
+    # Redirect index.php
+
+    RewriteCond %{THE_REQUEST} \s/+index\.php([/?\s]|$) [NC]
+    RewriteRule ^index\.php/?(.*)$ /$1 [R=301,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

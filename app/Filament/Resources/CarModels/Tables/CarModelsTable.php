@@ -15,17 +15,22 @@ class CarModelsTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('نام مدل')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('slug')->label('نام لاتین')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('category.name')->label('دسته بندی')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('created_at')
-                    ->jalaliDateTime()->label('تاریخ ایجاد')
+                    ->jalaliDateTime()
+                    ->label('تاریخ ایجاد')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
-                    ->jalaliDateTime()->label('تاریخ بروزرسانی')
+                    ->jalaliDateTime()
+                    ->label('تاریخ بروزرسانی')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
