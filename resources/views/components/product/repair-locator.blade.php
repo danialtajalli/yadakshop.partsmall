@@ -102,13 +102,6 @@
 
         <div class="flex flex-wrap gap-3 pt-1">
             <button type="submit" class="ps-btn-primary flex-1">نمایش تعمیرگاه‌ها</button>
-            <button
-                type="button"
-                class="ps-btn-secondary"
-                onclick="document.getElementById('{{ $modalId }}').close()"
-            >
-                انصراف
-            </button>
         </div>
     </form>
 </x-ui.modal>
