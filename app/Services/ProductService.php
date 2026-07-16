@@ -221,6 +221,7 @@ class ProductService
         {
             $query = fn () => Shop::query();
         }
+
         $query = fn() =>$query()
             ->visibleUnderProduct()
             ->ordered()
