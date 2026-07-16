@@ -42,6 +42,15 @@ enum PhoneType: string
         };
     }
 
+    public function brandIconClass(): ?string
+    {
+        return match ($this) {
+            self::Telegram => 'text-[#229ED9]',
+            self::Whatsapp => 'text-[#25D366]',
+            default => null,
+        };
+    }
+
     public function actionUrl(string $phoneNumber): string
     {
         $number = trim($phoneNumber);

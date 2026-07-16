@@ -26,7 +26,7 @@ class ShopProfileTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('shop.show');
-        $response->assertViewHas('title', 'یدک شاپ');
+        $response->assertViewHas('title', 'پروفایل یدک شاپ  در پارتس‌مال');
         $response->assertSee('یدک شاپ', false);
         $response->assertSee('هیوندای', false);
         $response->assertSee('02133979370', false);
@@ -37,13 +37,14 @@ class ShopProfileTest extends TestCase
         $response->assertSee('فروشگاه عالی بود', false);
         $response->assertSee('کاربر تست', false);
         $response->assertSee('میانگین امتیاز', false);
-        $response->assertSee('5/5', false);
+        $response->assertSee('۵/۵', false);
         $response->assertDontSee('نظر تایید نشده', false);
         $response->assertSee('aria-current="page"', false);
         $response->assertSee('BreadcrumbList', false);
         $response->assertSee(route('shops.index'), false);
         $response->assertSee('موقعیت روی نقشه', false);
         $response->assertSee('data-location-map', false);
+        $response->assertSee('مسیریابی در گوگل مپ', false);
         $response->assertSee('leaflet@1.9.4', false);
         $response->assertSee('data-lat="35.68843735"', false);
         $response->assertSee('data-lng="51.43004894"', false);

@@ -1,6 +1,7 @@
 @props([
     'links' => null,
     'items' => [],
+    'colorfulBranded' => false,
 ])
 
 @php
@@ -20,13 +21,16 @@
                 $linkType = $linksInGroup->first()->link_type;
                 $isGrouped = $linksInGroup->count() > 1;
                 $sponsoredShopIds = [1, 2, 3];
+                $iconClass = $colorfulBranded && $linkType->brandIconClass()
+                    ? $linkType->brandIconClass()
+                    : 'text-ink-muted';
             @endphp
 
             <li @class(['rounded-xl border border-line', 'overflow-hidden' => $isGrouped])>
                 @if ($isGrouped)
                     <div class="flex items-center justify-between gap-3 border-b border-line bg-surface/50 px-3 py-2.5">
                         <span class="font-medium text-ink">{{ $linkType->label() }}</span>
-                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-base text-brand">
+                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white text-base {{ $iconClass }}">
                             <i class="{{ $linkType->icon() }}" aria-hidden="true"></i>
                         </span>
                     </div>
@@ -62,7 +66,7 @@
                         class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:border-brand/30 hover:bg-brand-soft/40"
                     >
                         <span class="min-w-0 truncate font-medium text-ink">{{ $linkType->label() }}</span>
-                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base text-brand">
+                        <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base {{ $iconClass }}">
                             <i class="{{ $linkType->icon() }}" aria-hidden="true"></i>
                         </span>
                     </a>

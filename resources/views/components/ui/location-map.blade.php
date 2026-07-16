@@ -3,6 +3,7 @@
     'longitude',
     'title' => null,
     'address' => null,
+    'embedded' => false,
 ])
 
 @once
@@ -22,6 +23,17 @@
             @media (min-width: 640px) {
                 .ps-location-map {
                     height: 20rem;
+                }
+            }
+
+            .ps-location-map--embedded {
+                height: 12rem;
+            }
+
+            @media (min-width: 1024px) {
+                .ps-location-map--embedded {
+                    height: 100%;
+                    min-height: 11rem;
                 }
             }
 
@@ -92,21 +104,20 @@
     @endpush
 @endonce
 
-<section {{ $attributes->merge(['class' => 'ps-card overflow-hidden']) }}>
-    <div class="border-b border-line px-5 py-4 sm:px-6">
-        <h2 class="text-base font-bold text-ink">موقعیت روی نقشه</h2>
-        @if ($address)
-            <p class="mt-1 text-sm text-ink-muted">{{ $address }}</p>
-        @endif
-    </div>
+@php
+    $mapClass = $embedded
+        ? 'ps-location-map ps-location-map--embedded w-full overflow-hidden rounded-xl border border-line'
+        : 'ps-location-map w-full overflow-hidden rounded-xl border border-line';
+@endphp
 
-    <div class="p-4 sm:p-5">
+@if ($embedded)
+    <div {{ $attributes->merge(['class' => 'flex h-full min-w-0 flex-col']) }}>
         <div
             data-location-map
             data-lat="{{ $latitude }}"
             data-lng="{{ $longitude }}"
             @if ($title) data-title="{{ $title }}" @endif
-            class="ps-location-map w-full overflow-hidden rounded-xl border border-line"
+            class="{{ $mapClass }}"
             role="img"
             aria-label="نقشه موقعیت {{ $title ?? '' }}"
         ></div>
@@ -115,10 +126,41 @@
             href="https://www.google.com/maps?q={{ $latitude }},{{ $longitude }}"
             target="_blank"
             rel="noopener"
-            class="ps-btn-secondary mt-3 inline-flex items-center justify-center gap-2"
+            class="ps-btn-secondary mt-3 inline-flex w-full items-center justify-center gap-2 sm:w-auto"
         >
             <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
             مسیریابی در گوگل مپ
         </a>
     </div>
-</section>
+@else
+    <section {{ $attributes->merge(['class' => 'ps-card overflow-hidden']) }}>
+        <div class="border-b border-line px-5 py-4 sm:px-6">
+            <h2 class="text-base font-bold text-ink">موقعیت روی نقشه</h2>
+            @if ($address)
+                <p class="mt-1 text-sm text-ink-muted">{{ $address }}</p>
+            @endif
+        </div>
+
+        <div class="p-4 sm:p-5">
+            <div
+                data-location-map
+                data-lat="{{ $latitude }}"
+                data-lng="{{ $longitude }}"
+                @if ($title) data-title="{{ $title }}" @endif
+                class="{{ $mapClass }}"
+                role="img"
+                aria-label="نقشه موقعیت {{ $title ?? '' }}"
+            ></div>
+
+            <a
+                href="https://www.google.com/maps?q={{ $latitude }},{{ $longitude }}"
+                target="_blank"
+                rel="noopener"
+                class="ps-btn-secondary mt-3 inline-flex items-center justify-center gap-2"
+            >
+                <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+                مسیریابی در گوگل مپ
+            </a>
+        </div>
+    </section>
+@endif

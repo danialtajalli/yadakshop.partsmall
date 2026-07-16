@@ -1,6 +1,7 @@
 @props([
     'phones' => null,
     'contacts' => [],
+    'colorfulBranded' => false,
 ])
 
 @php
@@ -94,7 +95,12 @@
                 @if ($globalMessengerItems->isNotEmpty())
                     <ul class="divide-y divide-line">
                         @foreach ($globalMessengerItems as $phone)
-                            @php $phoneType = $phone->type; @endphp
+                            @php
+                                $phoneType = $phone->type;
+                                $messengerIconClass = $colorfulBranded && $phoneType->brandIconClass()
+                                    ? $phoneType->brandIconClass()
+                                    : 'text-brand';
+                            @endphp
                             <li>
                                 <a
                                     href="{{ $phoneType->actionUrl($phone->phone_number) }}"
@@ -105,8 +111,8 @@
                                 >
                                     <span class="ps-messenger-meta">
                                         <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
-                                        <span class="ps-messenger-meta__icon">
-                                            <i class="{{ $phoneType->icon() }} block leading-none" aria-hidden="true"></i>
+                                        <span @class(['ps-messenger-meta__icon', 'text-inherit' => $colorfulBranded && $phoneType->brandIconClass()])>
+                                            <i class="{{ $phoneType->icon() }} {{ $messengerIconClass }} block leading-none" aria-hidden="true"></i>
                                         </span>
                                     </span>
                                     <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
@@ -123,7 +129,12 @@
                 @if ($localMessengerItems->isNotEmpty())
                     <ul class="divide-y divide-line">
                         @foreach ($localMessengerItems as $phone)
-                            @php $phoneType = $phone->type; @endphp
+                            @php
+                                $phoneType = $phone->type;
+                                $messengerIconClass = $colorfulBranded && $phoneType->brandIconClass()
+                                    ? $phoneType->brandIconClass()
+                                    : 'text-ink-muted';
+                            @endphp
                             <li>
                                 <a
                                     href="{{ $phoneType->actionUrl($phone->phone_number) }}"
@@ -134,8 +145,8 @@
                                 >
                                     <span class="ps-messenger-meta">
                                         <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
-                                        <span class="ps-messenger-meta__icon">
-                                            <i class="{{ $phoneType->icon() }} block leading-none" aria-hidden="true"></i>
+                                        <span @class(['ps-messenger-meta__icon', 'text-inherit' => $colorfulBranded && $phoneType->brandIconClass()])>
+                                            <i class="{{ $phoneType->icon() }} {{ $messengerIconClass }} block leading-none" aria-hidden="true"></i>
                                         </span>
                                     </span>
                                     <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>

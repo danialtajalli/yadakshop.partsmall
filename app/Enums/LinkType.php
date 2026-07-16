@@ -42,6 +42,17 @@ enum LinkType: string
         };
     }
 
+    public function brandIconClass(): ?string
+    {
+        return match ($this) {
+            self::Website => 'text-[#2563eb]',
+            self::Telegram => 'text-[#229ED9]',
+            self::Instagram => 'text-[#E4405F]',
+            self::Whatsapp => 'text-[#25D366]',
+            default => null,
+        };
+    }
+
     public function actionUrl(string $name): string
     {
         $value = trim($name);
