@@ -19,7 +19,7 @@ class ShopsTable
                 TextColumn::make('name')
                     ->searchable()->label('نام فروشگاه')->toggleable(),
                 TextColumn::make('secondary_name')
-                    ->searchable()->label('نام ثانویه فروشگاه')->toggleable(),
+                    ->label('نام ثانویه فروشگاه')->toggleable(),
                 TextColumn::make('slug')
                     ->searchable()->label('نام لاتین فروشگاه')->toggleable(),
                 IconColumn::make('confirmed')
@@ -27,11 +27,11 @@ class ShopsTable
                 IconColumn::make('show_under_product')
                     ->boolean()->label('نمایش تحت محصول')->toggleable(),
                 TextColumn::make('person_responsible_name')
-                    ->searchable()->label('نام مسئول فروشگاه')->toggleable(),
+                    ->label('نام مسئول فروشگاه')->toggleable(),
                 TextColumn::make('person_responsible_email')
-                    ->searchable()->label('ایمیل مسئول فروشگاه')->toggleable(),
+                    ->label('ایمیل مسئول فروشگاه')->toggleable(),
                 TextColumn::make('website_show')
-                    ->searchable()->label('نمایش وبسایت')->toggleable(),
+                    ->label('نمایش وبسایت')->toggleable(),
                 TextColumn::make('order')
                     ->numeric()->label('ترتیب')
                     ->sortable()->toggleable(),
@@ -42,11 +42,11 @@ class ShopsTable
                     ->numeric()
                     ->sortable()->label('عرض جغرافیایی')->toggleable(),
                 TextColumn::make('city.name')->label('شهر')
-                    ->searchable()->toggleable(),
+                    ->toggleable(),
                 TextColumn::make('city.state.name')->label('استان')
-                    ->searchable()->toggleable(),
+                    ->toggleable(),
                 TextColumn::make('address')->label('آدرس')
-                    ->searchable()->toggleable(),
+                    ->toggleable(),
                 TextColumn::make('open_time')->label('ساعت شروع کار')
                     ->time()
                     ->sortable()->toggleable(),
