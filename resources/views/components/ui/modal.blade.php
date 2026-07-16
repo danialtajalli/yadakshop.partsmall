@@ -10,7 +10,7 @@
     <div
         data-ps-modal-panel
         {{ $attributes->class([
-            'ps-modal-panel relative w-full max-h-[calc(100dvh-2rem)] overflow-visible rounded-2xl border border-line bg-white p-0 shadow-2xl',
+            'ps-modal-panel relative w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-visible rounded-2xl border border-line bg-white p-0 shadow-2xl',
         ]) }}
     >
         {{ $slot }}

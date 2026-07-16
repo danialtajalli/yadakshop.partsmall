@@ -301,13 +301,13 @@
                                         <p class="mb-2 text-xs font-semibold text-ink/80">تلفن‌ها</p>
                                         <x-ui.phone-icons :phones="$shop->phones" />
                                     </div>
+                                @endif
+
                                 @if (strlen($shop->address) > 3)
                                     <div class="rounded-xl bg-surface p-4">
                                         <p class="mb-1 text-xs font-semibold text-ink/80">آدرس</p>
                                         <p class="text-ink-muted/70">{{ $shop->address }}</p>
                                     </div>
-                                @endif
-
                                 @endif
 
                                 @if ($shop->open_time && $shop->close_time)
