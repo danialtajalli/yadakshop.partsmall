@@ -123,7 +123,7 @@ class ImageForm
 
         $imageType = $type instanceof ImageType ? $type->value : (string) $type;
 
-        return "{$owner['model_type']}/{$imageType}/{$owner['model_id']}";
+        return $owner['model_type']!='company'?"{$owner['model_type']}/{$imageType}/{$owner['model_id']}":"{$owner['model_type']}/{$owner['model_id']}";
     }
 
     protected static function resolveStoragePath(Get $get, string $file, ?Image $record = null): ?string
