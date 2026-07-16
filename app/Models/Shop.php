@@ -128,7 +128,7 @@ class Shop extends Model
 
     public function scopeOrdered(Builder $query): void
     {
-        $query->orderByDesc('order')->orderBy('id');
+        $query->orderBy('order')->orderBy('name')->orderBy('id');
     }
 
     public function scopeConfirmed(Builder $query): void

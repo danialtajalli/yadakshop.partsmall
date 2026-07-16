@@ -162,8 +162,7 @@ class HomePageService
         $shops = Shop::query()
             ->with(['images'])
             ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
-            ->orderBy('order')
-            ->orderBy('name')
+            ->ordered()
             ->limit(self::FEATURED_LIMIT)
             ->get();
 
