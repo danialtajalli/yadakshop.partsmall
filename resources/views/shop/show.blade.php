@@ -9,7 +9,9 @@
     @php
         $websiteLink = $shop->website_show;
         $websiteUrl = $websiteLink ? $websiteLink->link_type->actionUrl($websiteLink->name) : null;
-        $websiteLabel = $websiteLink?->name;
+        $websiteLabel = $websiteLink
+            ? preg_replace('#^https?://#', '', $websiteLink->link_type->actionUrl($websiteLink->name))
+            : null;
         $shareUrl = route('shop.profile', $shop->slug);
         $locationLabel = collect([$shop->city?->name, $shop->city?->state?->name])->filter()->implode('، ');
         $hasMap = $shop->latitude && $shop->longitude;
@@ -25,99 +27,98 @@
 
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($shop->cover ?? null)
-            <div class="h-40 w-full overflow-hidden border-b border-line sm:h-52">
+            <div class="h-28 w-full overflow-hidden border-b border-line sm:h-36">
                 <img src="{{ $shop->cover }}" alt="" class="size-full object-cover">
             </div>
         @endif
 
-        <div class="bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-            <div class="flex gap-4 sm:gap-5">
+        <div class="px-4 py-4 sm:px-6 sm:py-5">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+
                 <x-ui.company-logo
                     :name="$shop->name"
                     :logo-url="$shop->logo ?? null"
                     size="xl"
-                    class="shrink-0"
+                    class="shrink-0 ring-1 ring-line"
                 />
-
-                <div class="min-w-0 flex-1 text-start">
+                <div class="min-w-0 flex-1">
                     <div class="flex min-w-0 flex-wrap items-center gap-2">
-                        <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $shop->name }}</h1>
-                        @if ($shop->verified ?? false)
-                            <x-shop.trusted-badge />
-                        @endif
+                        <h1 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">{{ $shop->name }}</h1>
                     </div>
 
                     @if ($shop->secondary_name)
-                        <p class="mt-1 text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
+                        <p class="mt-2 text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
                     @endif
 
-                    <div class="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-ink-muted sm:text-sm">
+                    <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted sm:text-sm">
                         @if ($averageRating)
-                            <span class="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-0.5 font-medium text-accent">
+                            <span class="inline-flex items-center gap-1 font-medium text-accent">
                                 <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
                                 {{ number_format($averageRating, 1) }}
                             </span>
+                        @endif
+
+                        @if ($averageRating && $commentsCount > 0)
+                            <span class="text-line" aria-hidden="true">·</span>
                         @endif
 
                         @if ($commentsCount > 0)
                             <span>{{ number_format($commentsCount) }} نظر</span>
                         @endif
 
-                        <span class="inline-flex items-center gap-1">
-                            <i class="fa-regular fa-eye" aria-hidden="true"></i>
-                            {{ number_format($pageViewCount) }} بازدید
-                        </span>
+                        @if (($averageRating || $commentsCount > 0) && $locationLabel)
+                            <span class="text-line" aria-hidden="true">·</span>
+                        @endif
 
                         @if ($locationLabel)
                             <span class="inline-flex items-center gap-1">
-                                <i class="fa-solid fa-location-dot text-brand" aria-hidden="true"></i>
-                                {{ $locationLabel }}
+                                <i class="fa-solid fa-location-dot text-[11px] text-brand" aria-hidden="true"></i>
+                                @if ($hasMap)
+                                    <a href="#shop-location" class="transition hover:text-ink">{{ $locationLabel }}</a>
+                                @else
+                                    {{ $locationLabel }}
+                                @endif
                             </span>
                         @endif
                     </div>
-
-                    <div class="mt-3 flex flex-wrap items-center gap-2">
-                        @if ($hasMap)
-                            <a
-                                href="#shop-location"
-                                class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[11px] font-medium text-ink-muted transition hover:border-brand/30 hover:text-ink"
-                            >
-                                <i class="fa-solid fa-map-location-dot text-brand text-xs" aria-hidden="true"></i>
-                                نقشه
-                            </a>
+                    <div class="mt-5">
+                        @if ($shop->verified ?? false)
+                            <x-shop.trusted-badge />
                         @endif
+                    </div>
+                </div>
 
-                        <x-shop.qr-gallery
-                            variant="compact"
-                            :url="$shareUrl"
-                            :title="$shop->name"
-                            :dialog-id="$qrDialogId"
-                        />
+                <aside class="flex shrink-0 items-start gap-3 border-t border-line pt-3 sm:border-t-0 sm:border-s sm:ps-5 sm:pt-0">
+                    <x-shop.qr-gallery
+                        variant="hero"
+                        :url="$shareUrl"
+                        :title="$shop->name"
+                        :dialog-id="$qrDialogId"
+                        :caption-url="$websiteUrl"
+                        :caption-label="$websiteLabel"
+                        class="w-[7.5rem] sm:w-[8.25rem]"
+                    />
 
-                        @if ($websiteUrl)
-                            <a
-                                href="{{ $websiteUrl }}"
-                                target="_blank"
-                                rel="noopener"
-                                class="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[11px] font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40"
-                            >
-                                <i class="fa-solid fa-globe shrink-0 text-[#2563eb] text-xs" aria-hidden="true"></i>
-                                <span class="truncate" dir="ltr">{{ $websiteLabel }}</span>
-                            </a>
-                        @endif
+                    <div class="flex flex-col gap-2 pt-0.5">
+                        <div class="inline-flex items-center gap-1.5 rounded-lg bg-surface px-2.5 py-1.5 text-[11px] text-ink-muted">
+                            <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                            <span class="tabular-nums font-semibold text-ink">{{ number_format($pageViewCount) }}</span>
+                        </div>
 
                         <button
                             type="button"
                             data-shop-share
                             data-share-url="{{ $shareUrl }}"
                             data-share-title="{{ $shop->name }}"
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[11px] font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40"
+                            class="inline-flex size-9 items-center justify-center rounded-lg border border-line bg-white text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                            aria-label="اشتراک‌گذاری"
+                            title="اشتراک‌گذاری"
                         >
-                            <i class="fa-solid fa-share-nodes text-xs" aria-hidden="true"></i>
-                            <span data-shop-share-label>اشتراک‌گذاری</span>
+                            <i class="fa-solid fa-share-nodes text-sm" aria-hidden="true"></i>
+                            <span class="sr-only" data-shop-share-label>اشتراک‌گذاری</span>
                         </button>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     </div>
@@ -155,21 +156,15 @@
                 </section>
             @endif
 
-            @if ($shop->links->isNotEmpty())
+            @if ($shop->links->isNotEmpty() || $websiteLink)
                 <section class="ps-card p-5">
-                    <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی</h2>
-                    <x-ui.social-icons :links="$shop->links" colorful-branded />
+                    <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
+                    <x-ui.social-icons
+                        :links="collect($websiteLink ? [$websiteLink] : [])->merge($shop->links)"
+                        colorful-branded
+                    />
                 </section>
             @endif
-
-            <section class="ps-card p-5">
-                <h2 class="mb-4 text-base font-bold text-ink">QR صفحه</h2>
-                <x-shop.qr-gallery
-                    :url="$shareUrl"
-                    :title="$shop->name"
-                    :dialog-id="$qrDialogId"
-                />
-            </section>
 
             <section class="ps-card p-5">
                 <h2 class="mb-4 text-base font-bold text-ink">ساعات کاری</h2>
@@ -195,17 +190,6 @@
         </aside>
 
         <div class="order-2 space-y-8 lg:order-1 lg:col-span-8">
-            @if ($hasMap)
-                <div id="shop-location" class="scroll-mt-24">
-                    <x-ui.location-map
-                        :latitude="$shop->latitude"
-                        :longitude="$shop->longitude"
-                        :title="$shop->name"
-                        :address="$shop->address"
-                    />
-                </div>
-            @endif
-
             @if ($shop->description)
                 <section class="ps-card px-5 py-6 sm:px-6">
                     <x-ui.section-heading title="درباره فروشگاه" />
@@ -257,6 +241,17 @@
                 </section>
             @endif
 
+            @if ($hasMap)
+                <div id="shop-location" class="scroll-mt-24">
+                    <x-ui.location-map
+                        :latitude="$shop->latitude"
+                        :longitude="$shop->longitude"
+                        :title="$shop->name"
+                        :address="$shop->address"
+                    />
+                </div>
+            @endif
+
             <div class="hidden sm:block">
                 <x-shop.comments-section
                     :shop="$shop"
@@ -269,7 +264,7 @@
         </div>
     </div>
 
-    <div class="sm:hidden sm:mt-4">
+    <div class="mt-8 space-y-8 sm:hidden">
         <x-shop.comments-section
             :shop="$shop"
             :comments="$shop->comments"
@@ -285,6 +280,8 @@
         :title="$shop->name"
         :dialog-id="$qrDialogId"
     />
+
+    <x-shop.comment-success-modal />
 
     <x-ui.toast-host />
 

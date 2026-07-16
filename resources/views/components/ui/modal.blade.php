@@ -5,6 +5,7 @@
 <dialog
     @if ($id) id="{{ $id }}" @endif
     data-ps-modal
+    {{ $attributes->except('class') }}
     class="fixed inset-0 z-50 m-0 max-h-none w-full max-w-none border-0 bg-transparent p-4 shadow-none backdrop:bg-ink/40 open:flex open:items-center open:justify-center open:animate-none"
 >
     <div

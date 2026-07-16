@@ -20,8 +20,6 @@
             : 'هنوز نظری برای این فروشگاه ثبت نشده است.'"
     />
 
-    <x-shop.comment-success-modal />
-
     @if ($commentsCount > 0 && $averageRating)
         <div class="ps-comment-rating-summary">
             <svg class="ps-comment-rating-summary__icon" viewBox="0 0 20 20" aria-hidden="true">

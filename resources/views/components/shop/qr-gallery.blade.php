@@ -3,6 +3,8 @@
     'title' => '',
     'variant' => 'sidebar',
     'dialogId' => null,
+    'captionUrl' => null,
+    'captionLabel' => null,
 ])
 
 @php
@@ -94,6 +96,41 @@
         />
         <span class="text-[11px] font-medium text-ink-muted transition group-hover:text-ink">QR صفحه</span>
     </button>
+@elseif ($variant === 'hero')
+    @php
+        $resolvedCaptionUrl = $captionUrl ?: null;
+        $resolvedCaptionLabel = $captionLabel
+            ?: ($resolvedCaptionUrl ? preg_replace('#^https?://#', '', $resolvedCaptionUrl) : null);
+    @endphp
+    <div {{ $attributes->merge(['class' => 'flex w-full flex-col items-stretch gap-2']) }}>
+        <button
+            type="button"
+            class="group flex aspect-square w-full items-center justify-center rounded-xl bg-white p-2 ring-1 ring-line transition hover:ring-brand/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+            data-ps-qr-open="{{ $resolvedDialogId }}"
+            aria-haspopup="dialog"
+            aria-controls="{{ $resolvedDialogId }}"
+            aria-label="مشاهده QR صفحه"
+        >
+            <x-shop.qr-placeholder
+                :seed="$url"
+                :size="104"
+                class="h-auto w-full rounded-md"
+            />
+        </button>
+
+        @if ($resolvedCaptionUrl)
+            <a
+                href="{{ $resolvedCaptionUrl }}"
+                target="_blank"
+                rel="noopener"
+                class="flex min-w-0 items-center gap-1.5 rounded-lg px-0.5 py-0.5 transition hover:text-brand"
+                title="{{ $resolvedCaptionUrl }}"
+            >
+                <i class="fa-solid fa-globe shrink-0 text-[10px] text-[#2563eb]" aria-hidden="true"></i>
+                <span class="min-w-0 truncate text-[10px] font-medium text-ink-muted sm:text-[11px]" dir="ltr">{{ $resolvedCaptionLabel }}</span>
+            </a>
+        @endif
+    </div>
 @else
     <div {{ $attributes->merge(['class' => 'flex flex-col items-center gap-3']) }}>
         <button
