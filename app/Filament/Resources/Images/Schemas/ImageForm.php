@@ -3,12 +3,17 @@
 namespace App\Filament\Resources\Images\Schemas;
 
 use App\Enums\ImageType;
+use App\Models\Company;
 use App\Models\Image;
+use App\Models\RepairShop;
+use App\Models\Shop;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ImageForm
 {
@@ -61,7 +66,13 @@ class ImageForm
                         ? 'ابتدا نوع تصویر را انتخاب کنید.'
                         : (self::resolveOwner($get) === null
                             ? 'ابتدا یکی از فروشگاه / تعمیرگاه / کمپانی را انتخاب کنید.'
-                            : 'تصویر در مسیر متناسب با نوع و مالک ذخیره می‌شود.'))
+                            : 'تصویر با نام مالک و در مسیر متناسب با نوع ذخیره می‌شود.'))
+                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get): string {
+                        $baseName = self::resolveOwnerFileBaseName($get);
+                        $extension = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+
+                        return "{$baseName}.{$extension}";
+                    })
                     ->afterStateHydrated(function (FileUpload $component, Get $get): void {
                         $record = self::recordFromUploadComponent($component);
                         $state = $component->getState();
@@ -123,7 +134,9 @@ class ImageForm
 
         $imageType = $type instanceof ImageType ? $type->value : (string) $type;
 
-        return $owner['model_type']!='company'?"{$owner['model_type']}/{$imageType}/{$owner['model_id']}":"{$owner['model_type']}/{$owner['model_id']}";
+        return $owner['model_type'] !== 'company'
+            ? "{$owner['model_type']}/{$imageType}/{$owner['model_id']}"
+            : "{$owner['model_type']}/{$owner['model_id']}";
     }
 
     protected static function resolveStoragePath(Get $get, string $file, ?Image $record = null): ?string
@@ -155,6 +168,44 @@ class ImageForm
         }
 
         return null;
+    }
+
+    protected static function resolveOwnerFileBaseName(Get $get, ?Image $record = null): string
+    {
+        $owner = self::resolveOwner($get, $record);
+
+        if ($owner === null) {
+            return 'image';
+        }
+
+        $model = match ($owner['model_type']) {
+            'shop' => Shop::query()->find($owner['model_id']),
+            'repair' => RepairShop::query()->find($owner['model_id']),
+            'company' => Company::query()->find($owner['model_id']),
+            default => null,
+        };
+
+        $base = self::sanitizeFileBaseName((string) ($model?->name ?? ''));
+
+        if ($base === '') {
+            $base = self::sanitizeFileBaseName((string) ($model?->slug ?? ''));
+        }
+
+        if ($base === '') {
+            $base = 'image-'.$owner['model_id'];
+        }
+
+        // Company stores all image types in one folder — include type to avoid overwrites.
+        if ($owner['model_type'] === 'company') {
+            $type = $get('type') ?? $record?->type;
+            $typeValue = $type instanceof ImageType ? $type->value : (string) $type;
+
+            if (filled($typeValue)) {
+                return "{$base}-{$typeValue}";
+            }
+        }
+
+        return $base;
     }
 
     protected static function resolveOwnerId(Get $get, string $field, ?Image $record = null): ?int
@@ -212,5 +263,25 @@ class ImageForm
         return collect(['shop_id', 'repair_shop_id', 'company_id'])
             ->reject(fn (string $ownerField): bool => $ownerField === $field)
             ->every(fn (string $ownerField): bool => blank($get($ownerField)));
+    }
+
+    protected static function sanitizeFileBaseName(string $value): string
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return '';
+        }
+
+        $slug = Str::slug($value, '-');
+
+        if ($slug !== '') {
+            return Str::lower($slug);
+        }
+
+        $safe = preg_replace('/[^\p{L}\p{N}\-_]+/u', '-', $value) ?? '';
+        $safe = trim($safe, '-_');
+
+        return $safe === '' ? '' : Str::lower($safe);
     }
 }
