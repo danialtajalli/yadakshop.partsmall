@@ -55,7 +55,7 @@ class DirectoryListingService
         $listings = $query
         ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
         ->paginate(self::PER_PAGE)
-        ->withQueryString();
+        ->appends($this->paginationQuery($filters));
 
         $listings->getCollection()->each(fn (Shop $shop) => $this->attachImageUrls($shop, 'shop'));
 
@@ -106,7 +106,7 @@ class DirectoryListingService
         $listings = $query
             ->orderBy('name')
             ->paginate(self::PER_PAGE)
-            ->withQueryString();
+            ->appends($this->paginationQuery($filters));
 
         $listings->getCollection()->each(fn (RepairShop $shop) => $this->attachImageUrls($shop, 'repair_shop'));
 
@@ -151,7 +151,7 @@ class DirectoryListingService
         $listings = $query
             ->orderBy('name')
             ->paginate(self::PER_PAGE)
-            ->withQueryString();
+            ->appends($this->paginationQuery($filters));
 
         $listings->getCollection()->each(function (Representation $representation): void {
             ShopImageUrlBuilder::attachRepresentationMedia($representation);
@@ -215,6 +215,20 @@ class DirectoryListingService
             'city_id' => $request->integer('city_id') ?: null,
             'specialization_id' => $request->integer('specialization_id') ?: null,
         ];
+    }
+
+    /**
+     * @param  array{q: ?string, state_id: ?int, city_id: ?int, specialization_id: ?int}  $filters
+     * @return array<string, int|string>
+     */
+    private function paginationQuery(array $filters): array
+    {
+        return array_filter([
+            'q' => $filters['q'],
+            'state_id' => $filters['state_id'],
+            'city_id' => $filters['city_id'],
+            'specialization_id' => $filters['specialization_id'],
+        ], fn ($value) => $value !== null && $value !== '');
     }
 
     /**

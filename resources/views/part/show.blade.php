@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="mt-10">
-                        {{ $vehicleApplications->withQueryString()->links() }}
+                        {{ $vehicleApplications->links() }}
                     </div>
                 @endif
             </div>

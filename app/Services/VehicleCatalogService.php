@@ -262,7 +262,10 @@ class VehicleCatalogService
         };
 
         if ($hasVehicleContext) {
-            $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->withQueryString();
+            $parts = $partsQuery->paginate(self::PARTS_PER_PAGE)->appends(array_filter([
+                'q' => $filters['q'],
+                'category' => $filters['category'],
+            ], fn ($value) => $value !== null && $value !== ''));
             $parts->getCollection()->transform(fn (Part $part): Part => $this->transformPartForCatalog($part, $context));
             $title = PageTitle::appendPageNumber($title, $parts->currentPage());
         } else {

@@ -74,8 +74,16 @@
                     {{ number_format($listings->total()) }} مورد یافت شد
                 </p>
                 <div class="flex min-w-0 flex-wrap gap-2 text-sm">
+                    @php
+                        $listingFilterQuery = array_filter([
+                            'q' => $filters['q'] ?? null,
+                            'state_id' => $filters['state_id'] ?? null,
+                            'city_id' => $filters['city_id'] ?? null,
+                            'specialization_id' => $filters['specialization_id'] ?? null,
+                        ], fn ($value) => $value !== null && $value !== '');
+                    @endphp
                     <a
-                        href="{{ route('shops.index', request()->except('page')) }}"
+                        href="{{ route('shops.index', $listingFilterQuery) }}"
                         @class([
                             'rounded-lg px-3 py-1.5 transition break-words',
                             'bg-brand text-white' => $type === 'shop',
@@ -85,7 +93,7 @@
                         فروشگاه‌ها
                     </a>
                     <a
-                        href="{{ route('repair-shops.index', request()->except('page')) }}"
+                        href="{{ route('repair-shops.index', $listingFilterQuery) }}"
                         @class([
                             'rounded-lg px-3 py-1.5 transition break-words',
                             'bg-brand text-white' => $type === 'repair_shop',
@@ -95,7 +103,7 @@
                         تعمیرگاه‌ها
                     </a>
                     <a
-                        href="{{ route('representations.index', request()->except('page')) }}"
+                        href="{{ route('representations.index', $listingFilterQuery) }}"
                         @class([
                             'rounded-lg px-3 py-1.5 transition break-words',
                             'bg-brand text-white' => $type === 'representation',

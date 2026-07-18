@@ -19,15 +19,23 @@ class PaginationTest extends TestCase
         $this->assertSame('http://localhost/shops?q=%DB%8C%D8%AF%DA%A9', Pagination::pageUrl($paginator, 1));
     }
 
-    public function test_page_url_includes_page_query_for_later_pages(): void
+    public function test_page_url_includes_post_body_filters(): void
     {
-        $request = Request::create('/shops', 'GET', ['q' => 'یدک']);
+        $request = Request::create('/shops', 'POST', [
+            'q' => 'یدک',
+            'state_id' => 3,
+            '_token' => 'secret',
+        ]);
         $this->app->instance('request', $request);
 
         $paginator = new LengthAwarePaginator([], 30, 12, 1, ['path' => 'http://localhost/shops']);
 
-        $this->assertSame('http://localhost/shops?q=%DB%8C%D8%AF%DA%A9&page=3', Pagination::pageUrl($paginator, 3));
+        $this->assertSame(
+            'http://localhost/shops?q=%DB%8C%D8%AF%DA%A9&state_id=3&page=2',
+            Pagination::pageUrl($paginator, 2),
+        );
     }
+
 
     public function test_previous_page_url_from_second_page_points_to_first_page_without_page_param(): void
     {

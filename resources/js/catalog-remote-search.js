@@ -20,6 +20,7 @@ export default function catalogRemoteSearch({
         csrf,
         controller: null,
         clearing: false,
+        page: 1,
         stateId: initialStateId != null && initialStateId !== '' ? String(initialStateId) : '',
         cityId: initialCityId != null && initialCityId !== '' ? String(initialCityId) : '',
         specializationId: initialSpecializationId != null && initialSpecializationId !== ''
@@ -30,6 +31,7 @@ export default function catalogRemoteSearch({
             this.$nextTick(() => {
                 this.captureFilters();
                 this.bindFilterTriggers();
+                this.bindPagination();
             });
         },
 
@@ -163,6 +165,39 @@ export default function catalogRemoteSearch({
             }
         },
 
+        bindPagination() {
+            this.$el.addEventListener('click', (event) => {
+                const link = event.target.closest('a[href]');
+
+                if (! (link instanceof HTMLAnchorElement) || ! this.$el.contains(link)) {
+                    return;
+                }
+
+                const results = this.$el.querySelector(this.resultsSelector);
+
+                if (! results?.contains(link) || ! link.closest('nav')) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                let page = 1;
+
+                try {
+                    const url = new URL(link.href, window.location.origin);
+                    page = Number(url.searchParams.get('page') || 1);
+                } catch {
+                    page = 1;
+                }
+
+                if (! Number.isFinite(page) || page < 1) {
+                    page = 1;
+                }
+
+                this.runSearch({ page });
+            });
+        },
+
         onQueryInput() {
             this.scheduleSearch({ force: false });
         },
@@ -225,14 +260,19 @@ export default function catalogRemoteSearch({
                 formData.set('q', q);
             }
 
+            if (this.page > 1) {
+                formData.set('page', String(this.page));
+            }
+
             return formData;
         },
 
-        async runSearch() {
+        async runSearch({ page = 1 } = {}) {
             if (! this.action) {
                 return;
             }
 
+            this.page = page > 1 ? page : 1;
             this.controller?.abort();
             this.controller = new AbortController();
             this.loading = true;
@@ -263,7 +303,8 @@ export default function catalogRemoteSearch({
                 const html = await response.text();
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const nextResults = doc.querySelector(this.resultsSelector);
-                const currentResults = document.querySelector(this.resultsSelector);
+                const currentResults = this.$el.querySelector(this.resultsSelector)
+                    || document.querySelector(this.resultsSelector);
 
                 if (nextResults && currentResults) {
                     currentResults.innerHTML = nextResults.innerHTML;
@@ -283,6 +324,7 @@ export default function catalogRemoteSearch({
             window.clearTimeout(this.timer);
             this.clearing = true;
             this.query = '';
+            this.page = 1;
             this.stateId = '';
             this.cityId = '';
             this.specializationId = '';

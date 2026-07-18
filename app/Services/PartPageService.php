@@ -88,7 +88,7 @@ class PartPageService
             ->values()
             ->all();
 
-        return new Paginator(
+        $paginator = new Paginator(
             $items,
             $total,
             self::PER_PAGE,
@@ -97,6 +97,10 @@ class PartPageService
                 'path' => route('part.show', $part->slug),
             ],
         );
+
+        return $paginator->appends(array_filter([
+            'q' => $query,
+        ], fn ($value) => $value !== null && $value !== ''));
     }
 
     /**

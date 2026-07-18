@@ -8,9 +8,9 @@ class Pagination
 {
     public static function pageUrl(PaginatorContract $paginator, int $page): string
     {
-        $query = collect(request()->query())
-            ->except('page')
-            ->filter(fn ($value) => $value !== null && $value !== '')
+        // Include POST body filters (remote search), not only the query string.
+        $query = collect(request()->except(['page', '_token']))
+            ->filter(fn ($value) => $value !== null && $value !== '' && ! is_array($value))
             ->all();
 
         if ($page <= 1) {
