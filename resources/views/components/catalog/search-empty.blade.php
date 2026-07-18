@@ -27,12 +27,12 @@
         <p class="text-sm text-ink-muted">{{ $message }}</p>
 
         @if ($clearUrl)
-            <a href="{{ $clearUrl }}" class="text-sm font-medium text-brand transition hover:text-brand-dark">{{ $clearLabel }}</a>
+            <a href="{{ $clearUrl }}" class="ps-btn-secondary shrink-0 px-3 py-1.5 text-xs sm:text-sm">{{ $clearLabel }}</a>
         @elseif ($clearButton)
             <button
                 type="button"
                 {{ $clearDataAttribute }}
-                class="text-sm font-medium text-brand transition hover:text-brand-dark"
+                class="ps-btn-secondary shrink-0 px-3 py-1.5 text-xs sm:text-sm"
             >
                 {{ $clearLabel }}
             </button>
