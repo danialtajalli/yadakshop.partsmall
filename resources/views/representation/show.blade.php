@@ -14,7 +14,7 @@
             <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
                 <x-ui.company-logo
                     :name="$representation->name"
-                    :logo-url="$representation->logo_url ?? null"
+                    :logo-url="$representation->logo ?? null"
                     size="xl"
                 />
 

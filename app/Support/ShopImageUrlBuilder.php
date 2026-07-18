@@ -66,8 +66,11 @@ class ShopImageUrlBuilder
 
     public static function attachRepresentationMedia(Representation $representation): void
     {
-        if (! $representation->logo) {
+        $logoPath = $representation->getRawOriginal('logo');
+
+        if (! filled($logoPath)) {
             $representation->logo = asset('panel/assets/uploads/img/no_image_representation.jpg');
+
             return;
         }
 
@@ -75,7 +78,7 @@ class ShopImageUrlBuilder
             'representation',
             ImageType::Logo,
             $representation->id,
-            $representation->logo,
+            basename((string) $logoPath),
         );
     }
 }
