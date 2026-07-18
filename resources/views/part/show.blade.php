@@ -39,52 +39,72 @@
             <p class="text-sm text-ink-muted">خودرویی برای نمایش ثبت نشده است.</p>
         </div>
     @else
-        <form method="GET" action="{{ route('part.show', $part->slug) }}" id="vehicle-search-form" class="mb-6">
-            <x-catalog.search-bar
-                id="vehicle-search"
-                name="q"
-                :value="$filters['q'] ?? ''"
-                placeholder="جستجوی نام خودرو یا شرکت..."
-                :clear-url="route('part.show', $part->slug)"
-                class="mb-0"
-            />
-        </form>
-
-        <div class="mb-4 flex items-center justify-between gap-3">
-            <p class="text-sm text-ink-muted">
-                {{ number_format($vehicleApplications->total()) }} مورد یافت شد
-            </p>
-        </div>
-
-        @if ($vehicleApplications->isEmpty())
-            <x-catalog.search-empty
+        <div
+            class="mb-6"
+            data-no-progress
+            x-data="catalogRemoteSearch({
+                action: @js(route('part.show', $part->slug)),
+                initialQuery: @js($filters['q'] ?? ''),
+                csrf: @js(csrf_token()),
+                minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+                debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+            })"
+        >
+            <form
+                method="POST"
+                action="{{ route('part.show', $part->slug) }}"
+                @submit.prevent="scheduleSearch({ force: true })"
                 class="mb-6"
-                message="خودرویی با این نام یافت نشد."
-                :clear-url="route('part.show', $part->slug)"
-                boxed
-            />
-        @else
-            <div
-                class="mb-6 columns-2 gap-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"
-                role="list"
-                aria-label="خودروها و مدل‌های مرتبط"
             >
-                @foreach ($vehicleApplications as $application)
-                    <a
-                        href="{{ $application['url'] }}"
-                        role="listitem"
-                        title="{{ $application['label'] }}"
-                        class="mb-2 inline-flex w-full break-inside-avoid items-center rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium leading-snug text-ink transition hover:border-brand/40 hover:bg-brand-soft/50 sm:px-3 sm:py-2 sm:text-sm"
-                    >
-                        {{ $application['short_label'] }}
-                    </a>
-                @endforeach
-            </div>
+                @csrf
+                <x-catalog.search-bar
+                    id="vehicle-search"
+                    name="q"
+                    :value="$filters['q'] ?? ''"
+                    placeholder="جستجوی نام خودرو یا شرکت..."
+                    alpine
+                    class="mb-0"
+                />
+            </form>
 
-            <div class="mt-10">
-                {{ $vehicleApplications->withQueryString()->links() }}
+            <div data-catalog-search-results>
+                <div class="mb-4 flex items-center justify-between gap-3">
+                    <p class="text-sm text-ink-muted">
+                        {{ number_format($vehicleApplications->total()) }} مورد یافت شد
+                    </p>
+                </div>
+
+                @if ($vehicleApplications->isEmpty())
+                    <x-catalog.search-empty
+                        class="mb-6"
+                        message="خودرویی با این نام یافت نشد."
+                        alpine
+                        boxed
+                    />
+                @else
+                    <div
+                        class="mb-6 columns-2 gap-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"
+                        role="list"
+                        aria-label="خودروها و مدل‌های مرتبط"
+                    >
+                        @foreach ($vehicleApplications as $application)
+                            <a
+                                href="{{ $application['url'] }}"
+                                role="listitem"
+                                title="{{ $application['label'] }}"
+                                class="mb-2 inline-flex w-full break-inside-avoid items-center rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium leading-snug text-ink transition hover:border-brand/40 hover:bg-brand-soft/50 sm:px-3 sm:py-2 sm:text-sm"
+                            >
+                                {{ $application['short_label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-10">
+                        {{ $vehicleApplications->withQueryString()->links() }}
+                    </div>
+                @endif
             </div>
-        @endif
+        </div>
     @endif
 
     @if ($part->description || $part->category_description)

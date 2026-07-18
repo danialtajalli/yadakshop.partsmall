@@ -22,23 +22,23 @@ Route::get('company', [VehicleCatalogController::class, 'companies'])->name('com
 Route::get('company/{company}', [VehicleCatalogController::class, 'cars'])->name('cars.index');
 
 Route::get('car/{company}/{car}', [VehicleCatalogController::class, 'models'])->name('models.index');
-Route::get('car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
+Route::match(['get', 'post'], 'car/{company}/{car}/{model}', [PartSelectionController::class, 'show'])
     ->name('car.parts.vehicle');
 
-Route::get('shops', [ShopController::class, 'index'])->name('shops.index');
+Route::match(['get', 'post'], 'shops', [ShopController::class, 'index'])->name('shops.index');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
 Route::post('profile/{shop_slug}/comments', [ShopCommentController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('shop.comments.store');
-Route::get('repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
+Route::match(['get', 'post'], 'repair_shops', [RepairShopController::class, 'index'])->name('repair-shops.index');
 Route::get('carservice/{id}/{slug}', [RepairShopController::class, 'show'])
     ->whereNumber('id')
     ->name('repair-shop.profile');
-Route::get('representations', [RepresentationController::class, 'index'])->name('representations.index');
+Route::match(['get', 'post'], 'representations', [RepresentationController::class, 'index'])->name('representations.index');
 Route::get('representation/{representation_slug}', [RepresentationController::class, 'show'])->name('representation.profile');
 
-Route::get('part', [PartSelectionController::class, 'show'])->name('car.parts');
-Route::get('part/{part}', [PartController::class, 'show'])->name('part.show');
+Route::match(['get', 'post'], 'part', [PartSelectionController::class, 'show'])->name('car.parts');
+Route::match(['get', 'post'], 'part/{part}', [PartController::class, 'show'])->name('part.show');
 
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');

@@ -22,28 +22,30 @@
         <x-site.sticky-cta-sidebar />
     </div>
 
-    <form id="model-search-form" class="mb-6">
+    <div
+        class="mb-6"
+        data-no-progress
+        x-data="catalogClientSearch({
+            itemSelector: '[data-search-text]',
+            sectionSelector: '.model-category-section',
+            minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+            debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+        })"
+    >
         <x-catalog.search-bar
             id="model-search"
             placeholder="جستجوی نام مدل..."
             empty-message="مدلی با این نام یافت نشد."
+            alpine
             class="mb-0"
         />
-    </form>
 
-    @if ($modelCategoryGroups->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">مدلی با این فیلتر یافت نشد.</p>
-        </div>
-    @else
-        <x-catalog.model-category-list :groups="$modelCategoryGroups" />
-    @endif
-
-    <x-catalog.client-search
-        form-id="model-search-form"
-        input-id="model-search"
-        empty-id="model-search-empty"
-        item-selector="[data-search-text]"
-        section-selector=".model-category-section"
-    />
+        @if ($modelCategoryGroups->isEmpty())
+            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+                <p class="text-sm text-ink-muted">مدلی با این فیلتر یافت نشد.</p>
+            </div>
+        @else
+            <x-catalog.model-category-list :groups="$modelCategoryGroups" />
+        @endif
+    </div>
 @endsection

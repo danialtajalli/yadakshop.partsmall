@@ -22,43 +22,45 @@
         <x-site.sticky-cta-sidebar />
     </div>
 
-    <form id="company-search-form" class="mb-6">
+    <div
+        class="mb-6"
+        data-no-progress
+        x-data="catalogClientSearch({
+            itemSelector: '.catalog-company-card',
+            minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+            debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+        })"
+    >
         <x-catalog.search-bar
             id="company-search"
             placeholder="جستجوی نام کمپانی..."
             empty-message="کمپانیی با این نام یافت نشد."
+            alpine
             class="mb-0"
         />
-    </form>
 
-    @if ($companies->isEmpty())
-        <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">کمپانیی برای نمایش ثبت نشده است.</p>
-        </div>
-    @else
-        <div id="companies-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            @foreach ($companies as $company)
-                <a
-                    href="{{ route('cars.index', ['company' => $company->slug]) }}"
-                    class="catalog-company-card ps-card-interactive flex flex-col p-5"
-                    data-search-text="{{ $company->name }}"
-                >
-                    <x-ui.company-logo
-                        class="mb-3"
-                        :name="$company->name"
-                        :logo-url="$company->logo_url ?? null"
-                    />
-                    <h2 class="text-base font-semibold text-ink">{{ $company->name }}</h2>
-                    <p class="mt-1 text-xs text-ink-muted">{{ $company->cars_count }} خودرو</p>
-                </a>
-            @endforeach
-        </div>
-    @endif
-
-    <x-catalog.client-search
-        form-id="company-search-form"
-        input-id="company-search"
-        empty-id="company-search-empty"
-        item-selector=".catalog-company-card"
-    />
+        @if ($companies->isEmpty())
+            <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
+                <p class="text-sm text-ink-muted">کمپانیی برای نمایش ثبت نشده است.</p>
+            </div>
+        @else
+            <div id="companies-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                @foreach ($companies as $company)
+                    <a
+                        href="{{ route('cars.index', ['company' => $company->slug]) }}"
+                        class="catalog-company-card ps-card-interactive flex flex-col p-5"
+                        data-search-text="{{ $company->name }}"
+                    >
+                        <x-ui.company-logo
+                            class="mb-3"
+                            :name="$company->name"
+                            :logo-url="$company->logo_url ?? null"
+                        />
+                        <h2 class="text-base font-semibold text-ink">{{ $company->name }}</h2>
+                        <p class="mt-1 text-xs text-ink-muted">{{ $company->cars_count }} خودرو</p>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </div>
 @endsection

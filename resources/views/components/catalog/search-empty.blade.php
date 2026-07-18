@@ -7,6 +7,7 @@
     'id' => null,
     'boxed' => false,
     'hidden' => false,
+    'alpine' => false,
 ])
 
 @php
@@ -21,18 +22,19 @@
 
 <div
     @if ($id) id="{{ $id }}" @endif
-    {{ $attributes->class([$containerClass, 'hidden' => $hidden]) }}
+    {{ $attributes->class([$containerClass, 'hidden' => $hidden && ! $alpine]) }}
 >
     <div class="{{ $innerClass }}">
         <p class="text-sm text-ink-muted">{{ $message }}</p>
 
-        @if ($clearUrl)
+        @if ($clearUrl && ! $alpine)
             <a href="{{ $clearUrl }}" class="ps-btn-secondary shrink-0 px-3 py-1.5 text-xs sm:text-sm">{{ $clearLabel }}</a>
-        @elseif ($clearButton)
+        @elseif ($clearButton || $alpine)
             <button
                 type="button"
-                {{ $clearDataAttribute }}
+                @if (! $alpine) {{ $clearDataAttribute }} @endif
                 class="ps-btn-secondary shrink-0 px-3 py-1.5 text-xs sm:text-sm"
+                @if ($alpine) @click="clearSearch" @endif
             >
                 {{ $clearLabel }}
             </button>

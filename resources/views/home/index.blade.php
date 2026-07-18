@@ -71,53 +71,49 @@
                 <p class="text-sm text-ink-muted">برند ماشینی برای نمایش ثبت نشده است.</p>
             </div>
         @else
-            <div class="mb-8">
-                <label for="home-company-search" class="sr-only">جستجوی برند ماشین</label>
-                <div class="relative">
-                    <svg class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                    <input
-                        id="home-company-search"
-                        type="search"
-                        placeholder="جستجوی نام برند ماشین..."
-                        autocomplete="off"
-                        class="w-full rounded-2xl border border-line bg-white py-3.5 pe-4 ps-12 text-sm text-ink shadow-card outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                    >
-                </div>
-                <x-catalog.search-empty
-                    id="home-company-search-empty"
-                    message="برند ماشینی با این نام یافت نشد."
-                    clear-button
-                    clear-data-attribute="data-home-company-search-clear"
-                    hidden
+            <div
+                class="mb-8"
+                data-no-progress
+                x-data="catalogClientSearch({
+                    itemSelector: '.home-company-card',
+                    textAttribute: 'companyName',
+                    minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+                    debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+                })"
+            >
+                <x-catalog.search-bar
+                    id="home-company-search"
+                    placeholder="جستجوی نام برند ماشین..."
+                    empty-message="برند ماشینی با این نام یافت نشد."
+                    alpine
+                    class="mb-0"
                 />
-            </div>
 
-            <div id="home-companies-grid" class="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-                @foreach ($companies as $company)
-                    <button
-                        type="button"
-                        @if ($company->cars->flatMap->models->isNotEmpty())
-                            data-company-picker-trigger
-                            data-company-slug="{{ $company->slug }}"
-                        @endif
-                        class="home-company-card ps-card-interactive flex w-full flex-col items-center p-2 text-center disabled:cursor-not-allowed disabled:opacity-60 sm:p-4"
-                        data-company-name="{{ $company->name }}"
-                        @disabled($company->cars->flatMap->models->isEmpty())
-                    >
-                        <x-ui.company-logo
-                            class="mb-2"
-                            :name="$company->name"
-                            :logo-url="$company->logo_url"
-                            size="sm"
-                        />
-                        <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $company->name }}</h3>
-                        @if ($company->cars->flatMap->models->isEmpty())
-                            <p class="mt-1 text-[10px] leading-4 text-ink-muted sm:text-xs">خودرویی ثبت نشده است</p>
-                        @endif
-                    </button>
-                @endforeach
+                <div id="home-companies-grid" class="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                    @foreach ($companies as $company)
+                        <button
+                            type="button"
+                            @if ($company->cars->flatMap->models->isNotEmpty())
+                                data-company-picker-trigger
+                                data-company-slug="{{ $company->slug }}"
+                            @endif
+                            class="home-company-card ps-card-interactive flex w-full flex-col items-center p-2 text-center disabled:cursor-not-allowed disabled:opacity-60 sm:p-4"
+                            data-company-name="{{ $company->name }}"
+                            @disabled($company->cars->flatMap->models->isEmpty())
+                        >
+                            <x-ui.company-logo
+                                class="mb-2"
+                                :name="$company->name"
+                                :logo-url="$company->logo_url"
+                                size="sm"
+                            />
+                            <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $company->name }}</h3>
+                            @if ($company->cars->flatMap->models->isEmpty())
+                                <p class="mt-1 text-[10px] leading-4 text-ink-muted sm:text-xs">خودرویی ثبت نشده است</p>
+                            @endif
+                        </button>
+                    @endforeach
+                </div>
             </div>
 
             <x-home.company-picker :company-picker="$companyPicker" />
@@ -138,174 +134,48 @@
                 <p class="text-sm text-ink-muted">قطعه‌ای برای نمایش ثبت نشده است.</p>
             </div>
         @else
-            <div class="mb-8">
-                <label for="home-part-search" class="sr-only">جستجوی قطعه</label>
-                <div class="relative">
-                    <svg class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                    <input
-                        id="home-part-search"
-                        type="search"
-                        placeholder="جستجوی نام قطعه..."
-                        autocomplete="off"
-                        class="w-full rounded-2xl border border-line bg-white py-3.5 pe-4 ps-12 text-sm text-ink shadow-card outline-none transition placeholder:text-ink-muted focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                    >
-                </div>
-                <x-catalog.search-empty
-                    id="home-part-search-empty"
-                    message="قطعه‌ای با این نام یافت نشد."
-                    clear-button
-                    clear-data-attribute="data-home-part-search-clear"
-                    hidden
+            <div
+                data-no-progress
+                x-data="catalogClientSearch({
+                    itemSelector: '.home-part-card',
+                    textAttribute: 'partName',
+                    gridSelector: '#home-parts-grid',
+                    loadMoreWrapSelector: '#home-parts-load-more-wrap',
+                    loadMoreButtonSelector: '#home-parts-load-more',
+                    initialRows: 8,
+                    minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+                    debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+                })"
+            >
+                <x-catalog.search-bar
+                    id="home-part-search"
+                    placeholder="جستجوی نام قطعه..."
+                    empty-message="قطعه‌ای با این نام یافت نشد."
+                    alpine
+                    class="mb-0"
                 />
-            </div>
 
-            <div id="home-parts-grid" class="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-                @foreach ($parts as $part)
-                    <x-ui.part-card
-                        :part="$part"
-                        :url="route('part.show', $part->slug)"
-                        class="home-part-card flex-col gap-1.5 p-2 sm:flex-row sm:gap-2.5 sm:p-3 [&_h3]:whitespace-normal [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
-                        data-part-name="{{ $part->title }}"
-                    />
-                @endforeach
-            </div>
+                <div id="home-parts-grid" class="mt-4 grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+                    @foreach ($parts as $part)
+                        <x-ui.part-card
+                            :part="$part"
+                            :url="route('part.show', $part->slug)"
+                            class="home-part-card flex-col gap-1.5 p-2 sm:flex-row sm:gap-2.5 sm:p-3 [&_h3]:whitespace-normal [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
+                            data-part-name="{{ $part->title }}"
+                        />
+                    @endforeach
+                </div>
 
-            <div id="home-parts-load-more-wrap" class="mt-5 hidden justify-center">
-                <button
-                    type="button"
-                    id="home-parts-load-more"
-                    class="ps-btn-secondary min-w-44 justify-center"
-                >
-                    نمایش بیشتر
-                </button>
+                <div id="home-parts-load-more-wrap" class="mt-5 hidden justify-center">
+                    <button
+                        type="button"
+                        id="home-parts-load-more"
+                        class="ps-btn-secondary min-w-44 justify-center"
+                    >
+                        نمایش بیشتر
+                    </button>
+                </div>
             </div>
         @endif
     </section>
 @endsection
-
-@push('scripts')
-    <script>
-        (function () {
-            const companySearchInput = document.getElementById('home-company-search');
-            const companyEmptyMessage = document.getElementById('home-company-search-empty');
-            const companySearchClear = document.querySelector('[data-home-company-search-clear]');
-            const companyCards = Array.from(document.querySelectorAll('.home-company-card'));
-
-            const applyCompanySearch = function () {
-                if (!companySearchInput) {
-                    return;
-                }
-
-                const query = companySearchInput.value.trim().toLowerCase();
-                let visibleCount = 0;
-
-                companyCards.forEach(function (card) {
-                    const name = (card.dataset.companyName || '').toLowerCase();
-                    const matches = query === '' || name.includes(query);
-
-                    card.classList.toggle('hidden', !matches);
-
-                    if (matches) {
-                        visibleCount++;
-                    }
-                });
-
-                if (companyEmptyMessage) {
-                    companyEmptyMessage.classList.toggle('hidden', query === '' || visibleCount > 0);
-                }
-            };
-
-            if (companySearchInput && companyCards.length > 0) {
-                companySearchInput.addEventListener('input', applyCompanySearch);
-
-                companySearchClear?.addEventListener('click', function () {
-                    companySearchInput.value = '';
-                    applyCompanySearch();
-                    companySearchInput.focus();
-                });
-            }
-
-            const partSearchInput = document.getElementById('home-part-search');
-            const partEmptyMessage = document.getElementById('home-part-search-empty');
-            const partSearchClear = document.querySelector('[data-home-part-search-clear]');
-            const partsGrid = document.getElementById('home-parts-grid');
-            const partCards = Array.from(document.querySelectorAll('.home-part-card'));
-            const partsLoadMore = document.getElementById('home-parts-load-more');
-            const partsLoadMoreWrap = document.getElementById('home-parts-load-more-wrap');
-            const INITIAL_PART_ROWS = 8;
-            let partsExpanded = false;
-
-            const getPartsGridColumnCount = function () {
-                if (!partsGrid) {
-                    return 1;
-                }
-
-                const columns = window.getComputedStyle(partsGrid).gridTemplateColumns.split(' ').filter(Boolean);
-
-                return columns.length || 1;
-            };
-
-            const getInitialPartsLimit = function () {
-                return getPartsGridColumnCount() * INITIAL_PART_ROWS;
-            };
-
-            const applyPartVisibility = function () {
-                const query = (partSearchInput?.value || '').trim().toLowerCase();
-                const isSearching = query !== '';
-                const initialLimit = getInitialPartsLimit();
-                let visibleCount = 0;
-
-                partCards.forEach(function (card, index) {
-                    const name = (card.dataset.partName || '').toLowerCase();
-                    const matchesSearch = query === '' || name.includes(query);
-                    const withinInitialLimit = partsExpanded || isSearching || index < initialLimit;
-                    const visible = matchesSearch && withinInitialLimit;
-
-                    card.classList.toggle('hidden', !visible);
-
-                    if (visible) {
-                        visibleCount++;
-                    }
-                });
-
-                if (partEmptyMessage) {
-                    partEmptyMessage.classList.toggle('hidden', !isSearching || visibleCount > 0);
-                }
-
-                if (partsLoadMoreWrap) {
-                    const showLoadMore = !partsExpanded && !isSearching && partCards.length > initialLimit;
-                    partsLoadMoreWrap.classList.toggle('hidden', !showLoadMore);
-                    partsLoadMoreWrap.classList.toggle('flex', showLoadMore);
-                }
-            };
-
-            if (partCards.length > 0) {
-                applyPartVisibility();
-
-                if (partSearchInput) {
-                    partSearchInput.addEventListener('input', applyPartVisibility);
-                }
-
-                partSearchClear?.addEventListener('click', function () {
-                    if (partSearchInput) {
-                        partSearchInput.value = '';
-                    }
-
-                    applyPartVisibility();
-                    partSearchInput?.focus();
-                });
-
-                if (partsLoadMore) {
-                    partsLoadMore.addEventListener('click', function () {
-                        partsExpanded = true;
-                        applyPartVisibility();
-                    });
-                }
-
-                window.addEventListener('resize', applyPartVisibility);
-            }
-        })();
-    </script>
-@endpush

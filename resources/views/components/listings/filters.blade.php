@@ -8,13 +8,21 @@
     'showSpecializationFilter' => false,
 ])
 
-<form method="GET" action="{{ $action }}" id="listing-filters-form" data-cities-by-state='@json($citiesByState)'>
+<form
+    method="POST"
+    action="{{ $action }}"
+    id="listing-filters-form"
+    data-cities-by-state='@json($citiesByState)'
+    data-no-progress
+    @submit.prevent="scheduleSearch({ force: true })"
+>
+    @csrf
     <x-catalog.search-bar
         id="listing-search"
         name="q"
         :value="$filters['q'] ?? ''"
         placeholder="جستجو در نام، آدرس و..."
-        :clear-url="$action"
+        alpine
         class="mb-0"
     >
         <x-slot:between>

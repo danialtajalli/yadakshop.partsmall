@@ -10,6 +10,14 @@
 @section('title', $title)
 
 @section('content')
+    @php
+        $listingAction = route(match ($type) {
+            'repair_shop' => 'repair-shops.index',
+            'representation' => 'representations.index',
+            default => 'shops.index',
+        });
+    @endphp
+
     <x-site.breadcrumb :items="$breadcrumbs" />
 
     <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
@@ -37,78 +45,86 @@
         <x-site.sticky-cta-sidebar />
     </div>
 
-    <x-listings.filters
-        :action="route(match ($type) {
-            'repair_shop' => 'repair-shops.index',
-            'representation' => 'representations.index',
-            default => 'shops.index',
+    <div
+        data-no-progress
+        x-data="catalogRemoteSearch({
+            action: @js($listingAction),
+            initialQuery: @js($filters['q'] ?? ''),
+            initialStateId: @js($filters['state_id'] ?? ''),
+            initialCityId: @js($filters['city_id'] ?? ''),
+            initialSpecializationId: @js($filters['specialization_id'] ?? ''),
+            csrf: @js(csrf_token()),
+            minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
+            debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
         })"
-        :filters="$filters"
-        :states="$states"
-        :cities="$cities"
-        :cities-by-state="$citiesByState"
-        :specializations="$specializations"
-        :show-specialization-filter="$showSpecializationFilter"
-    />
+    >
+        <x-listings.filters
+            :action="$listingAction"
+            :filters="$filters"
+            :states="$states"
+            :cities="$cities"
+            :cities-by-state="$citiesByState"
+            :specializations="$specializations"
+            :show-specialization-filter="$showSpecializationFilter"
+        />
 
-    <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
-        <p class="min-w-0 text-sm text-ink-muted">
-            {{ number_format($listings->total()) }} مورد یافت شد
-        </p>
-        <div class="flex min-w-0 flex-wrap gap-2 text-sm">
-            <a
-                href="{{ route('shops.index', request()->except('page')) }}"
-                @class([
-                    'rounded-lg px-3 py-1.5 transition break-words',
-                    'bg-brand text-white' => $type === 'shop',
-                    'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
-                ])
-            >
-                فروشگاه‌ها
-            </a>
-            <a
-                href="{{ route('repair-shops.index', request()->except('page')) }}"
-                @class([
-                    'rounded-lg px-3 py-1.5 transition break-words',
-                    'bg-brand text-white' => $type === 'repair_shop',
-                    'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
-                ])
-            >
-                تعمیرگاه‌ها
-            </a>
-            <a
-                href="{{ route('representations.index', request()->except('page')) }}"
-                @class([
-                    'rounded-lg px-3 py-1.5 transition break-words',
-                    'bg-brand text-white' => $type === 'representation',
-                    'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
-                ])
-            >
-                نمایندگی‌ها
-            </a>
+        <div data-catalog-search-results>
+            <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
+                <p class="min-w-0 text-sm text-ink-muted">
+                    {{ number_format($listings->total()) }} مورد یافت شد
+                </p>
+                <div class="flex min-w-0 flex-wrap gap-2 text-sm">
+                    <a
+                        href="{{ route('shops.index', request()->except('page')) }}"
+                        @class([
+                            'rounded-lg px-3 py-1.5 transition break-words',
+                            'bg-brand text-white' => $type === 'shop',
+                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
+                        ])
+                    >
+                        فروشگاه‌ها
+                    </a>
+                    <a
+                        href="{{ route('repair-shops.index', request()->except('page')) }}"
+                        @class([
+                            'rounded-lg px-3 py-1.5 transition break-words',
+                            'bg-brand text-white' => $type === 'repair_shop',
+                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
+                        ])
+                    >
+                        تعمیرگاه‌ها
+                    </a>
+                    <a
+                        href="{{ route('representations.index', request()->except('page')) }}"
+                        @class([
+                            'rounded-lg px-3 py-1.5 transition break-words',
+                            'bg-brand text-white' => $type === 'representation',
+                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
+                        ])
+                    >
+                        نمایندگی‌ها
+                    </a>
+                </div>
+            </div>
+
+            @if ($listings->isEmpty())
+                <x-catalog.search-empty
+                    message="موردی با این فیلترها یافت نشد."
+                    alpine
+                    boxed
+                />
+            @else
+                <h2 class="sr-only">نتایج جستجو</h2>
+                <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($listings as $listing)
+                        <x-listings.card :listing="$listing" :type="$type" />
+                    @endforeach
+                </div>
+
+                <div class="mt-10">
+                    {{ $listings->links() }}
+                </div>
+            @endif
         </div>
     </div>
-
-    @if ($listings->isEmpty())
-        <x-catalog.search-empty
-            message="موردی با این فیلترها یافت نشد."
-            :clear-url="route(match ($type) {
-                'repair_shop' => 'repair-shops.index',
-                'representation' => 'representations.index',
-                default => 'shops.index',
-            })"
-            boxed
-        />
-    @else
-        <h2 class="sr-only">نتایج جستجو</h2>
-        <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($listings as $listing)
-                <x-listings.card :listing="$listing" :type="$type" />
-            @endforeach
-        </div>
-
-        <div class="mt-10">
-            {{ $listings->links() }}
-        </div>
-    @endif
 @endsection
