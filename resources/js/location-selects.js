@@ -31,7 +31,16 @@ function placeholderFromSelect(select) {
 
 function keepsEmptyOptionSelectable(select) {
     return select.matches(
-        '[data-listing-state], [data-listing-city], [data-repair-locator-state], [data-repair-locator-city], [data-shops-filter-state]',
+        [
+            '[data-listing-state]',
+            '[data-listing-city]',
+            '[data-repair-locator-state]',
+            '[data-repair-locator-city]',
+            '[data-shops-filter-state]',
+            '[data-vehicle-company]',
+            '[data-vehicle-car]',
+            '[data-vehicle-model]',
+        ].join(', '),
     );
 }
 
@@ -161,7 +170,15 @@ function bindStateCityGroup(stateSelect, citySelect, citiesByState) {
 
 function initStandaloneSearchableSelects() {
     document.querySelectorAll('[data-searchable-select]').forEach(function (select) {
-        if (select.matches('[data-listing-state], [data-listing-city], [data-repair-locator-state], [data-repair-locator-city]')) {
+        if (select.matches([
+            '[data-listing-state]',
+            '[data-listing-city]',
+            '[data-repair-locator-state]',
+            '[data-repair-locator-city]',
+            '[data-vehicle-company]',
+            '[data-vehicle-car]',
+            '[data-vehicle-model]',
+        ].join(', '))) {
             return;
         }
 
@@ -208,9 +225,136 @@ function initRepairLocators() {
     });
 }
 
+function parseJsonDataset(raw) {
+    if (! raw) {
+        return {};
+    }
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return {};
+    }
+}
+
+function lookupByKey(map, key) {
+    if (! key) {
+        return [];
+    }
+
+    return map[key] ?? map[String(key)] ?? [];
+}
+
+function optionListFromItems(items, valueKey = 'slug', labelKey = 'name') {
+    return items.map(function (item) {
+        return {
+            id: item[valueKey],
+            name: item[labelKey],
+            url: item.url ?? '',
+        };
+    });
+}
+
+function initVehicleFilters() {
+    document.querySelectorAll('[data-vehicle-filter]').forEach(function (form) {
+        const companySelect = form.querySelector('[data-vehicle-company]');
+        const carSelect = form.querySelector('[data-vehicle-car]');
+        const modelSelect = form.querySelector('[data-vehicle-model]');
+        const submitButton = form.querySelector('[data-vehicle-filter-submit]');
+
+        if (! companySelect || ! carSelect || ! modelSelect) {
+            return;
+        }
+
+        const carsByCompany = parseJsonDataset(form.dataset.carsByCompany);
+        const modelsByCar = parseJsonDataset(form.dataset.modelsByCar);
+
+        const $companySelect = initSearchableSelect(companySelect);
+        initSearchableSelect(carSelect);
+        initSearchableSelect(modelSelect);
+
+        setSelectDisabled(carSelect, true);
+        setSelectDisabled(modelSelect, true);
+
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        const syncSubmit = function () {
+            if (! submitButton) {
+                return;
+            }
+
+            submitButton.disabled = ! jQuery(modelSelect).val();
+        };
+
+        const handleCompanyChange = function () {
+            const companySlug = jQuery(companySelect).val() || '';
+            const cars = optionListFromItems(lookupByKey(carsByCompany, companySlug));
+
+            setSelectDisabled(carSelect, companySlug === '');
+            setSelectDisabled(modelSelect, true);
+            replaceSelectOptions(carSelect, cars, '');
+            replaceSelectOptions(modelSelect, [], '');
+            syncSubmit();
+        };
+
+        const handleCarChange = function () {
+            const companySlug = jQuery(companySelect).val() || '';
+            const carSlug = jQuery(carSelect).val() || '';
+            const key = companySlug && carSlug ? `${companySlug}|${carSlug}` : '';
+            const models = optionListFromItems(lookupByKey(modelsByCar, key));
+
+            setSelectDisabled(modelSelect, carSlug === '');
+            replaceSelectOptions(modelSelect, models, '');
+            syncSubmit();
+        };
+
+        const handleModelChange = function () {
+            syncSubmit();
+        };
+
+        $companySelect.off('.vehicleFilter');
+        $companySelect.on(
+            'change.vehicleFilter select2:select.vehicleFilter select2:clear.vehicleFilter',
+            handleCompanyChange,
+        );
+
+        jQuery(carSelect)
+            .off('.vehicleFilter')
+            .on('change.vehicleFilter select2:select.vehicleFilter select2:clear.vehicleFilter', handleCarChange);
+
+        jQuery(modelSelect)
+            .off('.vehicleFilter')
+            .on('change.vehicleFilter select2:select.vehicleFilter select2:clear.vehicleFilter', handleModelChange);
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const companySlug = jQuery(companySelect).val() || '';
+            const carSlug = jQuery(carSelect).val() || '';
+            const modelSlug = jQuery(modelSelect).val() || '';
+
+            if (! companySlug || ! carSlug || ! modelSlug) {
+                return;
+            }
+
+            const models = lookupByKey(modelsByCar, `${companySlug}|${carSlug}`);
+            const selected = models.find(function (model) {
+                return String(model.slug) === String(modelSlug);
+            });
+
+            if (selected?.url) {
+                window.location.assign(selected.url);
+            }
+        });
+    });
+}
+
 export function initLocationSelects() {
     initListingFilters();
     initRepairLocators();
+    initVehicleFilters();
     initStandaloneSearchableSelects();
 }
 
