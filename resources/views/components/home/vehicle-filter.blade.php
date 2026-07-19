@@ -33,7 +33,7 @@
                     >
                         <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
                             <div class="min-w-0">
-                                <label for="vehicle-company" class="mb-1 block text-xs font-medium text-ink-muted">برند</label>
+                                <label for="vehicle-company" class="mb-1 block text-xs font-medium text-ink-muted">انتخاب کمپانی</label>
                                 <div class="ps-searchable-select">
                                     <select
                                         id="vehicle-company"
@@ -42,7 +42,7 @@
                                         data-searchable-select
                                         required
                                     >
-                                        <option value="">انتخاب برند</option>
+                                        <option value="">انتخاب کمپانی سازنده</option>
                                         @foreach ($companies as $company)
                                             <option value="{{ $company['slug'] }}">{{ $company['name'] }}</option>
                                         @endforeach
