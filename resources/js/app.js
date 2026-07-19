@@ -4,6 +4,7 @@ import './location-selects';
 import './touch-feedback';
 import './navigation-progress';
 import './stats-strip';
+import './best-shops-banner';
 
 const isFilamentPanel = () => {
     const path = window.location.pathname;

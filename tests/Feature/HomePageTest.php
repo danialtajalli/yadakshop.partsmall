@@ -31,6 +31,9 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
+        $response->assertSee('فروشگاه‌های برتر', false);
+        $response->assertSee('لوگوی شما می‌تواند اینجا باشد', false);
+        $response->assertSee('data-best-shops-banner', false);
         $response->assertSee('aria-label="آمار پارتس‌مال"', false);
         $response->assertSee('اعتماد در مقیاس ملی', false);
         $response->assertSee('data-stats-strip', false);
@@ -65,6 +68,8 @@ class HomePageTest extends TestCase
             'path' => 'logo.webp',
         ]);
 
+        config(['partsmall.home_best_shop_ids' => [$shop->id]]);
+
         RepairShop::create([
             'name' => 'تعمیرگاه آریا',
             'slug' => 'aria-repair',
@@ -89,6 +94,9 @@ class HomePageTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertSee('یدک شاپ', false);
+        $response->assertSee('لوگوی شما می‌تواند اینجا باشد', false);
+        $response->assertSee('فروشگاه‌های برتر', false);
+        $response->assertSee(route('shop.profile', 'yadak-shop'), false);
         $response->assertSee('تعمیرگاه آریا', false);
         $response->assertSee('نمایندگی آسان', false);
         $response->assertSee('شمع', false);

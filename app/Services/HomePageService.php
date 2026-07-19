@@ -44,6 +44,7 @@ class HomePageService
      *         parts: list<array{slug: string, name: string}>,
      *     },
      *     representations: Collection<int, Representation>,
+     *     bestShops: Collection<int, Shop>,
      *     parts: Collection<int, Part>,
      *     title: string,
      * }
@@ -65,6 +66,7 @@ class HomePageService
             'companyPicker' => $companyPicker,
             'vehicleFilter' => $this->buildVehicleFilter($companyPicker, $parts),
             'representations' => $this->featuredRepresentations(),
+            'bestShops' => $this->bestShowcaseShops(),
             'parts' => $parts,
             'title' => "پارتس‌مال",
         ];
@@ -236,6 +238,29 @@ class HomePageService
                 ->values()
                 ->all(),
         ];
+    }
+
+    /**
+     * @return Collection<int, Shop>
+     */
+    private function bestShowcaseShops(): Collection
+    {
+        $ids = config('partsmall.home_best_shop_ids', [1, 2, 3]);
+
+        if ($ids === []) {
+            return collect();
+        }
+
+        $shops = Shop::query()
+            ->with(['images'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->sortBy(fn (Shop $shop) => array_search($shop->id, $ids, true))
+            ->values();
+
+        $shops->each(fn (Shop $shop) => ShopImageUrlBuilder::attachShopMedia($shop, 'shop'));
+
+        return $shops;
     }
 
     /**

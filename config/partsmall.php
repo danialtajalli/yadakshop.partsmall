@@ -21,6 +21,11 @@ return [
     'theme_color' => '#f27c22',
 
     /*
+     | Shop IDs shown in the home "best shops" showcase banner.
+     */
+    'home_best_shop_ids' => [1, 2, 3],
+
+    /*
      | Social-proof / trust metrics shown on the home page stats strip.
      | Update values here when the live figures change.
      */
