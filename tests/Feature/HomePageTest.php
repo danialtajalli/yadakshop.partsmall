@@ -110,6 +110,23 @@ class HomePageTest extends TestCase
         $response->assertOk();
         $response->assertSee('home-company-picker-modal', false);
         $response->assertSee('data-company-picker-trigger', false);
+        $response->assertSee('قطعه مناسب خودروی خود را پیدا کنید', false);
+        $response->assertSee('id="home-vehicle-filter-form"', false);
+        $response->assertSee('data-vehicle-company', false);
+        $response->assertSee('data-vehicle-car', false);
+        $response->assertSee('data-vehicle-model', false);
+        $response->assertViewHas('vehicleFilter', function (array $filter) use ($company, $car, $model): bool {
+            $companySlug = $company->slug;
+            $carSlug = $car->slug;
+
+            return ($filter['companies'][0]['slug'] ?? null) === $companySlug
+                && ($filter['carsByCompany'][$companySlug][0]['slug'] ?? null) === $carSlug
+                && ($filter['modelsByCar'][$companySlug.'|'.$carSlug][0]['url'] ?? null) === route('car.parts.vehicle', [
+                    'company' => $companySlug,
+                    'car' => $carSlug,
+                    'model' => $model->slug,
+                ]);
+        });
         $response->assertViewHas('companyPicker', function (array $picker): bool {
             return collect($picker)->contains(function (array $company): bool {
                 if ($company['slug'] !== 'hyundai') {

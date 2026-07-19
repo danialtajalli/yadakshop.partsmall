@@ -36,6 +36,11 @@ class HomePageService
      *             }>,
      *         }>,
      *     }>,
+     *     vehicleFilter: array{
+     *         companies: list<array{slug: string, name: string}>,
+     *         carsByCompany: array<string, list<array{slug: string, name: string}>>,
+     *         modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
+     *     },
      *     representations: Collection<int, Representation>,
      *     parts: Collection<int, Part>,
      *     title: string,
@@ -44,6 +49,7 @@ class HomePageService
     public function getHomePageData(): array
     {
         $companies = $this->featuredCompanies();
+        $companyPicker = $this->buildCompanyPicker($companies);
         $parts = $this->allParts();
         $parts->transform(function (Part $part): Part {
             $part->title = $part->name;
@@ -54,7 +60,8 @@ class HomePageService
             'shops' => $this->featuredShops(),
             'repairShops' => $this->featuredRepairShops(),
             'companies' => $companies,
-            'companyPicker' => $this->buildCompanyPicker($companies),
+            'companyPicker' => $companyPicker,
+            'vehicleFilter' => $this->buildVehicleFilter($companyPicker),
             'representations' => $this->featuredRepresentations(),
             'parts' => $parts,
             'title' => "پارتس‌مال",
@@ -152,6 +159,66 @@ class HomePageService
             ->filter(fn (array $company) => $company['cars'] !== [])
             ->values()
             ->all();
+    }
+
+    /**
+     * @param  list<array{
+     *     slug: string,
+     *     name: string,
+     *     cars: list<array{
+     *         slug: string,
+     *         name: string,
+     *         modelCategories: list<array{
+     *             models: list<array{slug: string, name: string, url: string}>,
+     *         }>,
+     *     }>,
+     * }>  $companyPicker
+     * @return array{
+     *     companies: list<array{slug: string, name: string}>,
+     *     carsByCompany: array<string, list<array{slug: string, name: string}>>,
+     *     modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
+     * }
+     */
+    private function buildVehicleFilter(array $companyPicker): array
+    {
+        $companies = [];
+        $carsByCompany = [];
+        $modelsByCar = [];
+
+        foreach ($companyPicker as $company) {
+            $companies[] = [
+                'slug' => $company['slug'],
+                'name' => $company['name'],
+            ];
+
+            $carsByCompany[$company['slug']] = [];
+
+            foreach ($company['cars'] as $car) {
+                $carsByCompany[$company['slug']][] = [
+                    'slug' => $car['slug'],
+                    'name' => $car['name'],
+                ];
+
+                $models = collect($car['modelCategories'])
+                    ->flatMap(fn (array $category) => $category['models'])
+                    ->unique('slug')
+                    ->values()
+                    ->map(fn (array $model): array => [
+                        'slug' => $model['slug'],
+                        'name' => $model['name'],
+                        'url' => $model['url'],
+                    ])
+                    ->all();
+
+                $modelsByCar[$company['slug'].'|'.$car['slug']] = $models;
+            }
+        }
+
+        return [
+            'companies' => $companies,
+            'carsByCompany' => $carsByCompany,
+            'modelsByCar' => $modelsByCar,
+        ];
     }
 
     /**
