@@ -31,6 +31,14 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
+        $response->assertSee('aria-label="آمار پارتس‌مال"', false);
+        $response->assertSee('اعتماد در مقیاس ملی', false);
+        $response->assertSee('data-stats-strip', false);
+        $response->assertSee('data-stats-value', false);
+        $response->assertSee('فروشگاه عضو', false);
+        $response->assertSee('قطعه ثبت‌شده', false);
+        $response->assertSee('خرید روزانه', false);
+        $response->assertSee('برند خودرو', false);
         $response->assertDontSee('id="home-global-search"', false);
         $response->assertSee('id="header-meilisearch-parts-search"', false);
         $response->assertSee('id="mobile-meilisearch-parts-search"', false);

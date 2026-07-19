@@ -26,6 +26,8 @@
         empty-message="هنوز فروشگاهی ثبت نشده است."
     />
 
+    <x-home.stats-strip />
+
     <x-home.entity-carousel
         title="تعمیرگاه‌ها"
         description="تعمیرگاه‌های تخصصی خودرو"

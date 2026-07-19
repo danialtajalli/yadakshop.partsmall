@@ -3,6 +3,7 @@ import './map/imports';
 import './location-selects';
 import './touch-feedback';
 import './navigation-progress';
+import './stats-strip';
 
 const isFilamentPanel = () => {
     const path = window.location.pathname;
