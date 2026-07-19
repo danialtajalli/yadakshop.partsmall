@@ -9,6 +9,7 @@ use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Support\CarModelLabel;
+use App\Support\CarModelSort;
 use App\Support\ModelCategoryLabel;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
@@ -40,6 +41,7 @@ class HomePageService
      *         companies: list<array{slug: string, name: string}>,
      *         carsByCompany: array<string, list<array{slug: string, name: string}>>,
      *         modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
+     *         parts: list<array{slug: string, name: string}>,
      *     },
      *     representations: Collection<int, Representation>,
      *     parts: Collection<int, Part>,
@@ -61,7 +63,7 @@ class HomePageService
             'repairShops' => $this->featuredRepairShops(),
             'companies' => $companies,
             'companyPicker' => $companyPicker,
-            'vehicleFilter' => $this->buildVehicleFilter($companyPicker),
+            'vehicleFilter' => $this->buildVehicleFilter($companyPicker, $parts),
             'representations' => $this->featuredRepresentations(),
             'parts' => $parts,
             'title' => "پارتس‌مال",
@@ -130,23 +132,25 @@ class HomePageService
                                         return [
                                             'slug' => ModelCategoryLabel::slug($category),
                                             'label' => ModelCategoryLabel::display($category),
-                                            'models' => $models
-                                                ->map(function ($model) use ($company, $car): array {
-                                                    return [
-                                                        'slug' => $model->slug,
-                                                        'name' => CarModelLabel::display($model),
-                                                        'url' => route('car.parts.vehicle', [
-                                                            'company' => $company->slug,
-                                                            'car' => $car->slug,
-                                                            'model' => $model->slug,
-                                                        ]),
-                                                    ];
-                                                })
-                                                ->values()
-                                                ->all(),
+                                            'models' => CarModelSort::prioritize(
+                                                $models
+                                                    ->map(function ($model) use ($company, $car, $category): array {
+                                                        return [
+                                                            'slug' => $model->slug,
+                                                            'name' => CarModelLabel::display($model),
+                                                            'category_slug' => ModelCategoryLabel::slug($category),
+                                                            'url' => route('car.parts.vehicle', [
+                                                                'company' => $company->slug,
+                                                                'car' => $car->slug,
+                                                                'model' => $model->slug,
+                                                            ]),
+                                                        ];
+                                                    })
+                                                    ->values(),
+                                            ),
                                         ];
                                     })
-                                    ->sortByDesc(fn (array $category): int => count($category['models']))
+                                    ->sortBy(fn (array $category): int => CarModelSort::bucketForCategory($category['slug']))
                                     ->values()
                                     ->all(),
                             ];
@@ -169,17 +173,20 @@ class HomePageService
      *         slug: string,
      *         name: string,
      *         modelCategories: list<array{
-     *             models: list<array{slug: string, name: string, url: string}>,
+     *             slug: string,
+     *             models: list<array{slug: string, name: string, url: string, category_slug?: string}>,
      *         }>,
      *     }>,
      * }>  $companyPicker
+     * @param  Collection<int, Part>  $parts
      * @return array{
      *     companies: list<array{slug: string, name: string}>,
      *     carsByCompany: array<string, list<array{slug: string, name: string}>>,
      *     modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
+     *     parts: list<array{slug: string, name: string}>,
      * }
      */
-    private function buildVehicleFilter(array $companyPicker): array
+    private function buildVehicleFilter(array $companyPicker, Collection $parts): array
     {
         $companies = [];
         $carsByCompany = [];
@@ -200,17 +207,20 @@ class HomePageService
                 ];
 
                 $models = collect($car['modelCategories'])
-                    ->flatMap(fn (array $category) => $category['models'])
+                    ->flatMap(function (array $category) {
+                        return collect($category['models'])->map(function (array $model) use ($category): array {
+                            return [
+                                'slug' => $model['slug'],
+                                'name' => $model['name'],
+                                'url' => $model['url'],
+                                'category_slug' => $model['category_slug'] ?? $category['slug'],
+                            ];
+                        });
+                    })
                     ->unique('slug')
-                    ->values()
-                    ->map(fn (array $model): array => [
-                        'slug' => $model['slug'],
-                        'name' => $model['name'],
-                        'url' => $model['url'],
-                    ])
-                    ->all();
+                    ->values();
 
-                $modelsByCar[$company['slug'].'|'.$car['slug']] = $models;
+                $modelsByCar[$company['slug'].'|'.$car['slug']] = CarModelSort::prioritize($models);
             }
         }
 
@@ -218,6 +228,13 @@ class HomePageService
             'companies' => $companies,
             'carsByCompany' => $carsByCompany,
             'modelsByCar' => $modelsByCar,
+            'parts' => $parts
+                ->map(fn (Part $part): array => [
+                    'slug' => $part->slug,
+                    'name' => $part->name,
+                ])
+                ->values()
+                ->all(),
         ];
     }
 

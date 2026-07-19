@@ -40,6 +40,8 @@ function keepsEmptyOptionSelectable(select) {
             '[data-vehicle-company]',
             '[data-vehicle-car]',
             '[data-vehicle-model]',
+            '[data-vehicle-part]',
+            '[data-shop-company-select]',
         ].join(', '),
     );
 }
@@ -178,6 +180,8 @@ function initStandaloneSearchableSelects() {
             '[data-vehicle-company]',
             '[data-vehicle-car]',
             '[data-vehicle-model]',
+            '[data-vehicle-part]',
+            '[data-shop-company-select]',
         ].join(', '))) {
             return;
         }
@@ -260,7 +264,9 @@ function initVehicleFilters() {
         const companySelect = form.querySelector('[data-vehicle-company]');
         const carSelect = form.querySelector('[data-vehicle-car]');
         const modelSelect = form.querySelector('[data-vehicle-model]');
+        const partSelect = form.querySelector('[data-vehicle-part]');
         const submitButton = form.querySelector('[data-vehicle-filter-submit]');
+        const submitLabel = form.querySelector('[data-vehicle-filter-submit-label]');
 
         if (! companySelect || ! carSelect || ! modelSelect) {
             return;
@@ -268,10 +274,27 @@ function initVehicleFilters() {
 
         const carsByCompany = parseJsonDataset(form.dataset.carsByCompany);
         const modelsByCar = parseJsonDataset(form.dataset.modelsByCar);
+        let parts = [];
+
+        try {
+            const parsedParts = JSON.parse(form.dataset.parts || '[]');
+            parts = Array.isArray(parsedParts) ? parsedParts : [];
+        } catch {
+            parts = [];
+        }
+
+        const productUrlPrefix = (form.dataset.productUrlPrefix || '/product').replace(/\/$/, '');
+        const labelParts = form.dataset.labelParts || 'مشاهده قطعات';
+        const labelShops = form.dataset.labelShops || 'مشاهده فروشگاه‌ها';
 
         const $companySelect = initSearchableSelect(companySelect);
         initSearchableSelect(carSelect);
         initSearchableSelect(modelSelect);
+
+        if (partSelect) {
+            initSearchableSelect(partSelect);
+            setSelectDisabled(partSelect, true);
+        }
 
         setSelectDisabled(carSelect, true);
         setSelectDisabled(modelSelect, true);
@@ -280,12 +303,53 @@ function initVehicleFilters() {
             submitButton.disabled = true;
         }
 
+        const setSubmitLabel = function (nextLabel, animate) {
+            if (! submitLabel || submitLabel.textContent === nextLabel) {
+                return;
+            }
+
+            if (! animate) {
+                submitLabel.textContent = nextLabel;
+
+                return;
+            }
+
+            submitLabel.classList.add('translate-y-1', 'opacity-0');
+            submitButton?.classList.add('ring-2', 'ring-brand-soft/50', 'scale-[1.02]');
+
+            window.setTimeout(function () {
+                submitLabel.textContent = nextLabel;
+                submitLabel.classList.remove('translate-y-1', 'opacity-0');
+            }, 160);
+
+            window.setTimeout(function () {
+                submitButton?.classList.remove('ring-2', 'ring-brand-soft/50', 'scale-[1.02]');
+            }, 420);
+        };
+
+        if (submitLabel) {
+            submitLabel.classList.add('inline-block', 'transition', 'duration-200', 'ease-out');
+        }
+
         const syncSubmit = function () {
             if (! submitButton) {
                 return;
             }
 
-            submitButton.disabled = ! jQuery(modelSelect).val();
+            const hasModel = Boolean(jQuery(modelSelect).val());
+            const hasPart = Boolean(partSelect && jQuery(partSelect).val());
+
+            submitButton.disabled = ! hasModel;
+            setSubmitLabel(hasPart ? labelShops : labelParts, hasModel);
+        };
+
+        const resetPartSelect = function () {
+            if (! partSelect) {
+                return;
+            }
+
+            setSelectDisabled(partSelect, true);
+            replaceSelectOptions(partSelect, optionListFromItems(parts), '');
         };
 
         const handleCompanyChange = function () {
@@ -296,6 +360,7 @@ function initVehicleFilters() {
             setSelectDisabled(modelSelect, true);
             replaceSelectOptions(carSelect, cars, '');
             replaceSelectOptions(modelSelect, [], '');
+            resetPartSelect();
             syncSubmit();
         };
 
@@ -307,10 +372,27 @@ function initVehicleFilters() {
 
             setSelectDisabled(modelSelect, carSlug === '');
             replaceSelectOptions(modelSelect, models, '');
+            resetPartSelect();
             syncSubmit();
         };
 
         const handleModelChange = function () {
+            const hasModel = Boolean(jQuery(modelSelect).val());
+
+            if (partSelect) {
+                if (! hasModel) {
+                    resetPartSelect();
+                } else {
+                    const currentPart = jQuery(partSelect).val() || '';
+                    setSelectDisabled(partSelect, false);
+                    replaceSelectOptions(partSelect, optionListFromItems(parts), currentPart);
+                }
+            }
+
+            syncSubmit();
+        };
+
+        const handlePartChange = function () {
             syncSubmit();
         };
 
@@ -328,14 +410,29 @@ function initVehicleFilters() {
             .off('.vehicleFilter')
             .on('change.vehicleFilter select2:select.vehicleFilter select2:clear.vehicleFilter', handleModelChange);
 
+        if (partSelect) {
+            jQuery(partSelect)
+                .off('.vehicleFilter')
+                .on('change.vehicleFilter select2:select.vehicleFilter select2:clear.vehicleFilter', handlePartChange);
+        }
+
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
             const companySlug = jQuery(companySelect).val() || '';
             const carSlug = jQuery(carSelect).val() || '';
             const modelSlug = jQuery(modelSelect).val() || '';
+            const partSlug = partSelect ? (jQuery(partSelect).val() || '') : '';
 
             if (! companySlug || ! carSlug || ! modelSlug) {
+                return;
+            }
+
+            if (partSlug) {
+                window.location.assign(
+                    `${productUrlPrefix}/${encodeURIComponent(companySlug)}/${encodeURIComponent(carSlug)}/${encodeURIComponent(modelSlug)}/${encodeURIComponent(partSlug)}`,
+                );
+
                 return;
             }
 
@@ -351,10 +448,39 @@ function initVehicleFilters() {
     });
 }
 
+function initShopCompanyFilters() {
+    document.querySelectorAll('[data-shop-company-select]').forEach(function (select) {
+        initSearchableSelect(select);
+
+        const navigateToSelected = function () {
+            const selected = select.options[select.selectedIndex];
+            const url = selected?.getAttribute('data-url');
+
+            if (! url) {
+                return;
+            }
+
+            const nextUrl = new URL(url, window.location.origin);
+
+            if (nextUrl.pathname === window.location.pathname) {
+                return;
+            }
+
+            // Full navigation — separate from Alpine listing search.
+            window.location.assign(nextUrl.href);
+        };
+
+        jQuery(select)
+            .off('.shopCompanyFilter')
+            .on('change.shopCompanyFilter select2:select.shopCompanyFilter select2:clear.shopCompanyFilter', navigateToSelected);
+    });
+}
+
 export function initLocationSelects() {
     initListingFilters();
     initRepairLocators();
     initVehicleFilters();
+    initShopCompanyFilters();
     initStandaloneSearchableSelects();
 }
 

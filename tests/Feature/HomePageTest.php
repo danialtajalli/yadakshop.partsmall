@@ -31,9 +31,9 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
-        $response->assertSee('id="home-global-search"', false);
-        $response->assertDontSee('id="header-meilisearch-parts-search"', false);
-        $response->assertDontSee('id="mobile-meilisearch-parts-search"', false);
+        $response->assertDontSee('id="home-global-search"', false);
+        $response->assertSee('id="header-meilisearch-parts-search"', false);
+        $response->assertSee('id="mobile-meilisearch-parts-search"', false);
         $response->assertSee('action="'.route('search.index').'"', false);
         $response->assertSee('data-floating-call', false);
         $response->assertSee('021 77 222 4 99', false);
@@ -115,6 +115,8 @@ class HomePageTest extends TestCase
         $response->assertSee('data-vehicle-company', false);
         $response->assertSee('data-vehicle-car', false);
         $response->assertSee('data-vehicle-model', false);
+        $response->assertSee('data-vehicle-part', false);
+        $response->assertSee('data-label-shops="مشاهده فروشگاه‌ها"', false);
         $response->assertViewHas('vehicleFilter', function (array $filter) use ($company, $car, $model): bool {
             $companySlug = $company->slug;
             $carSlug = $car->slug;
@@ -125,7 +127,8 @@ class HomePageTest extends TestCase
                     'company' => $companySlug,
                     'car' => $carSlug,
                     'model' => $model->slug,
-                ]);
+                ])
+                && array_key_exists('parts', $filter);
         });
         $response->assertViewHas('companyPicker', function (array $picker): bool {
             return collect($picker)->contains(function (array $company): bool {

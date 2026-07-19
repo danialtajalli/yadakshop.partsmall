@@ -1,6 +1,6 @@
 @php
     $headerNavigationPages = collect($navigationPages ?? []);
-    $showHeaderSearch = ! request()->routeIs('home');
+    $showHeaderSearch = true;
 
     $isCompaniesNavActive = request()->routeIs('companies.index', 'cars.index', 'models.index');
     $isPartsNavActive = request()->routeIs('car.parts', 'car.parts.vehicle', 'part.show', 'product.show');
