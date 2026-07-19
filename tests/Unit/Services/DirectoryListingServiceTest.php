@@ -151,6 +151,7 @@ class DirectoryListingServiceTest extends TestCase
         $listing = $data['listings']->first();
 
         $this->assertStringContainsString('shop/logo/'.$shop->id.'/yadak.webp', $listing->logo);
+        $this->assertStringStartsWith(asset('panel/assets/uploads/'), $listing->logo);
     }
 
     public function test_shop_listing_includes_shops_regardless_of_show_under_product_scope(): void

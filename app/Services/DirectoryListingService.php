@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\ImageType;
 use App\Models\City;
 use App\Models\Company;
-use App\Models\Image;
 use App\Models\RepairCategory;
 use App\Models\Representation;
 use App\Models\RepairShop;
@@ -343,19 +342,10 @@ class DirectoryListingService
     {
         if ($model instanceof RepairShop) {
             ShopImageUrlBuilder::attachRepairShopMedia($model);
-        } else {
-            $model->images->each(function (Image $image) use ($model, $modelType): void {
-                if (! in_array($image->type, [ImageType::Cover, ImageType::Logo], true)) {
-                    return;
-                }
 
-                $property = $image->type === ImageType::Cover ? 'cover' : 'logo';
-                $model->{$property} = str_replace(
-                    ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
-                    [$modelType, $image->type->value, (string) $model->id, $image->path],
-                    config('partsmall.image_url'),
-                );
-            });
+            return;
         }
+
+        ShopImageUrlBuilder::attachShopMedia($model, $modelType);
     }
 }
