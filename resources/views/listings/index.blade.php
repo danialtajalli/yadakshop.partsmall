@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @if (isset($_GET['page']) && $_GET['page'] > 1
- && Route::current()->getName() != 'shops.index')
+ && ! Route::current()->named('shops.index', 'shops.company'))
 @push('head')
 <meta name="robots" content="noindex, follow" />
 @endpush
@@ -11,11 +11,13 @@
 
 @section('content')
     @php
-        $listingAction = route(match ($type) {
-            'repair_shop' => 'repair-shops.index',
-            'representation' => 'representations.index',
-            default => 'shops.index',
-        });
+        $listingAction = match ($type) {
+            'repair_shop' => route('repair-shops.index'),
+            'representation' => route('representations.index'),
+            default => ($filterCompany ?? null)
+                ? route('shops.company', $filterCompany)
+                : route('shops.index'),
+        };
     @endphp
 
     <x-site.breadcrumb :items="$breadcrumbs" />
@@ -23,8 +25,13 @@
     <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
         <div class="min-w-0 flex-1">
             <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-                <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
+                <div @class([
+                    'border-b border-line bg-gradient-to-l px-5 py-6 sm:px-8 sm:py-8',
+                    'from-[#fff4eb] via-white to-white' => $type === 'shop',
+                    'from-gray-100 via-white' => $type !== 'shop',
+                ])>
                     <x-ui.section-heading
+                        class="mb-0"
                         :label="match ($type) {
                             'repair_shop' => 'تعمیرگاه‌ها',
                             'representation' => 'نمایندگی‌ها',
@@ -34,10 +41,19 @@
                         :description="match ($type) {
                             'repair_shop' => 'جستجو و فیلتر تعمیرگاه‌ها بر اساس استان، شهر و تخصص',
                             'representation' => 'جستجو و فیلتر نمایندگی‌های رسمی بر اساس استان، شهر و برند',
-                            default => 'جستجو و فیلتر فروشگاه‌های لوازم یدکی بر اساس استان و شهر',
+                            default => isset($filterCompany) && $filterCompany
+                                ? 'فروشگاه‌های مرتبط با '.$filterCompany->name.' — جستجو بر اساس استان و شهر'
+                                : 'جستجو و فیلتر فروشگاه‌های لوازم یدکی بر اساس استان و شهر',
                         }"
                         heading="h1"
                     />
+
+                    @if ($type === 'shop')
+                        <x-listings.company-filter
+                            :companies="$shopCompanies ?? collect()"
+                            :selected="$filterCompany ?? null"
+                        />
+                    @endif
                 </div>
             </div>
         </div>
@@ -83,7 +99,7 @@
                         ], fn ($value) => $value !== null && $value !== '');
                     @endphp
                     <a
-                        href="{{ route('shops.index', $listingFilterQuery) }}"
+                        href="{{ ($filterCompany ?? null) ? route('shops.company', $filterCompany) : route('shops.index', $listingFilterQuery) }}"
                         @class([
                             'rounded-lg px-3 py-1.5 transition break-words',
                             'bg-brand text-white' => $type === 'shop',

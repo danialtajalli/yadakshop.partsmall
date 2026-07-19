@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Services\DirectoryListingService;
 use App\Services\ShopProfileService;
 use Illuminate\Http\Request;
@@ -17,6 +18,11 @@ class ShopController extends Controller
     public function index(Request $request): View
     {
         return view('listings.index', $this->directoryListingService->getShopListing($request));
+    }
+
+    public function byCompany(Request $request, Company $company): View
+    {
+        return view('listings.index', $this->directoryListingService->getShopListing($request, $company));
     }
 
     public function show(string $shop_slug): View
