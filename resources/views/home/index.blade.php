@@ -21,6 +21,8 @@
         </div>
     </div>
 
+    <x-home.vehicle-filter :vehicle-filter="$vehicleFilter" />
+
     <x-home.entity-grid
         title="فروشگاه‌های لوازم یدکی"
         description="فروشگاه‌های معتبر قطعات خودرو"
