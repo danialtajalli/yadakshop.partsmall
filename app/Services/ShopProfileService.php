@@ -14,12 +14,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ShopProfileService
 {
+    private const RELATED_SHOPS_LIMIT = 8;
+
     /**
      * @return array{
      *     shop: Shop,
      *     title: string,
      *     averageRating: ?float,
      *     commentsCount: int,
+     *     relatedShops: Collection<int, Shop>,
      * }
      */
     public function getProfilePageData(string $slug): array
@@ -63,7 +66,33 @@ class ShopProfileService
             'title' => "پروفایل " . $shop->name . " " . " در پارتس‌مال",
             'averageRating' => $shop->average_rating !== null ? (float) $shop->average_rating : null,
             'commentsCount' => $shop->comments->count(),
+            'relatedShops' => $this->loadRelatedShops($shop),
         ];
+    }
+
+    /** @return Collection<int, Shop> */
+    private function loadRelatedShops(Shop $shop): Collection
+    {
+        $companyIds = $shop->companies->modelKeys();
+
+        if ($companyIds === []) {
+            return new Collection;
+        }
+
+        $relatedShops = Shop::query()
+            ->whereKeyNot($shop->id)
+            ->whereHas(
+                'companies',
+                fn ($query) => $query->whereIn('companies.id', $companyIds),
+            )
+            ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
+            ->ordered()
+            ->limit(self::RELATED_SHOPS_LIMIT)
+            ->get();
+
+        $relatedShops->each(fn (Shop $relatedShop) => ShopImageUrlBuilder::attachShopMedia($relatedShop));
+
+        return $relatedShops;
     }
 
     /** @param  Collection<int, Phone>  $phones */

@@ -33,15 +33,54 @@ class ShopProfileServiceTest extends TestCase
         $data = $this->service->getProfilePageData($shop->slug);
 
         $this->assertSame(
-            ['shop', 'title', 'averageRating', 'commentsCount'],
+            ['shop', 'title', 'averageRating', 'commentsCount', 'relatedShops'],
             array_keys($data),
         );
-        $this->assertSame('یدک شاپ', $data['title']);
+        $this->assertSame('پروفایل یدک شاپ  در پارتس‌مال', $data['title']);
         $this->assertSame($shop->id, $data['shop']->id);
         $this->assertStringContainsString('shop/logo/'.$shop->id.'/logo.webp', $data['shop']->logo);
         $this->assertCount(1, $data['shop']->companies);
+        $this->assertTrue($data['relatedShops']->isEmpty());
         Log::info($data['shop']->companies->first()->logo_url);
         $this->assertStringContainsString('uploads/company', $data['shop']->companies->first()->logo_url);
+    }
+
+    public function test_it_loads_related_shops_that_share_the_same_company(): void
+    {
+        $shop = $this->createShopWithRelations();
+
+        $relatedShop = Shop::create([
+            'name' => 'فروشگاه مرتبط',
+            'slug' => 'related-shop',
+            'show_under_product' => true,
+            'order' => 2,
+        ]);
+        $relatedShop->images()->create(['type' => ImageType::Logo, 'path' => 'related-logo.webp']);
+        $relatedShop->companies()->attach($shop->companies->first());
+
+        $unrelatedShop = Shop::create([
+            'name' => 'فروشگاه دیگر',
+            'slug' => 'unrelated-shop',
+            'order' => 3,
+        ]);
+        $unrelatedShop->images()->create(['type' => ImageType::Logo, 'path' => 'other-logo.webp']);
+        $otherCompany = Company::create([
+            'name' => 'کیا',
+            'slug' => 'kia',
+            'wage_strike' => 2.5,
+        ]);
+        $unrelatedShop->companies()->attach($otherCompany);
+
+        $data = $this->service->getProfilePageData($shop->slug);
+
+        $this->assertCount(1, $data['relatedShops']);
+        $this->assertSame('related-shop', $data['relatedShops']->first()->slug);
+        $this->assertStringContainsString(
+            'shop/logo/'.$relatedShop->id.'/related-logo.webp',
+            $data['relatedShops']->first()->logo,
+        );
+        $this->assertFalse($data['relatedShops']->contains('id', $shop->id));
+        $this->assertFalse($data['relatedShops']->contains('id', $unrelatedShop->id));
     }
 
     public function test_it_finds_shop_even_when_hidden_from_product_scope(): void

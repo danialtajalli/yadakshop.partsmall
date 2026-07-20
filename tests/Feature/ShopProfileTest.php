@@ -126,6 +126,33 @@ class ShopProfileTest extends TestCase
         $this->get(route('shop.profile', 'unknown-shop'))->assertNotFound();
     }
 
+    public function test_shop_profile_displays_related_shops_for_same_company(): void
+    {
+        $shop = $this->seedShopProfileGraph();
+
+        $relatedShop = Shop::create([
+            'name' => 'فروشگاه مرتبط',
+            'slug' => 'related-shop',
+            'order' => 2,
+        ]);
+        $relatedShop->images()->create(['type' => ImageType::Logo, 'path' => 'related-logo.webp']);
+        $relatedShop->companies()->attach($shop->companies->first());
+
+        $response = $this->get(route('shop.profile', $shop->slug));
+
+        $response->assertOk();
+        $response->assertSee('فروشگاه‌های مرتبط', false);
+        $response->assertSee('سایر فروشگاه‌های هیوندای', false);
+        $response->assertSee('فروشگاه مرتبط', false);
+        $response->assertSee(route('shop.profile', 'related-shop'), false);
+        $response->assertSee(route('shops.company', 'hyundai'), false);
+        $response->assertViewHas('relatedShops', function ($relatedShops) use ($shop, $relatedShop): bool {
+            return $relatedShops->count() === 1
+                && $relatedShops->first()->is($relatedShop)
+                && ! $relatedShops->contains('id', $shop->id);
+        });
+    }
+
     private function seedShopProfileGraph(): Shop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);

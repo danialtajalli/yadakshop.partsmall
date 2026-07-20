@@ -187,6 +187,11 @@
                     @endif
                 </dl>
             </section>
+
+            <x-shop.related-shops
+                :shops="$relatedShops"
+                :companies="$shop->companies"
+            />
         </aside>
 
         <div class="order-2 space-y-8 lg:order-1 lg:col-span-8">
