@@ -1,5 +1,3 @@
-
-
 @props([
     'shop',
     'idSuffix' => 'default',
@@ -12,7 +10,16 @@
     $mobileId = 'comment-mobile-'.$idSuffix;
     $bodyId = 'comment-body-'.$idSuffix;
     $honeypotId = 'company-url-'.$idSuffix;
+    $turnstileSiteKey = config('services.turnstile.site_key');
 @endphp
+
+@once
+    @push('head')
+        @if (filled(config('services.turnstile.site_key')))
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endif
+    @endpush
+@endonce
 
 <form
     method="post"
@@ -134,18 +141,18 @@
             placeholder="تجربه خود از خرید یا مراجعه به این فروشگاه را بنویسید..."
         ></textarea>
     </div>
-    <div class="mt-5 flex justify-center">
-    <div
-        class="cf-turnstile"
-        data-sitekey="{{ config('services.turnstile.site_key') }}">
-    </div>
-</div>
+
+    @if (filled($turnstileSiteKey))
+        <div class="mt-5 flex justify-center">
+            <div
+                class="cf-turnstile"
+                data-sitekey="{{ $turnstileSiteKey }}"
+            ></div>
+        </div>
+    @endif
+
     <button type="submit" class="ps-btn-primary mt-5" :disabled="submitting" :aria-busy="submitting">
         <span x-show="!submitting">ارسال نظر</span>
         <span x-cloak x-show="submitting">در حال ارسال...</span>
     </button>
-
-    
 </form>
-
-

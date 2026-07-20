@@ -92,10 +92,27 @@ class ShopProfileService
             return false;
         }
 
-        $openTime = Carbon::createFromFormat('H:i:s', $open);
-        $closeTime = Carbon::createFromFormat('H:i:s', $close);
+        $openTime = $this->parseShopTime($open)?->setDateFrom($now);
+        $closeTime = $this->parseShopTime($close)?->setDateFrom($now);
+
+        if ($openTime === null || $closeTime === null) {
+            return false;
+        }
 
         return $now->between($openTime, $closeTime);
+    }
+
+    private function parseShopTime(string $time): ?Carbon
+    {
+        foreach (['H:i:s', 'H:i'] as $format) {
+            try {
+                return Carbon::createFromFormat($format, $time);
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     /** @param  Collection<int, Phone>  $phones */
