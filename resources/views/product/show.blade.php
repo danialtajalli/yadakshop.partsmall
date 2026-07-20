@@ -456,6 +456,13 @@
                 @endif
             </div>
         </section>
+
+        <x-product.related-products
+            :products="$relatedProducts"
+            :company="$company"
+            :car="$car"
+            :model="$model"
+        />
     </div>
 
     @push('scripts')

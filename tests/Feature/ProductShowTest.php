@@ -126,6 +126,40 @@ class ProductShowTest extends TestCase
         ]))->assertNotFound();
     }
 
+    public function test_product_show_displays_related_products_for_same_car_and_model(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+
+        Part::create([
+            'name' => 'سیبک',
+            'slug' => 'ball-joint',
+            'parts_category_id' => $part->parts_category_id,
+        ]);
+
+        $response = $this->get(route('product.show', [
+            'company' => 'hyundai',
+            'car' => 'santafe',
+            'model' => 'new',
+            'part' => 'arm',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('محصولات مرتبط', false);
+        $response->assertSee('قطعات دیگر برای هیوندای سانتافه نیو', false);
+        $response->assertSee('سیبک هیوندای سانتافه نیو', false);
+        $response->assertSee(route('product.show', [
+            'company' => 'hyundai',
+            'car' => 'santafe',
+            'model' => 'new',
+            'part' => 'ball-joint',
+        ]), false);
+        $response->assertViewHas('relatedProducts', function ($relatedProducts) use ($part): bool {
+            return $relatedProducts->count() === 1
+                && $relatedProducts->first()->slug === 'ball-joint'
+                && ! $relatedProducts->contains('id', $part->id);
+        });
+    }
+
     /**
      * @return array{0: Company, 1: Car, 2: CarModel, 3: Part}
      */

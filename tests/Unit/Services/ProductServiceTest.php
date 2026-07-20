@@ -35,7 +35,7 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'title', 'breadcrumbs', 'repairLocators', 'telegramTitle', 'telegramUrl', 'signupUrl'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'title', 'breadcrumbs', 'repairLocators', 'relatedProducts', 'telegramTitle', 'telegramUrl', 'telegramName', 'signupUrl'],
             array_keys($data),
         );
         $this->assertSame('به گروه تلگرام هیوندای سانتافه سواران بپیوندید', $data['telegramTitle']);
@@ -244,6 +244,46 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame('هیوندای سانتافه', $data['shops']->first()->description);
+    }
+
+    public function test_it_loads_related_products_for_same_car_and_model(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+
+        $sameCategoryPart = Part::create([
+            'name' => 'سیبک',
+            'slug' => 'ball-joint',
+            'parts_category_id' => $part->parts_category_id,
+        ]);
+
+        $otherCategory = PartsCategory::create(['name' => 'موتور']);
+        $otherCategoryPart = Part::create([
+            'name' => 'فیلتر روغن',
+            'slug' => 'oil-filter',
+            'parts_category_id' => $otherCategory->id,
+        ]);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertCount(2, $data['relatedProducts']);
+        $this->assertSame('ball-joint', $data['relatedProducts']->first()->slug);
+        $this->assertSame('oil-filter', $data['relatedProducts']->last()->slug);
+        $this->assertSame(
+            'سیبک هیوندای سانتافه نیو',
+            $data['relatedProducts']->first()->title,
+        );
+        $this->assertSame(
+            route('product.show', [
+                'company' => 'hyundai',
+                'car' => 'santafe',
+                'model' => 'new',
+                'part' => 'ball-joint',
+            ]),
+            $data['relatedProducts']->first()->url,
+        );
+        $this->assertFalse($data['relatedProducts']->contains('id', $part->id));
+        $this->assertTrue($data['relatedProducts']->contains('id', $sameCategoryPart->id));
+        $this->assertTrue($data['relatedProducts']->contains('id', $otherCategoryPart->id));
     }
 
     /**

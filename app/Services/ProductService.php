@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ProductService
 {
+    private const RELATED_PRODUCTS_LIMIT = 8;
+
     /**
      * @return array{
      *     company: Company,
@@ -37,6 +39,7 @@ class ProductService
      *         citiesByState: array<int, list<array{id: int, name: string}>>,
      *         defaultStateId: ?int,
      *     },
+     *     relatedProducts: Collection<int, Part>,
      *     telegramTitle: string,
      *     telegramUrl: string,
      *     signupUrl: string,
@@ -58,7 +61,7 @@ class ProductService
 
         $title = $this->buildTitle($part, $company, $car, $model);
         $telegramCta = $this->buildTelegramCta($company, $car);
-;
+        $relatedProducts = $this->loadRelatedProducts($company, $car, $model, $part);
 
         return [
             'company' => $company,
@@ -77,6 +80,7 @@ class ProductService
                 terminalLabel: $title,
             ),
             'repairLocators' => $this->buildRepairLocatorContext($part, $car),
+            'relatedProducts' => $relatedProducts,
             'telegramTitle' => $telegramCta['title'],
             'telegramUrl' => $telegramCta['url'],
             'telegramName' => $telegramCta['name'],
@@ -188,6 +192,26 @@ class ProductService
         $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
 
         return $part->name.' '.$company->name.' '.$car->name.' '.$modelName;
+    }
+
+    /** @return Collection<int, Part> */
+    private function loadRelatedProducts(Company $company, Car $car, CarModel $model, Part $part): Collection
+    {
+        return Part::query()
+            ->with('partsCategory')
+            ->whereKeyNot($part->id)
+            ->orderBy('name')
+            ->limit(self::RELATED_PRODUCTS_LIMIT)
+            ->get()
+            ->each(function (Part $related) use ($company, $car, $model): void {
+                $related->setAttribute('title', $this->buildTitle($related, $company, $car, $model));
+                $related->setAttribute('url', route('product.show', [
+                    'company' => $company->slug,
+                    'car' => $car->slug,
+                    'model' => $model->slug,
+                    'part' => $related->slug,
+                ]));
+            });
     }
 
     /**
