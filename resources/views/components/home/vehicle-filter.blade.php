@@ -107,9 +107,14 @@
                     </div>
 
                     <div class="mt-3.5 flex flex-wrap items-center gap-2.5">
-                        <a href="{{ route('car.parts') }}" class="ps-btn-secondary">
-                            همه قطعات
-                        </a>
+                        <button
+                            type="submit"
+                            class="ps-btn-primary transition duration-300 ease-out"
+                            data-vehicle-filter-submit
+                            disabled
+                        >
+                            <span data-vehicle-filter-submit-label aria-live="polite">مشاهده قطعات</span>
+                        </button>
                     </div>
                 </form>
             </div>
