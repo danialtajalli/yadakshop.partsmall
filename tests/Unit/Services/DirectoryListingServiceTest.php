@@ -44,6 +44,8 @@ class DirectoryListingServiceTest extends TestCase
                 'specializations',
                 'filters',
                 'showSpecializationFilter',
+                'shopCompanies',
+                'filterCompany',
             ],
             array_keys($data),
         );
@@ -51,6 +53,27 @@ class DirectoryListingServiceTest extends TestCase
         $this->assertSame('فروشگاه‌های لوازم یدکی', $data['title']);
         $this->assertFalse($data['showSpecializationFilter']);
         $this->assertTrue($data['specializations']->isEmpty());
+        $this->assertNull($data['filterCompany']);
+    }
+
+    public function test_shop_listing_filters_by_company(): void
+    {
+        $company = \App\Models\Company::create(['name' => 'هیوندای', 'slug' => 'hyundai']);
+        $other = \App\Models\Company::create(['name' => 'کیا', 'slug' => 'kia']);
+
+        $matching = $this->createShopWithLogo(['name' => 'فروشگاه هیوندای', 'slug' => 'hyundai-shop']);
+        $matching->companies()->attach($company);
+
+        $excluded = $this->createShopWithLogo(['name' => 'فروشگاه کیا', 'slug' => 'kia-shop']);
+        $excluded->companies()->attach($other);
+
+        $data = $this->service->getShopListing(Request::create('/shops/hyundai', 'GET'), $company);
+
+        $this->assertCount(1, $data['listings']);
+        $this->assertSame('فروشگاه هیوندای', $data['listings']->first()->name);
+        $this->assertTrue($data['filterCompany']?->is($company));
+        $this->assertSame('فروشگاه‌های هیوندای', $data['title']);
+        $this->assertTrue($data['shopCompanies']->contains('slug', 'hyundai'));
     }
 
     public function test_shop_listing_filters_by_search_query(): void
@@ -128,6 +151,7 @@ class DirectoryListingServiceTest extends TestCase
         $listing = $data['listings']->first();
 
         $this->assertStringContainsString('shop/logo/'.$shop->id.'/yadak.webp', $listing->logo);
+        $this->assertStringStartsWith(asset('panel/assets/uploads/'), $listing->logo);
     }
 
     public function test_shop_listing_includes_shops_regardless_of_show_under_product_scope(): void

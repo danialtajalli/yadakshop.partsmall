@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\ImageType;
 use App\Models\City;
-use App\Models\Image;
+use App\Models\Company;
 use App\Models\RepairCategory;
 use App\Models\Representation;
 use App\Models\RepairShop;
@@ -35,15 +35,24 @@ class DirectoryListingService
      *     specializations: Collection<int, RepairCategory>,
      *     filters: array{q: ?string, state_id: ?int, city_id: ?int, specialization_id: ?int},
      *     showSpecializationFilter: bool,
+     *     shopCompanies: Collection<int, Company>,
+     *     filterCompany: ?Company,
      * }
      */
-    public function getShopListing(Request $request): array
+    public function getShopListing(Request $request, ?Company $company = null): array
     {
         $filters = $this->filtersFromRequest($request);
 
         $query = Shop::query()
             ->with(['city.state', 'images'])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
+
+        if ($company !== null) {
+            $query->whereHas(
+                'companies',
+                fn (Builder $relation) => $relation->whereKey($company->id),
+            );
+        }
 
         $this->applyCommonFilters($query, $filters, [
             'name',
@@ -53,18 +62,23 @@ class DirectoryListingService
         ]);
 
         $listings = $query
-        ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
-        ->paginate(self::PER_PAGE)
-        ->appends($this->paginationQuery($filters));
+            ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
+            ->paginate(self::PER_PAGE)
+            ->appends($this->paginationQuery($filters));
 
         $listings->getCollection()->each(fn (Shop $shop) => $this->attachImageUrls($shop, 'shop'));
+
+        $title = $company !== null
+            ? 'فروشگاه‌های '.$company->name
+            : 'فروشگاه‌های لوازم یدکی';
 
         return $this->buildPageData(
             listings: $listings,
             type: 'shop',
-            title: 'فروشگاه‌های لوازم یدکی',
+            title: $title,
             filters: $filters,
             showSpecializationFilter: false,
+            filterCompany: $company,
         );
     }
 
@@ -244,6 +258,8 @@ class DirectoryListingService
      *     specializations: Collection<int, RepairCategory>,
      *     filters: array{q: ?string, state_id: ?int, city_id: ?int, specialization_id: ?int},
      *     showSpecializationFilter: bool,
+     *     shopCompanies: Collection<int, Company>,
+     *     filterCompany: ?Company,
      * }
      */
     private function buildPageData(
@@ -252,21 +268,33 @@ class DirectoryListingService
         string $title,
         array $filters,
         bool $showSpecializationFilter,
+        ?Company $filterCompany = null,
     ): array {
         $states = State::query()->orderBy('name')->get(['id', 'name']);
         $cities = $filters['state_id']
             ? City::query()->where('state_id', $filters['state_id'])->orderBy('name')->get(['id', 'name', 'state_id'])
             : collect();
 
+        $breadcrumbTrail = [
+            ['label' => 'خانه', 'url' => url('/')],
+        ];
+
+        if ($type === 'shop' && $filterCompany !== null) {
+            $breadcrumbTrail[] = [
+                'label' => 'فروشگاه‌های لوازم یدکی',
+                'url' => route('shops.index'),
+            ];
+            $breadcrumbTrail[] = ['label' => $filterCompany->name];
+        } else {
+            $breadcrumbTrail[] = ['label' => $title];
+        }
+
         return [
             'listings' => $listings,
             'type' => $type,
             'title' => PageTitle::appendPageNumber($title, $listings->currentPage()),
             'breadcrumbs' => Pagination::buildBreadcrumbs(
-                [
-                    ['label' => 'خانه', 'url' => url('/')],
-                    ['label' => $title],
-                ],
+                $breadcrumbTrail,
                 $listings->currentPage(),
                 Pagination::pageUrl($listings, 1),
             ),
@@ -278,7 +306,20 @@ class DirectoryListingService
                 : collect(),
             'filters' => $filters,
             'showSpecializationFilter' => $showSpecializationFilter,
+            'shopCompanies' => $type === 'shop' ? $this->shopFilterCompanies() : collect(),
+            'filterCompany' => $type === 'shop' ? $filterCompany : null,
         ];
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    private function shopFilterCompanies(): Collection
+    {
+        return Company::query()
+            ->whereHas('shops')
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug']);
     }
 
     /**
@@ -301,19 +342,10 @@ class DirectoryListingService
     {
         if ($model instanceof RepairShop) {
             ShopImageUrlBuilder::attachRepairShopMedia($model);
-        } else {
-            $model->images->each(function (Image $image) use ($model, $modelType): void {
-                if (! in_array($image->type, [ImageType::Cover, ImageType::Logo], true)) {
-                    return;
-                }
 
-                $property = $image->type === ImageType::Cover ? 'cover' : 'logo';
-                $model->{$property} = str_replace(
-                    ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
-                    [$modelType, $image->type->value, (string) $model->id, $image->path],
-                    config('partsmall.image_url'),
-                );
-            });
+            return;
         }
+
+        ShopImageUrlBuilder::attachShopMedia($model, $modelType);
     }
 }

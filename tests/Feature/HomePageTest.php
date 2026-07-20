@@ -31,9 +31,20 @@ class HomePageTest extends TestCase
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
         $response->assertSee('قطعات خودرو', false);
-        $response->assertSee('id="home-global-search"', false);
-        $response->assertDontSee('id="header-meilisearch-parts-search"', false);
-        $response->assertDontSee('id="mobile-meilisearch-parts-search"', false);
+        $response->assertSee('فروشگاه‌های برتر', false);
+        $response->assertSee('لوگوی شما می‌تواند اینجا باشد', false);
+        $response->assertSee('data-best-shops-banner', false);
+        $response->assertSee('aria-label="آمار پارتس‌مال"', false);
+        $response->assertSee('اعتماد در مقیاس ملی', false);
+        $response->assertSee('data-stats-strip', false);
+        $response->assertSee('data-stats-value', false);
+        $response->assertSee('فروشگاه عضو', false);
+        $response->assertSee('قطعه ثبت‌شده', false);
+        $response->assertSee('خرید روزانه', false);
+        $response->assertSee('برند خودرو', false);
+        $response->assertDontSee('id="home-global-search"', false);
+        $response->assertSee('id="header-meilisearch-parts-search"', false);
+        $response->assertSee('id="mobile-meilisearch-parts-search"', false);
         $response->assertSee('action="'.route('search.index').'"', false);
         $response->assertSee('data-floating-call', false);
         $response->assertSee('021 77 222 4 99', false);
@@ -56,6 +67,8 @@ class HomePageTest extends TestCase
             'type' => ImageType::Logo,
             'path' => 'logo.webp',
         ]);
+
+        config(['partsmall.home_best_shop_ids' => [$shop->id]]);
 
         RepairShop::create([
             'name' => 'تعمیرگاه آریا',
@@ -81,6 +94,9 @@ class HomePageTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertSee('یدک شاپ', false);
+        $response->assertSee('لوگوی شما می‌تواند اینجا باشد', false);
+        $response->assertSee('فروشگاه‌های برتر', false);
+        $response->assertSee(route('shop.profile', 'yadak-shop'), false);
         $response->assertSee('تعمیرگاه آریا', false);
         $response->assertSee('نمایندگی آسان', false);
         $response->assertSee('شمع', false);
@@ -115,6 +131,8 @@ class HomePageTest extends TestCase
         $response->assertSee('data-vehicle-company', false);
         $response->assertSee('data-vehicle-car', false);
         $response->assertSee('data-vehicle-model', false);
+        $response->assertSee('data-vehicle-part', false);
+        $response->assertSee('data-label-shops="مشاهده فروشگاه‌ها"', false);
         $response->assertViewHas('vehicleFilter', function (array $filter) use ($company, $car, $model): bool {
             $companySlug = $company->slug;
             $carSlug = $car->slug;
@@ -125,7 +143,8 @@ class HomePageTest extends TestCase
                     'company' => $companySlug,
                     'car' => $carSlug,
                     'model' => $model->slug,
-                ]);
+                ])
+                && array_key_exists('parts', $filter);
         });
         $response->assertViewHas('companyPicker', function (array $picker): bool {
             return collect($picker)->contains(function (array $company): bool {

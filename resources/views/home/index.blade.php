@@ -11,13 +11,6 @@
                 description="فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو — همه در یکجا"
                 heading="h1"
             />
-
-            <x-ui.global-search-bar
-                id="home-global-search"
-                class="mx-auto mt-7 max-w-3xl px-1 sm:px-6"
-                placeholder="جستجو در پارتس‌مال..."
-                variant="hero"
-            />
         </div>
     </div>
 
@@ -32,6 +25,8 @@
         profile-route="shop.profile"
         empty-message="هنوز فروشگاهی ثبت نشده است."
     />
+
+    <x-home.stats-strip />
 
     <x-home.entity-carousel
         title="تعمیرگاه‌ها"
@@ -121,6 +116,8 @@
             <x-home.company-picker :company-picker="$companyPicker" />
         @endif
     </section>
+
+    <x-home.best-shops-banner :shops="$bestShops" />
 
     <section id="parts" class="scroll-mt-24">
         <x-ui.section-heading

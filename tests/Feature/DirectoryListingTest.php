@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ImageType;
 use App\Models\City;
+use App\Models\Company;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\Shop;
@@ -113,6 +114,44 @@ class DirectoryListingTest extends TestCase
             ->assertSee('فروشگاه‌های لوازم یدکی - صفحه 2', false)
             ->assertSee('صفحه 2', false)
             ->assertDontSee('page=1', false);
+    }
+
+    public function test_shops_can_be_filtered_by_company_slug_route(): void
+    {
+        $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);
+        $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
+        $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai']);
+        $otherCompany = Company::create(['name' => 'کیا', 'slug' => 'kia']);
+
+        $matchingShop = $this->createListedShop([
+            'name' => 'فروشگاه هیوندای',
+            'slug' => 'hyundai-shop',
+            'city_id' => $city->id,
+        ]);
+        $matchingShop->companies()->attach($company);
+
+        $otherShop = $this->createListedShop([
+            'name' => 'فروشگاه کیا',
+            'slug' => 'kia-shop',
+            'city_id' => $city->id,
+        ]);
+        $otherShop->companies()->attach($otherCompany);
+
+        $response = $this->get(route('shops.company', $company));
+
+        $response->assertOk();
+        $response->assertViewIs('listings.index');
+        $response->assertViewHas('filterCompany', fn ($value) => $value?->is($company));
+        $response->assertSee('فروشگاه‌های هیوندای', false);
+        $response->assertSee('فروشگاه هیوندای', false);
+        $response->assertDontSee('فروشگاه کیا', false);
+        $response->assertSee('id="shop-company-filter"', false);
+        $response->assertSee('data-shop-company-select', false);
+    }
+
+    public function test_unknown_company_slug_returns_not_found(): void
+    {
+        $this->get('/shops/missing-brand')->assertNotFound();
     }
 
     /**

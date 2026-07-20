@@ -26,6 +26,8 @@ Route::match(['get', 'post'], 'car/{company}/{car}/{model}', [PartSelectionContr
     ->name('car.parts.vehicle');
 
 Route::match(['get', 'post'], 'shops', [ShopController::class, 'index'])->name('shops.index');
+Route::match(['get', 'post'], 'shops/{company:slug}', [ShopController::class, 'byCompany'])
+    ->name('shops.company');
 Route::get('profile/{shop_slug}', [ShopController::class, 'show'])->name('shop.profile');
 Route::post('profile/{shop_slug}/comments', [ShopCommentController::class, 'store'])
     ->middleware('throttle:6,1')
