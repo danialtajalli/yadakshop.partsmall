@@ -30,7 +30,7 @@
             <div class="relative px-4 py-9 sm:px-7 sm:py-11 lg:px-10 lg:py-12">
                 <div class="ps-stats-strip__intro mb-8 text-center sm:mb-10">
                     <p class="text-[11px] font-semibold tracking-[0.28em] text-brand-soft sm:text-xs">
-                        اعتماد در مقیاس ملی
+                        اعتباری به وسعت یک بازار
                     </p>
                     <div class="mx-auto mt-3.5 h-px w-20 bg-gradient-to-l from-transparent via-brand-soft to-transparent" aria-hidden="true"></div>
                     <p class="mx-auto mt-3 max-w-md text-xs leading-6 text-white/55 sm:text-sm">
