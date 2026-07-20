@@ -3,6 +3,7 @@ const STAGGER_MS = 120;
 const LIVE_JITTER = 40;
 const LIVE_MIN_INTERVAL_MS = 1000;
 const LIVE_MAX_INTERVAL_MS = 45000;
+const LIVE_BUMP_DURATION_MS = 650;
 
 function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -26,31 +27,22 @@ function approximateTarget(base) {
     return randomInt(floor, base + LIVE_JITTER);
 }
 
-function scheduleLiveIncrements(el, startValue) {
-    let current = Math.round(startValue);
+function animateValue(el, target, duration, delay, onComplete, from = 0) {
+    const startValue = from;
+    const delta = target - startValue;
 
-    const bump = () => {
-        current += randomInt(1, 3);
-        el.textContent = formatCount(current);
-        el.dataset.current = String(current);
-        window.setTimeout(bump, randomInt(LIVE_MIN_INTERVAL_MS, LIVE_MAX_INTERVAL_MS));
-    };
-
-    window.setTimeout(bump, randomInt(LIVE_MIN_INTERVAL_MS, LIVE_MAX_INTERVAL_MS));
-}
-
-function animateValue(el, target, duration, delay, onComplete) {
     const start = () => {
         const startedAt = performance.now();
 
         const tick = (now) => {
             const progress = Math.min((now - startedAt) / duration, 1);
-            el.textContent = formatCount(target * easeOutCubic(progress));
+            el.textContent = formatCount(startValue + (delta * easeOutCubic(progress)));
 
             if (progress < 1) {
                 window.requestAnimationFrame(tick);
             } else {
                 el.textContent = formatCount(target);
+                el.dataset.current = String(Math.round(target));
                 el.closest('[data-stats-item]')?.classList.add('is-complete');
                 onComplete?.(target);
             }
@@ -64,6 +56,31 @@ function animateValue(el, target, duration, delay, onComplete) {
     } else {
         start();
     }
+}
+
+function scheduleLiveIncrements(el, startValue) {
+    let current = Math.round(startValue);
+    const reduced = prefersReducedMotion();
+
+    const bump = () => {
+        const next = current + randomInt(1, 3);
+        const from = current;
+        current = next;
+
+        if (reduced) {
+            el.textContent = formatCount(current);
+            el.dataset.current = String(current);
+            window.setTimeout(bump, randomInt(LIVE_MIN_INTERVAL_MS, LIVE_MAX_INTERVAL_MS));
+
+            return;
+        }
+
+        animateValue(el, next, LIVE_BUMP_DURATION_MS, 0, () => {
+            window.setTimeout(bump, randomInt(LIVE_MIN_INTERVAL_MS, LIVE_MAX_INTERVAL_MS));
+        }, from);
+    };
+
+    window.setTimeout(bump, randomInt(LIVE_MIN_INTERVAL_MS, LIVE_MAX_INTERVAL_MS));
 }
 
 function revealStrip(strip) {
