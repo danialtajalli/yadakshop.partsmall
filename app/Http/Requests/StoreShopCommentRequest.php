@@ -3,7 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Validator;
 class StoreShopCommentRequest extends FormRequest
 {
     public function authorize(): bool
@@ -20,7 +21,30 @@ class StoreShopCommentRequest extends FormRequest
             'body' => ['required', 'string', 'min:10', 'max:2000'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'company_url' => ['prohibited'],
+            'cf-turnstile-response' => ['required'],
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function (Validator $validator) {
+
+            $response = Http::asForm()->post(
+                'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+                [
+                    'secret'   => config('services.turnstile.secret'),
+                    'response' => $this->input('cf-turnstile-response'),
+                    'remoteip' => $this->ip(),
+                ]
+            );
+
+            if (!($response->json()['success'] ?? false)) {
+                $validator->errors()->add(
+                    'captcha',
+                    'کپچای امنیتی معتبر نیست.'
+                );
+            }
+        });
     }
 
     /** @return array<string, string> */
@@ -51,6 +75,8 @@ class StoreShopCommentRequest extends FormRequest
             'body.min' => 'متن نظر باید حداقل ۱۰ کاراکتر باشد.',
             'body.max' => 'متن نظر نباید بیشتر از ۲۰۰۰ کاراکتر باشد.',
             'rating.required' => 'لطفاً امتیاز خود را انتخاب کنید.',
+            'cf-turnstile-response.required' => 'لطفاً کپچای امنیتی را تکمیل کنید.',
+            
         ];
     }
 }

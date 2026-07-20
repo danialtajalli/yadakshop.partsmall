@@ -11,7 +11,7 @@ use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Carbon\Carbon;
 class ShopProfileService
 {
     /**
@@ -64,6 +64,38 @@ class ShopProfileService
             'averageRating' => $shop->average_rating !== null ? (float) $shop->average_rating : null,
             'commentsCount' => $shop->comments->count(),
         ];
+    }
+
+
+    public function isOpen($shop): bool
+    {
+        $now = Carbon::now();
+        
+        switch ($now->dayOfWeek) {
+            case 4: // پنجشنبه
+                $open = $shop->open_time_thursday;
+                $close = $shop->close_time_thursday;
+                break;
+
+            case 5: // جمعه
+                $open = $shop->open_time_friday;
+                $close = $shop->close_time_friday;
+                break;
+
+            default: // شنبه تا چهارشنبه
+                $open = $shop->open_time;
+                $close = $shop->close_time;
+                break;
+        }
+
+        if (!$open || !$close) {
+            return false;
+        }
+
+        $openTime = Carbon::createFromFormat('H:i:s', $open);
+        $closeTime = Carbon::createFromFormat('H:i:s', $close);
+
+        return $now->between($openTime, $closeTime);
     }
 
     /** @param  Collection<int, Phone>  $phones */

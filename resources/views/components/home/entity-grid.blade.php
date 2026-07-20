@@ -57,7 +57,7 @@
 
             <span class="min-w-0">
                 <span class="block text-sm font-bold text-ink">لوگوی شما اینجا</span>
-                <span class="mt-0.5 block text-xs text-ink-muted">ثبت‌نام و نمایش در پارتس‌مال</span>
+                <span class="mt-0.5 block text-xs text-ink-muted">ثبت نام</span>
             </span>
         </a>
     </div>

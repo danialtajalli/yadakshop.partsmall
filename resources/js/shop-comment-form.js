@@ -79,6 +79,18 @@ export default function shopCommentForm({ action, csrf }) {
                     body.set('company_url', this.form.company_url);
                 }
 
+                const turnstileToken = document.querySelector(
+                    '[name="cf-turnstile-response"]'
+                )?.value;
+                
+                if (!turnstileToken) {
+                    this.errors = ['لطفاً کپچای امنیتی را تکمیل کنید.'];
+                    this.submitting = false;
+                    return;
+                }
+                
+                body.set('cf-turnstile-response', turnstileToken);
+
                 const response = await fetch(this.action, {
                     method: 'POST',
                     headers: {
@@ -105,6 +117,9 @@ export default function shopCommentForm({ action, csrf }) {
                 }
 
                 this.resetForm();
+                if (window.turnstile) {
+                    turnstile.reset();
+                }
                 window.dispatchEvent(new CustomEvent('shop-comment-submitted', {
                     detail: {
                         message: payload.message ?? null,

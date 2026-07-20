@@ -1,3 +1,5 @@
+
+
 @props([
     'shop',
     'idSuffix' => 'default',
@@ -132,9 +134,18 @@
             placeholder="تجربه خود از خرید یا مراجعه به این فروشگاه را بنویسید..."
         ></textarea>
     </div>
-
+    <div class="mt-5 flex justify-center">
+    <div
+        class="cf-turnstile"
+        data-sitekey="{{ config('services.turnstile.site_key') }}">
+    </div>
+</div>
     <button type="submit" class="ps-btn-primary mt-5" :disabled="submitting" :aria-busy="submitting">
         <span x-show="!submitting">ارسال نظر</span>
         <span x-cloak x-show="submitting">در حال ارسال...</span>
     </button>
+
+    
 </form>
+
+

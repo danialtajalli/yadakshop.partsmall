@@ -169,11 +169,16 @@
             <section class="ps-card p-5">
                 <h2 class="mb-4 text-base font-bold text-ink">ساعات کاری</h2>
                 <dl class="space-y-3 text-sm">
-                    <div class="flex items-center justify-between gap-3">
+                    <!-- <div class="flex items-center justify-between gap-3">
                         <dt class="text-ink-muted">شنبه تا چهارشنبه</dt>
                         <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time }} – {{ $shop->close_time }}</dd>
-                    </div>
-                    @if ($shop->open_time_thursday && $shop->close_time_thursday)
+                    </div> -->
+                    @if($isOpen)
+    <span class="text-green-600">🟢 فروشگاه باز است</span>
+@else
+    <span class="text-red-600">🔴 فروشگاه بسته است</span>
+@endif
+                    <!-- @if ($shop->open_time_thursday && $shop->close_time_thursday)
                         <div class="flex items-center justify-between gap-3">
                             <dt class="text-ink-muted">پنج‌شنبه</dt>
                             <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_thursday }} – {{ $shop->close_time_thursday }}</dd>
@@ -184,7 +189,7 @@
                             <dt class="text-ink-muted">جمعه</dt>
                             <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_friday }} – {{ $shop->close_time_friday }}</dd>
                         </div>
-                    @endif
+                    @endif -->
                 </dl>
             </section>
         </aside>
