@@ -222,6 +222,185 @@
         }
     }
 
+    .ps-part-cats {
+        perspective: 1200px;
+    }
+
+    .ps-part-cat {
+        position: relative;
+        min-height: 13.5rem;
+        opacity: 0;
+        perspective: 1200px;
+        animation: ps-part-cat-enter 0.55s ease forwards;
+        animation-delay: var(--part-cat-delay, 0ms);
+    }
+
+    @media (hover: none), (pointer: coarse) {
+        .ps-part-cat {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+    }
+
+    @keyframes ps-part-cat-enter {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .ps-part-cat__shell {
+        position: relative;
+        height: 100%;
+        min-height: 13.5rem;
+        border-radius: 1rem;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        box-shadow:
+            0 18px 40px -22px rgb(15 23 42 / 0.55),
+            inset 0 1px 0 rgb(255 255 255 / 0.08);
+        transform: rotateY(0deg);
+        transform-style: preserve-3d;
+        background-image:
+            radial-gradient(90% 80% at 80% 0%, rgb(242 124 34 / 0.28), transparent 55%),
+            radial-gradient(70% 60% at 10% 100%, rgb(255 255 255 / 0.06), transparent 50%);
+    }
+
+    .ps-part-cat.is-turning .ps-part-cat__face {
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .ps-part-cat__face {
+        position: relative;
+        display: flex;
+        height: 100%;
+        min-height: 13.5rem;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 2rem;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .ps-part-cat__panel {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        text-align: center;
+    }
+
+    .ps-part-cat__panel--parts {
+        display: none;
+    }
+
+    .ps-part-cat.is-flipped .ps-part-cat__panel--category {
+        display: none;
+    }
+
+    .ps-part-cat.is-flipped .ps-part-cat__panel--parts {
+        display: flex;
+    }
+
+    .ps-part-cat__index {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        color: rgb(242 124 34 / 0.9);
+    }
+
+    .ps-part-cat__title {
+        max-width: 11rem;
+        text-align: center;
+        font-size: 1.15rem;
+        font-weight: 800;
+        line-height: 1.5;
+        color: #fff;
+    }
+
+    .ps-part-cat__hint {
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: rgb(255 255 255 / 0.45);
+    }
+
+    .ps-part-cat__back-label {
+        margin-bottom: 0.15rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: rgb(242 124 34 / 0.95);
+    }
+
+    .ps-part-cat__parts {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.45rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        text-align: center;
+    }
+
+    .ps-part-cat__parts li {
+        font-size: 0.9rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: rgb(255 255 255 / 0.92);
+    }
+
+    .ps-part-cat__part-link {
+        color: inherit;
+        text-decoration: none;
+        border-bottom: 1px solid rgb(242 124 34 / 0.45);
+        transition:
+            color 0.15s ease,
+            border-color 0.15s ease;
+    }
+
+    .ps-part-cat__part-link:hover,
+    .ps-part-cat__part-link:focus-visible {
+        color: rgb(255 220 175);
+        border-bottom-color: rgb(242 124 34);
+        outline: none;
+    }
+
+    @media (max-width: 639px) {
+        .ps-part-cat__shell {
+            clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+        }
+
+        .ps-part-cats {
+            gap: 1.1rem;
+            padding-inline: 0.35rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ps-part-cat,
+        .ps-part-cat__shell,
+        .ps-part-cat__face,
+        .ps-part-cat__parts li {
+            opacity: 1;
+            transform: none !important;
+            transition: none;
+            animation: none;
+        }
+
+        .ps-part-cat__panel--category,
+        .ps-part-cat__panel--parts {
+            display: flex;
+        }
+
+        .ps-part-cat__face {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+
     .ps-best-shops {
         --circuit-cycle: 7s;
         --beam-path-length: 1;

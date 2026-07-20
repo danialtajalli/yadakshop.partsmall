@@ -117,6 +117,8 @@
         @endif
     </section>
 
+    <x-home.part-category-cards />
+
     <x-home.best-shops-banner :shops="$bestShops" />
 
     <section id="parts" class="scroll-mt-24">

@@ -26,6 +26,24 @@ return [
     'home_best_shop_ids' => [1, 2, 3],
 
     /*
+     | Parallelogram category cards shown above the best-shops banner.
+     */
+    'home_part_categories' => [
+        [
+            'title' => 'قطعات موتوری',
+            'parts' => ['میللنگ', 'واشر کامل', 'اویل پمپ'],
+        ],
+        [
+            'title' => 'قطعات بدنه',
+            'parts' => ['سپر جلو', 'سپر عقب', 'چراغ جلو'],
+        ],
+        [
+            'title' => 'قطعات مصرفی',
+            'parts' => ['شمع', 'فیلتر هوا', 'فیلتر روغن', 'تسمه دینام'],
+        ],
+    ],
+
+    /*
      | Social-proof / trust metrics shown on the home page stats strip.
      | Update values here when the live figures change.
      */

@@ -34,8 +34,17 @@ class HomePageTest extends TestCase
         $response->assertSee('فروشگاه‌های برتر', false);
         $response->assertSee('لوگوی شما می‌تواند اینجا باشد', false);
         $response->assertSee('data-best-shops-banner', false);
+        $response->assertSee('data-part-category-cards', false);
+        $response->assertSee('قطعات موتوری', false);
+        $response->assertSee('قطعات بدنه', false);
+        $response->assertSee('قطعات مصرفی', false);
+        $response->assertSee('میللنگ', false);
+        $response->assertSee('سپر جلو', false);
+        $response->assertSee('فیلتر روغن', false);
+        $response->assertSee('چراغ جلو', false);
+        $response->assertSee('تسمه دینام', false);
         $response->assertSee('aria-label="آمار پارتس‌مال"', false);
-        $response->assertSee('اعتماد در مقیاس ملی', false);
+        $response->assertSee('اعتباری به وسعت یک بازار', false);
         $response->assertSee('data-stats-strip', false);
         $response->assertSee('data-stats-value', false);
         $response->assertSee('فروشگاه عضو', false);
