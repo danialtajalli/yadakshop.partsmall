@@ -108,71 +108,88 @@
             :show-specialization-filter="$showSpecializationFilter"
         />
 
-        <div data-catalog-search-results>
-            <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
-                <p class="min-w-0 text-sm text-ink-muted">
-                    {{ number_format($listings->total()) }} مورد یافت شد
-                </p>
-                <div class="flex min-w-0 flex-wrap gap-2 text-sm">
-                    @php
-                        $listingFilterQuery = array_filter([
-                            'q' => $filters['q'] ?? null,
-                            'state_id' => $filters['state_id'] ?? null,
-                            'city_id' => $filters['city_id'] ?? null,
-                            'specialization_id' => $filters['specialization_id'] ?? null,
-                        ], fn ($value) => $value !== null && $value !== '');
-                    @endphp
-                    <a
-                        href="{{ ($filterCompany ?? null) ? route('shops.company', $filterCompany) : route('shops.index', $listingFilterQuery) }}"
-                        @class([
-                            'rounded-lg px-3 py-1.5 transition break-words',
-                            'bg-brand text-white' => $type === 'shop',
-                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
-                        ])
-                    >
-                        فروشگاه‌ها
-                    </a>
-                    <a
-                        href="{{ route('repair-shops.index', $listingFilterQuery) }}"
-                        @class([
-                            'rounded-lg px-3 py-1.5 transition break-words',
-                            'bg-brand text-white' => $type === 'repair_shop',
-                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
-                        ])
-                    >
-                        تعمیرگاه‌ها
-                    </a>
-                    <a
-                        href="{{ route('representations.index', $listingFilterQuery) }}"
-                        @class([
-                            'rounded-lg px-3 py-1.5 transition break-words',
-                            'bg-brand text-white' => $type === 'representation',
-                            'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
-                        ])
-                    >
-                        نمایندگی‌ها
-                    </a>
-                </div>
+        <div
+            class="relative ps-shops-section"
+            :class="{ 'is-filter-loading': loading }"
+        >
+            <div
+                class="ps-shops-filter-loading"
+                aria-hidden="true"
+                x-bind:aria-hidden="!loading"
+            >
+                <svg class="ps-shops-filter-spinner size-9 text-brand" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                </svg>
+                <span class="sr-only">در حال اعمال فیلتر</span>
             </div>
 
-            @if ($listings->isEmpty())
-                <x-catalog.search-empty
-                    message="موردی با این فیلترها یافت نشد."
-                    alpine
-                    boxed
-                />
-            @else
-                <h2 class="sr-only">نتایج جستجو</h2>
-                <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach ($listings as $listing)
-                        <x-listings.card :listing="$listing" :type="$type" />
-                    @endforeach
+            <div class="ps-shops-section__content" data-catalog-search-results>
+                <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
+                    <p class="min-w-0 text-sm text-ink-muted">
+                        {{ number_format($listings->total()) }} مورد یافت شد
+                    </p>
+                    <div class="flex min-w-0 flex-wrap gap-2 text-sm">
+                        @php
+                            $listingFilterQuery = array_filter([
+                                'q' => $filters['q'] ?? null,
+                                'state_id' => $filters['state_id'] ?? null,
+                                'city_id' => $filters['city_id'] ?? null,
+                                'specialization_id' => $filters['specialization_id'] ?? null,
+                            ], fn ($value) => $value !== null && $value !== '');
+                        @endphp
+                        <a
+                            href="{{ ($filterCompany ?? null) ? route('shops.company', $filterCompany) : route('shops.index', $listingFilterQuery) }}"
+                            @class([
+                                'rounded-lg px-3 py-1.5 transition break-words',
+                                'bg-brand text-white' => $type === 'shop',
+                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
+                            ])
+                        >
+                            فروشگاه‌ها
+                        </a>
+                        <a
+                            href="{{ route('repair-shops.index', $listingFilterQuery) }}"
+                            @class([
+                                'rounded-lg px-3 py-1.5 transition break-words',
+                                'bg-brand text-white' => $type === 'repair_shop',
+                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
+                            ])
+                        >
+                            تعمیرگاه‌ها
+                        </a>
+                        <a
+                            href="{{ route('representations.index', $listingFilterQuery) }}"
+                            @class([
+                                'rounded-lg px-3 py-1.5 transition break-words',
+                                'bg-brand text-white' => $type === 'representation',
+                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
+                            ])
+                        >
+                            نمایندگی‌ها
+                        </a>
+                    </div>
                 </div>
 
-                <div class="mt-10">
-                    {{ $listings->links() }}
-                </div>
-            @endif
+                @if ($listings->isEmpty())
+                    <x-catalog.search-empty
+                        message="موردی با این فیلترها یافت نشد."
+                        alpine
+                        boxed
+                    />
+                @else
+                    <h2 class="sr-only">نتایج جستجو</h2>
+                    <div class="grid min-w-0 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($listings as $listing)
+                            <x-listings.card :listing="$listing" :type="$type" />
+                        @endforeach
+                    </div>
+
+                    <div class="mt-10">
+                        {{ $listings->links() }}
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endsection

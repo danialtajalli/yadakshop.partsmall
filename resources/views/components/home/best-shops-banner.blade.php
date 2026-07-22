@@ -135,7 +135,7 @@
                     <a
                         href="{{ $signupUrl }}"
                         role="listitem"
-                        class="ps-best-shop-logo ps-best-shop-logo--cta inline-flex max-w-[10.5rem] items-center gap-2.5 rounded-2xl border-2 border-dashed border-brand-soft/70 bg-brand-soft/10 px-3.5 py-3 text-start shadow-[0_12px_30px_-14px_rgb(242_124_34_/_0.55)] backdrop-blur-sm transition hover:border-brand-soft hover:bg-brand-soft/20"
+                        class="ps-best-shop-logo m-3 ps-best-shop-logo--cta inline-flex max-w-[10.5rem] items-center gap-2.5 rounded-2xl border-2 border-dashed border-brand-soft/70 bg-brand-soft/10 px-3.5 py-3 text-start shadow-[0_12px_30px_-14px_rgb(242_124_34_/_0.55)] backdrop-blur-sm transition hover:border-brand-soft hover:bg-brand-soft/20"
                         style="--best-shop-delay: {{ 180 + ($shops->count() * 140) }}ms"
                     >
                         <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-white shadow-md">
@@ -144,7 +144,7 @@
                             </svg>
                         </span>
                         <span class="min-w-0 text-xs font-semibold leading-5 text-white">
-                            لوگوی شما می‌تواند اینجا باشد
+                            لوگوی شما
                         </span>
                     </a>
                 </div>

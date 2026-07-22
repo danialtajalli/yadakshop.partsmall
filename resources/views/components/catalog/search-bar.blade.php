@@ -82,8 +82,4 @@
             @endif
         </div>
     @endif
-
-    @if ($alpine)
-        <p class="mt-2 text-[11px] text-ink-muted" x-cloak x-show="loading">در حال جستجو...</p>
-    @endif
 </div>
