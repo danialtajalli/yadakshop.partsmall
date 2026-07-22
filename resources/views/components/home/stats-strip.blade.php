@@ -28,12 +28,19 @@
             <div class="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-l from-transparent via-white/25 to-transparent sm:inset-x-10" aria-hidden="true"></div>
 
             <div class="relative px-4 py-9 sm:px-7 sm:py-11 lg:px-10 lg:py-12">
-                <div class="ps-stats-strip__intro mb-8 text-center sm:mb-10">
-                    <p class="text-[11px] font-semibold tracking-[0.28em] text-brand-soft sm:text-xs">
-                        اعتباری به وسعت یک بازار
+                <div class="ps-stats-strip__intro mb-9 text-center sm:mb-11">
+                    <p class="text-[11px] font-semibold tracking-[0.22em] text-brand-soft/90 sm:text-xs">
+                        پارتس‌مال
                     </p>
-                    <div class="mx-auto mt-3.5 h-px w-20 bg-gradient-to-l from-transparent via-brand-soft to-transparent" aria-hidden="true"></div>
-                    <p class="mx-auto mt-3 max-w-md text-xs leading-6 text-white/55 sm:text-sm">
+                    <h2 class="mx-auto mt-3 max-w-2xl text-2xl font-black leading-snug tracking-tight text-white sm:text-3xl lg:text-[2.35rem] lg:leading-tight">
+                        اعتباری به وسعت یک بازار
+                    </h2>
+                    <div class="mx-auto mt-4 flex items-center justify-center gap-3" aria-hidden="true">
+                        <span class="h-px w-8 bg-gradient-to-l from-transparent to-brand-soft/80 sm:w-12"></span>
+                        <span class="size-1.5 rounded-full bg-brand-soft shadow-[0_0_12px_rgb(242_124_34_/_0.7)]"></span>
+                        <span class="h-px w-8 bg-gradient-to-r from-transparent to-brand-soft/80 sm:w-12"></span>
+                    </div>
+                    <p class="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/60 sm:text-base sm:leading-8">
                         شبکه‌ای از فروشگاه‌ها، قطعات و تراکنش‌های واقعی — هر روز در پارتس‌مال
                     </p>
                 </div>
