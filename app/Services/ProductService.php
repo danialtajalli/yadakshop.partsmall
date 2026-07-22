@@ -200,7 +200,7 @@ class ProductService
         return Part::query()
             ->with('partsCategory')
             ->whereKeyNot($part->id)
-            ->orderBy('name')
+            ->inRandomOrder()
             ->limit(self::RELATED_PRODUCTS_LIMIT)
             ->get()
             ->each(function (Part $related) use ($company, $car, $model): void {
