@@ -65,10 +65,65 @@ function roundedPolyline(points, radius = CORNER_RADIUS) {
 }
 
 /**
+ * Mobile: beam enters from the right edge and splits into a full-section frame.
+ * Desktop keeps the text → shops circuit.
+ */
+function buildMobileSectionPaths(panel) {
+    const width = panel.clientWidth;
+    const height = panel.clientHeight;
+
+    if (width < GRID * 3 || height < GRID * 3) {
+        return null;
+    }
+
+    const inset = 8;
+    const x = inset;
+    const y = inset;
+    const w = width - inset * 2;
+    const h = height - inset * 2;
+    const r = Math.min(14, w / 2, h / 2);
+    const midY = y + h / 2;
+    const entryX = x + w;
+
+    const travel = roundedPolyline([
+        { x: width - 1, y: midY },
+        { x: entryX, y: midY },
+    ]);
+
+    const borderUp = [
+        `M ${entryX} ${midY}`,
+        `L ${entryX} ${y + r}`,
+        `Q ${entryX} ${y} ${entryX - r} ${y}`,
+        `L ${x + r} ${y}`,
+        `Q ${x} ${y} ${x} ${y + r}`,
+        `L ${x} ${midY}`,
+    ].join(' ');
+
+    const borderDown = [
+        `M ${entryX} ${midY}`,
+        `L ${entryX} ${y + h - r}`,
+        `Q ${entryX} ${y + h} ${entryX - r} ${y + h}`,
+        `L ${x + r} ${y + h}`,
+        `Q ${x} ${y + h} ${x} ${y + h - r}`,
+        `L ${x} ${midY}`,
+    ].join(' ');
+
+    return {
+        travel,
+        borderUp,
+        borderDown,
+    };
+}
+
+/**
  * Travel path around the text, plus two border halves from the right-middle
  * (one upward, one downward) that meet on the left side.
  */
 function buildCircuitPaths(panel, trio, copy) {
+    if (window.matchMedia('(max-width: 639px)').matches) {
+        return buildMobileSectionPaths(panel);
+    }
+
     const panelRect = panel.getBoundingClientRect();
     const trioRect = trio.getBoundingClientRect();
     const copyRect = copy.getBoundingClientRect();
@@ -387,6 +442,17 @@ function initBestShopsBanners() {
     });
 
     window.addEventListener('resize', refresh, { passive: true });
+
+    if (typeof window.matchMedia === 'function') {
+        const mobileMedia = window.matchMedia('(max-width: 639px)');
+        const onLayoutChange = () => refresh();
+
+        if (typeof mobileMedia.addEventListener === 'function') {
+            mobileMedia.addEventListener('change', onLayoutChange);
+        } else if (typeof mobileMedia.addListener === 'function') {
+            mobileMedia.addListener(onLayoutChange);
+        }
+    }
 }
 
 if (document.readyState === 'loading') {

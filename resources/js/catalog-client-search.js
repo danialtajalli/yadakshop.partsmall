@@ -3,7 +3,7 @@ export default function catalogClientSearch({
     sectionSelector = null,
     textAttribute = 'searchText',
     minChars = 2,
-    debounceMs = 1000,
+    debounceMs = 0,
     gridSelector = null,
     loadMoreWrapSelector = null,
     loadMoreButtonSelector = null,

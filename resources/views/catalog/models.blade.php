@@ -29,7 +29,7 @@
             itemSelector: '[data-search-text]',
             sectionSelector: '.model-category-section',
             minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
-            debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+            debounceMs: {{ \App\Support\CatalogSearch::CLIENT_DEBOUNCE_MS }},
         })"
     >
         <x-catalog.search-bar

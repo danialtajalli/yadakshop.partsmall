@@ -28,7 +28,7 @@
         x-data="catalogClientSearch({
             itemSelector: '.catalog-company-card',
             minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
-            debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+            debounceMs: {{ \App\Support\CatalogSearch::CLIENT_DEBOUNCE_MS }},
         })"
     >
         <x-catalog.search-bar

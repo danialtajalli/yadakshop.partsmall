@@ -75,7 +75,7 @@
                     itemSelector: '.home-company-card',
                     textAttribute: 'companyName',
                     minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
-                    debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+                    debounceMs: {{ \App\Support\CatalogSearch::CLIENT_DEBOUNCE_MS }},
                 })"
             >
                 <x-catalog.search-bar
@@ -145,7 +145,7 @@
                     loadMoreButtonSelector: '#home-parts-load-more',
                     initialRows: 8,
                     minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
-                    debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+                    debounceMs: {{ \App\Support\CatalogSearch::CLIENT_DEBOUNCE_MS }},
                 })"
             >
                 <x-catalog.search-bar

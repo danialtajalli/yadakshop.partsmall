@@ -47,7 +47,7 @@
             x-data="catalogClientSearch({
                 itemSelector: '.catalog-part-card',
                 minChars: {{ \App\Support\CatalogSearch::MIN_CHARS }},
-                debounceMs: {{ \App\Support\CatalogSearch::DEBOUNCE_MS }},
+                debounceMs: {{ \App\Support\CatalogSearch::CLIENT_DEBOUNCE_MS }},
             })"
         @endif
     >
