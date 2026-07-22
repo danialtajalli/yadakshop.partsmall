@@ -44,6 +44,7 @@
                 <div class="min-w-0 flex-1">
                     <div class="flex min-w-0 flex-wrap items-center gap-2">
                         <h1 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">{{ $shop->name }}</h1>
+                        <x-shop.open-status :open="$isOpen" variant="compact" />
                     </div>
 
                     @if ($shop->secondary_name)
@@ -168,29 +169,99 @@
 
             <section class="ps-card p-5">
                 <h2 class="mb-4 text-base font-bold text-ink">ساعات کاری</h2>
-                <dl class="space-y-3 text-sm">
-                    <!-- <div class="flex items-center justify-between gap-3">
-                        <dt class="text-ink-muted">شنبه تا چهارشنبه</dt>
-                        <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time }} – {{ $shop->close_time }}</dd>
-                    </div> -->
-                    @if($isOpen)
-    <span class="text-green-600">🟢 فروشگاه باز است</span>
-@else
-    <span class="text-red-600">🔴 فروشگاه بسته است</span>
-@endif
-                    <!-- @if ($shop->open_time_thursday && $shop->close_time_thursday)
-                        <div class="flex items-center justify-between gap-3">
-                            <dt class="text-ink-muted">پنج‌شنبه</dt>
-                            <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_thursday }} – {{ $shop->close_time_thursday }}</dd>
-                        </div>
-                    @endif
-                    @if ($shop->open_time_friday && $shop->close_time_friday)
-                        <div class="flex items-center justify-between gap-3">
-                            <dt class="text-ink-muted">جمعه</dt>
-                            <dd class="tabular-nums font-medium text-ink" dir="ltr">{{ $shop->open_time_friday }} – {{ $shop->close_time_friday }}</dd>
-                        </div>
-                    @endif -->
-                </dl>
+
+                <x-shop.open-status :open="$isOpen" />
+
+                @php
+                    use App\Support\PersianDigits;
+
+                    $formatShopTime = static function (?string $time): ?string {
+                        if ($time === null || $time === '') {
+                            return null;
+                        }
+
+                        $normalized = preg_match('/^\d{1,2}:\d{2}/', $time, $matches) ? $matches[0] : $time;
+
+                        return PersianDigits::convert($normalized);
+                    };
+
+                    $weekday = now()->dayOfWeek;
+                    $todayKey = match ($weekday) {
+                        4 => 'thursday',
+                        5 => 'friday',
+                        default => 'weekday',
+                    };
+
+                    $scheduleRows = collect([
+                        [
+                            'key' => 'weekday',
+                            'label' => 'شنبه تا چهارشنبه',
+                            'open' => $formatShopTime($shop->open_time),
+                            'close' => $formatShopTime($shop->close_time),
+                        ],
+                        [
+                            'key' => 'thursday',
+                            'label' => 'پنج‌شنبه',
+                            'open' => $formatShopTime($shop->open_time_thursday),
+                            'close' => $formatShopTime($shop->close_time_thursday),
+                        ],
+                        [
+                            'key' => 'friday',
+                            'label' => 'جمعه',
+                            'open' => $formatShopTime($shop->open_time_friday),
+                            'close' => $formatShopTime($shop->close_time_friday),
+                        ],
+                    ])->filter(fn (array $row): bool => filled($row['open']) && filled($row['close']));
+                @endphp
+
+                @if ($scheduleRows->isNotEmpty())
+                    <ul class="mt-1 space-y-2" role="list">
+                        @foreach ($scheduleRows as $row)
+                            @php
+                                $isToday = $row['key'] === $todayKey;
+                            @endphp
+                            <li
+                                @class([
+                                    'flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 transition',
+                                    'border-line bg-white shadow-card' => $isToday,
+                                    'border-line/70 bg-surface/50' => ! $isToday,
+                                ])
+                            >
+                                <div class="min-w-0 flex items-center gap-2.5">
+                                    <span
+                                        class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white text-ink-muted ring-1 ring-line"
+                                        aria-hidden="true"
+                                    >
+                                        <i class="fa-regular fa-clock text-[12px]"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="flex min-w-0 flex-wrap items-center gap-2">
+                                            <p class="truncate text-sm font-semibold text-ink">{{ $row['label'] }}</p>
+                                            @if ($isToday)
+                                                <span class="inline-flex shrink-0 items-center rounded-md border border-line bg-surface px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">
+                                                    امروز
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <span
+                                    @class([
+                                        'shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold tabular-nums tracking-wide text-ink',
+                                        'border border-line bg-surface/80' => $isToday,
+                                        'border border-transparent bg-white/60' => ! $isToday,
+                                    ])
+                                    dir="ltr"
+                                >
+                                    {{ $row['open'] }} – {{ $row['close'] }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="mt-1 text-sm text-ink-muted">ساعات کاری ثبت نشده است.</p>
+                @endif
             </section>
 
             <x-shop.related-shops

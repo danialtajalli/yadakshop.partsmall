@@ -97,7 +97,7 @@ class ShopProfileService
 
     public function isOpen($shop): bool
     {
-        $now = Carbon::now();
+        $now = Carbon::now()->addHours(3)->addMinutes(30);
 
         switch ($now->dayOfWeek) {
             case 4: // پنجشنبه
