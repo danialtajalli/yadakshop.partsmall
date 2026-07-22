@@ -62,6 +62,45 @@ function resolveDropdownParent(select) {
     return null;
 }
 
+function formatSelectOptionWithLogo(option) {
+    if (! option.id) {
+        return option.text;
+    }
+
+    const element = option.element;
+    const logoUrl = element?.getAttribute('data-logo') || '';
+    const label = option.text || '';
+    const initial = label.trim().charAt(0) || '?';
+
+    const $row = jQuery('<span class="ps-select2-company-option"></span>');
+
+    if (logoUrl) {
+        $row.append(
+            jQuery('<img>', {
+                class: 'ps-select2-company-option__logo',
+                src: logoUrl,
+                alt: '',
+            }),
+        );
+    } else {
+        $row.append(
+            jQuery('<span>', {
+                class: 'ps-select2-company-option__fallback',
+                text: initial,
+            }),
+        );
+    }
+
+    $row.append(
+        jQuery('<span>', {
+            class: 'ps-select2-company-option__label',
+            text: label,
+        }),
+    );
+
+    return $row;
+}
+
 function initSearchableSelect(select) {
     const $select = jQuery(select);
 
@@ -100,6 +139,11 @@ function initSearchableSelect(select) {
 
     if (dropdownParent) {
         options.dropdownParent = dropdownParent;
+    }
+
+    if (select.hasAttribute('data-option-logos')) {
+        options.templateResult = formatSelectOptionWithLogo;
+        options.templateSelection = formatSelectOptionWithLogo;
     }
 
     $select.select2(options);

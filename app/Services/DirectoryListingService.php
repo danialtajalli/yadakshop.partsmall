@@ -289,6 +289,13 @@ class DirectoryListingService
             $breadcrumbTrail[] = ['label' => $title];
         }
 
+        $shopCompanies = $type === 'shop' ? $this->shopFilterCompanies() : collect();
+
+        if ($type === 'shop' && $filterCompany !== null) {
+            $matched = $shopCompanies->firstWhere('id', $filterCompany->id);
+            $filterCompany->logo_url = $matched?->logo_url;
+        }
+
         return [
             'listings' => $listings,
             'type' => $type,
@@ -306,7 +313,7 @@ class DirectoryListingService
                 : collect(),
             'filters' => $filters,
             'showSpecializationFilter' => $showSpecializationFilter,
-            'shopCompanies' => $type === 'shop' ? $this->shopFilterCompanies() : collect(),
+            'shopCompanies' => $shopCompanies,
             'filterCompany' => $type === 'shop' ? $filterCompany : null,
         ];
     }
@@ -316,10 +323,21 @@ class DirectoryListingService
      */
     private function shopFilterCompanies(): Collection
     {
-        return Company::query()
+        $companies = Company::query()
+            ->with('images')
             ->whereHas('shops')
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
+
+        $companies->each(function (Company $company): void {
+            $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+            $company->logo_url = $logo
+                ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                : null;
+        });
+
+        return $companies;
     }
 
     /**

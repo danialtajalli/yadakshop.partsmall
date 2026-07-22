@@ -80,7 +80,7 @@ class DirectoryListingTest extends TestCase
         $state = State::create(['name' => 'فارس', 'slug' => 'fars', 'tel_prefix' => '071']);
         $city = City::create(['name' => 'شیراز', 'slug' => 'shiraz-city', 'state_id' => $state->id]);
 
-        foreach (range(1, 15) as $index) {
+        foreach (range(1, 30) as $index) {
             $this->createListedShop([
                 'name' => "فروشگاه {$index}",
                 'slug' => "shop-{$index}",
@@ -92,7 +92,7 @@ class DirectoryListingTest extends TestCase
         $response = $this->get(route('shops.index'));
 
         $response->assertOk();
-        $response->assertViewHas('listings', fn ($listings) => $listings->count() === 12 && $listings->total() === 15);
+        $response->assertViewHas('listings', fn ($listings) => $listings->count() === 24 && $listings->total() === 30);
     }
 
     public function test_shops_index_title_includes_page_number_on_later_pages(): void
@@ -147,6 +147,32 @@ class DirectoryListingTest extends TestCase
         $response->assertDontSee('فروشگاه کیا', false);
         $response->assertSee('id="shop-company-filter"', false);
         $response->assertSee('data-shop-company-select', false);
+        $response->assertSee('data-option-logos', false);
+        $response->assertDontSee('seller-signup', false);
+    }
+
+    public function test_shops_index_uses_full_width_heading_without_signup_cta(): void
+    {
+        $this->createListedShop([
+            'name' => 'فروشگاه تست',
+            'slug' => 'test-shop',
+            'order' => 1,
+        ]);
+
+        $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai']);
+        $company->images()->create([
+            'type' => ImageType::Logo,
+            'path' => 'hyundai.png',
+        ]);
+        $company->shops()->attach(Shop::query()->where('slug', 'test-shop')->first());
+
+        $response = $this->get(route('shops.index'));
+
+        $response->assertOk();
+        $response->assertSee('تعداد فروشگاه‌ها', false);
+        $response->assertSee('فیلتر بر اساس برند', false);
+        $response->assertSee('data-logo=', false);
+        $response->assertDontSee('قطعات خود را در پارتس‌مال بفروشید', false);
     }
 
     public function test_unknown_company_slug_returns_not_found(): void
