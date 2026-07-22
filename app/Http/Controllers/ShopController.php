@@ -16,7 +16,8 @@ class ShopController extends Controller
     ) {}
 
     public function index(Request $request): View
-    {
+    {   
+
         return view('listings.index', $this->directoryListingService->getShopListing($request));
     }
 
@@ -27,6 +28,11 @@ class ShopController extends Controller
 
     public function show(string $shop_slug): View
     {
-        return view('shop.show', $this->shopProfileService->getProfilePageData($shop_slug));
+        $data = $this->shopProfileService->getProfilePageData($shop_slug);
+
+        $data['isOpen'] = $this->shopProfileService->isOpen($data['shop']);
+
+        return view('shop.show', $data);
+        // return view('shop.show', $this->shopProfileService->getProfilePageData($shop_slug));
     }
 }

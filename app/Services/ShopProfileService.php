@@ -11,7 +11,7 @@ use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Carbon\Carbon;
 class ShopProfileService
 {
     private const RELATED_SHOPS_LIMIT = 8;
@@ -93,6 +93,54 @@ class ShopProfileService
         $relatedShops->each(fn (Shop $relatedShop) => ShopImageUrlBuilder::attachShopMedia($relatedShop));
 
         return $relatedShops;
+    }
+
+    public function isOpen($shop): bool
+    {
+        $now = Carbon::now();
+
+        switch ($now->dayOfWeek) {
+            case 4: // پنجشنبه
+                $open = $shop->open_time_thursday;
+                $close = $shop->close_time_thursday;
+                break;
+
+            case 5: // جمعه
+                $open = $shop->open_time_friday;
+                $close = $shop->close_time_friday;
+                break;
+
+            default: // شنبه تا چهارشنبه
+                $open = $shop->open_time;
+                $close = $shop->close_time;
+                break;
+        }
+
+        if (!$open || !$close) {
+            return false;
+        }
+
+        $openTime = $this->parseShopTime($open)?->setDateFrom($now);
+        $closeTime = $this->parseShopTime($close)?->setDateFrom($now);
+
+        if ($openTime === null || $closeTime === null) {
+            return false;
+        }
+
+        return $now->between($openTime, $closeTime);
+    }
+
+    private function parseShopTime(string $time): ?Carbon
+    {
+        foreach (['H:i:s', 'H:i'] as $format) {
+            try {
+                return Carbon::createFromFormat($format, $time);
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     /** @param  Collection<int, Phone>  $phones */

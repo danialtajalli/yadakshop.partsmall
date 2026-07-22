@@ -45,6 +45,22 @@ export default function shopCommentForm({ action, csrf }) {
             return Boolean(this.fieldErrors[field]);
         },
 
+        turnstileWidget() {
+            return this.$el?.querySelector('.cf-turnstile') ?? null;
+        },
+
+        turnstileToken() {
+            return this.$el?.querySelector('[name="cf-turnstile-response"]')?.value ?? '';
+        },
+
+        resetTurnstile() {
+            const widget = this.turnstileWidget();
+
+            if (window.turnstile && widget) {
+                window.turnstile.reset(widget);
+            }
+        },
+
         resetForm() {
             this.form = {
                 fullname: '',
@@ -56,6 +72,7 @@ export default function shopCommentForm({ action, csrf }) {
             this.hoverRating = 0;
             this.errors = [];
             this.fieldErrors = {};
+            this.resetTurnstile();
         },
 
         async submit() {
@@ -79,6 +96,19 @@ export default function shopCommentForm({ action, csrf }) {
                     body.set('company_url', this.form.company_url);
                 }
 
+                const turnstileToken = this.turnstileToken();
+
+                if (this.turnstileWidget() && ! turnstileToken) {
+                    this.errors = ['لطفاً کپچای امنیتی را تکمیل کنید.'];
+                    this.submitting = false;
+
+                    return;
+                }
+
+                if (turnstileToken) {
+                    body.set('cf-turnstile-response', turnstileToken);
+                }
+
                 const response = await fetch(this.action, {
                     method: 'POST',
                     headers: {
@@ -94,12 +124,14 @@ export default function shopCommentForm({ action, csrf }) {
                 if (response.status === 422) {
                     this.fieldErrors = payload.errors ?? {};
                     this.errors = Object.values(this.fieldErrors).flat();
+                    this.resetTurnstile();
 
                     return;
                 }
 
                 if (! response.ok) {
                     this.errors = [payload.message ?? 'ارسال نظر با خطا مواجه شد. لطفاً دوباره تلاش کنید.'];
+                    this.resetTurnstile();
 
                     return;
                 }
@@ -112,6 +144,7 @@ export default function shopCommentForm({ action, csrf }) {
                 }));
             } catch {
                 this.errors = ['ارتباط با سرور برقرار نشد. لطفاً دوباره تلاش کنید.'];
+                this.resetTurnstile();
             } finally {
                 this.submitting = false;
             }

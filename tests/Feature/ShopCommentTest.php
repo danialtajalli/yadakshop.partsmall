@@ -42,6 +42,7 @@ class ShopCommentTest extends TestCase
 
         $this->post(route('shop.comments.store', $shop->slug), [
             'fullname' => 'علی رضایی',
+            'mobile' => '09121234567',
             'body' => 'این نظر هنوز تایید نشده است.',
             'rating' => 5,
         ])->assertRedirect()->assertSessionHas('comment_submitted');
@@ -87,6 +88,7 @@ class ShopCommentTest extends TestCase
     {
         $this->post(route('shop.comments.store', 'missing-shop'), [
             'fullname' => 'کاربر',
+            'mobile' => '09121234567',
             'body' => 'نظر تستی برای فروشگاه ناموجود.',
             'rating' => 3,
         ])->assertNotFound();
@@ -138,6 +140,7 @@ class ShopCommentTest extends TestCase
 
         $response = $this->followingRedirects()->post(route('shop.comments.store', $shop->slug), [
             'fullname' => 'علی رضایی',
+            'mobile' => '09121234567',
             'body' => 'خرید خوبی بود و برخورد مناسبی داشتند.',
             'rating' => 4,
         ]);
