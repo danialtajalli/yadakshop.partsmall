@@ -698,7 +698,7 @@
     }
 
     .ps-shops-filter-loading {
-        @apply pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-white/75 opacity-0 transition-opacity duration-200;
+        @apply pointer-events-none absolute inset-0 z-20 flex items-start justify-center bg-white/75 pt-8 opacity-0 transition-opacity duration-200 sm:pt-10;
     }
 
     .ps-shops-section.is-filter-loading .ps-shops-filter-loading {
