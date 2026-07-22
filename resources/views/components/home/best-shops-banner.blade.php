@@ -59,7 +59,7 @@
             <div class="ps-best-shops__frame-glow"></div>
         </div>
 
-        <div class="relative z-10 flex flex-col items-center gap-6 px-5 py-8 sm:flex-row sm:justify-between sm:gap-10 sm:px-8 sm:py-9">
+        <div class="relative z-10 flex flex-col items-center gap-6 px-6 py-10 sm:flex-row sm:justify-between sm:gap-10 sm:px-8 sm:py-9">
             <div class="ps-best-shops__copy min-w-0 max-w-lg text-center sm:text-start" data-best-shops-copy>
                 <p class="inline-flex items-center gap-2 rounded-full border border-brand-soft/40 bg-brand-soft/10 px-3 py-1 text-[11px] font-semibold tracking-[0.2em] text-brand-soft">
                     <span class="size-1.5 rounded-full bg-brand-soft" aria-hidden="true"></span>
@@ -73,8 +73,8 @@
                 </p>
             </div>
 
-            <div class="ps-best-shops__logos flex min-w-0 flex-col items-center gap-4">
-                <div class="flex flex-wrap items-end justify-center gap-4" role="list">
+            <div class="ps-best-shops__logos flex min-w-0 flex-col items-center gap-4 px-2 py-3 sm:px-3 sm:py-2">
+                <div class="flex flex-wrap items-center justify-center gap-5" role="list">
                     <div class="ps-best-shops__trio relative inline-flex flex-wrap items-end justify-center gap-4" data-best-shops-trio>
                         @foreach ($shops as $index => $shop)
                             @php
@@ -135,7 +135,7 @@
                     <a
                         href="{{ $signupUrl }}"
                         role="listitem"
-                        class="ps-best-shop-logo m-3 ps-best-shop-logo--cta inline-flex max-w-[10.5rem] items-center gap-2.5 rounded-2xl border-2 border-dashed border-brand-soft/70 bg-brand-soft/10 px-3.5 py-3 text-start shadow-[0_12px_30px_-14px_rgb(242_124_34_/_0.55)] backdrop-blur-sm transition hover:border-brand-soft hover:bg-brand-soft/20"
+                        class="ps-best-shop-logo m-3 ps-best-shop-logo--cta inline-flex max-w-[10.5rem] shrink-0 items-center gap-2.5 self-center rounded-2xl border-2 border-dashed border-brand-soft/70 bg-brand-soft/10 px-3.5 py-3 text-start shadow-[0_12px_30px_-14px_rgb(242_124_34_/_0.55)] backdrop-blur-sm transition hover:border-brand-soft hover:bg-brand-soft/20"
                         style="--best-shop-delay: {{ 180 + ($shops->count() * 140) }}ms"
                     >
                         <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-white shadow-md">

@@ -76,7 +76,7 @@ function buildMobileSectionPaths(panel) {
         return null;
     }
 
-    const inset = 8;
+    const inset = 5;
     const x = inset;
     const y = inset;
     const w = width - inset * 2;
