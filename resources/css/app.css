@@ -448,6 +448,70 @@
         transition-delay: var(--best-shop-delay, 0ms);
     }
 
+    .ps-best-shop-medal {
+        position: absolute;
+        top: -0.85rem;
+        z-index: 30;
+        display: inline-flex;
+        width: 2rem;
+        height: 2.35rem;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.35));
+    }
+
+    .ps-best-shop-medal__icon {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+    }
+
+    .ps-best-shop-medal__icon path,
+    .ps-best-shop-medal__icon circle {
+        stroke-width: 0.7;
+    }
+
+    .ps-best-shop-medal--gold .ps-best-shop-medal__icon path,
+    .ps-best-shop-medal--gold .ps-best-shop-medal__icon circle {
+        fill: #f5c542;
+        stroke: #ffe9a8;
+    }
+
+    .ps-best-shop-medal--gold .ps-best-shop-medal__icon path:first-child {
+        fill: #e8a317;
+        stroke: #ffd666;
+    }
+
+    .ps-best-shop-medal--silver .ps-best-shop-medal__icon path,
+    .ps-best-shop-medal--silver .ps-best-shop-medal__icon circle {
+        fill: #d7dde7;
+        stroke: #f8fafc;
+    }
+
+    .ps-best-shop-medal--silver .ps-best-shop-medal__icon path:first-child {
+        fill: #aeb8c7;
+        stroke: #eef2f7;
+    }
+
+    .ps-best-shop-medal--bronze .ps-best-shop-medal__icon path,
+    .ps-best-shop-medal--bronze .ps-best-shop-medal__icon circle {
+        fill: #d08a4c;
+        stroke: #f0c49a;
+    }
+
+    .ps-best-shop-medal--bronze .ps-best-shop-medal__icon path:first-child {
+        fill: #b86a2f;
+        stroke: #e0a46a;
+    }
+
+    @media (min-width: 640px) {
+        .ps-best-shop-medal {
+            top: -1rem;
+            width: 2.35rem;
+            height: 2.7rem;
+        }
+    }
+
     .ps-best-shops.is-visible .ps-best-shop-logo {
         opacity: 1;
         transform: translateY(0) scale(1);

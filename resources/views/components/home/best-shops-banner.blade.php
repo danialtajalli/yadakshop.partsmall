@@ -79,37 +79,50 @@
                         @foreach ($shops as $index => $shop)
                             @php
                                 $rank = $index + 1;
+                                $medal = match ($rank) {
+                                    1 => [
+                                        'label' => 'طلا',
+                                        'badge' => 'ps-best-shop-medal ps-best-shop-medal--gold',
+                                        'frame' => 'size-[4.25rem] shadow-[0_16px_40px_-12px_rgb(212_160_23_/_0.7)] ring-4 ring-[#f5c542] sm:size-[4.75rem]',
+                                        'logo' => '!size-12 !rounded-xl sm:!size-14',
+                                    ],
+                                    2 => [
+                                        'label' => 'نقره',
+                                        'badge' => 'ps-best-shop-medal ps-best-shop-medal--silver',
+                                        'frame' => 'size-16 shadow-[0_14px_34px_-12px_rgb(148_163_184_/_0.55)] ring-[3px] ring-[#cfd6e0] sm:size-[4.25rem]',
+                                        'logo' => '!size-11 !rounded-xl sm:!size-12',
+                                    ],
+                                    default => [
+                                        'label' => 'برنز',
+                                        'badge' => 'ps-best-shop-medal ps-best-shop-medal--bronze',
+                                        'frame' => 'size-[3.75rem] shadow-[0_12px_30px_-12px_rgb(180_100_40_/_0.55)] ring-[3px] ring-[#d4956a] sm:size-16',
+                                        'logo' => '!size-10 !rounded-xl sm:!size-11',
+                                    ],
+                                };
                             @endphp
                             <a
                                 href="{{ route('shop.profile', $shop->slug) }}"
                                 role="listitem"
                                 class="ps-best-shop-logo group relative z-10 inline-flex flex-col items-center"
                                 style="--best-shop-delay: {{ 180 + ($index * 140) }}ms"
-                                title="{{ $shop->name }}"
+                                title="{{ $shop->name }} — {{ $medal['label'] }}"
                             >
-                                <span @class([
-                                    'absolute -top-2 z-20 inline-flex size-6 items-center justify-center rounded-full text-[10px] font-black text-white shadow-lg ring-2 ring-white/30 sm:size-7 sm:text-xs',
-                                    'bg-brand-soft' => $rank === 1,
-                                    'bg-[#c0c7d1] text-brand-dark' => $rank === 2,
-                                    'bg-[#c47a3a]' => $rank === 3,
-                                ])>
-                                    {{ $rank }}
+                                <span class="{{ $medal['badge'] }}" aria-label="رتبه {{ $medal['label'] }}">
+                                    <svg class="ps-best-shop-medal__icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M8.2 2.8h7.6l-1.4 4.2H9.6L8.2 2.8Z" />
+                                        <path d="M9.6 7 7.2 13.2h9.6L14.4 7H9.6Z" opacity=".9" />
+                                        <circle cx="12" cy="16.4" r="4.2" />
+                                    </svg>
                                 </span>
                                 <span @class([
                                     'relative flex items-center justify-center overflow-hidden rounded-2xl bg-white transition duration-300 group-hover:-translate-y-1 group-hover:scale-105',
-                                    'size-[4.25rem] shadow-[0_16px_40px_-12px_rgb(242_124_34_/_0.65)] ring-4 ring-brand-soft/80 sm:size-[4.75rem]' => $rank === 1,
-                                    'size-16 shadow-[0_14px_34px_-12px_rgb(0_0_0_/_0.55)] ring-[3px] ring-white/70 sm:size-[4.25rem]' => $rank === 2,
-                                    'size-[3.75rem] shadow-[0_12px_30px_-12px_rgb(0_0_0_/_0.5)] ring-[3px] ring-[#c47a3a]/70 sm:size-16' => $rank === 3,
+                                    $medal['frame'],
                                 ])>
                                     <x-ui.company-logo
                                         :name="$shop->name"
                                         :logo-url="$shop->logo ?? null"
                                         size="md"
-                                        @class([
-                                            '!size-12 !rounded-xl sm:!size-14' => $rank === 1,
-                                            '!size-11 !rounded-xl sm:!size-12' => $rank === 2,
-                                            '!size-10 !rounded-xl sm:!size-11' => $rank === 3,
-                                        ])
+                                        @class([$medal['logo'] => true])
                                     />
                                 </span>
                                 <span class="mt-2 max-w-[4.75rem] truncate text-center text-[10px] font-semibold text-white/85 sm:max-w-[5.5rem] sm:text-[11px]">
