@@ -4,7 +4,7 @@
 
     $isCompaniesNavActive = request()->routeIs('companies.index', 'cars.index', 'models.index');
     $isPartsNavActive = request()->routeIs('car.parts', 'car.parts.vehicle', 'part.show', 'product.show');
-    $isShopsNavActive = request()->routeIs('shops.index', 'shop.profile');
+    $isShopsNavActive = request()->routeIs('shops.index', 'shops.company', 'shop.profile');
 @endphp
 
 <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
