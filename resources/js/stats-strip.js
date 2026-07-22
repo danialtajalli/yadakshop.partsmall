@@ -13,8 +13,12 @@ function easeOutCubic(t) {
     return 1 - ((1 - t) ** 3);
 }
 
+function toPersianDigits(value) {
+    return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
+}
+
 function formatCount(value) {
-    return new Intl.NumberFormat('en-US').format(Math.round(value));
+    return toPersianDigits(new Intl.NumberFormat('en-US').format(Math.round(value)));
 }
 
 function randomInt(min, max) {
@@ -111,7 +115,7 @@ function revealStrip(strip) {
             return;
         }
 
-        valueEl.textContent = '0';
+        valueEl.textContent = '۰';
         item.style.setProperty('--stats-delay', `${index * STAGGER_MS}ms`);
         item.classList.add('is-visible');
         animateValue(

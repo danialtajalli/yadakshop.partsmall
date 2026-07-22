@@ -59,7 +59,7 @@
                                     data-stats-value
                                     data-target="{{ (int) ($stat['value'] ?? 0) }}"
                                     @if (! empty($stat['live'])) data-stats-live @endif
-                                >0</span>@if (! empty($stat['suffix']))<span class="text-brand-soft">{{ $stat['suffix'] }}</span>@endif
+                                >۰</span>@if (! empty($stat['suffix']))<span class="text-brand-soft">{{ $stat['suffix'] }}</span>@endif
                             </p>
                             <div class="ps-stats-strip__rule mx-auto mt-3.5 h-px w-9 bg-gradient-to-l from-transparent via-brand-soft/70 to-transparent" aria-hidden="true"></div>
                             <p class="mt-3 text-[11px] font-medium tracking-wide text-white/60 sm:text-xs">
