@@ -86,7 +86,7 @@
                     boxed
                 />
             @else
-                <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
+                <div class="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
                     @foreach ($parts as $part)
                         <x-ui.part-card
                             class="catalog-part-card"
