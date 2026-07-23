@@ -38,7 +38,7 @@ class HomePageService
      *         }>,
      *     }>,
      *     vehicleFilter: array{
-     *         companies: list<array{slug: string, name: string}>,
+     *         companies: list<array{slug: string, name: string, logo_url: ?string}>,
      *         carsByCompany: array<string, list<array{slug: string, name: string}>>,
      *         modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
      *         parts: list<array{slug: string, name: string}>,
@@ -182,7 +182,7 @@ class HomePageService
      * }>  $companyPicker
      * @param  Collection<int, Part>  $parts
      * @return array{
-     *     companies: list<array{slug: string, name: string}>,
+     *     companies: list<array{slug: string, name: string, logo_url: ?string}>,
      *     carsByCompany: array<string, list<array{slug: string, name: string}>>,
      *     modelsByCar: array<string, list<array{slug: string, name: string, url: string}>>,
      *     parts: list<array{slug: string, name: string}>,
@@ -198,6 +198,7 @@ class HomePageService
             $companies[] = [
                 'slug' => $company['slug'],
                 'name' => $company['name'],
+                'logo_url' => $company['logo_url'] ?? null,
             ];
 
             $carsByCompany[$company['slug']] = [];

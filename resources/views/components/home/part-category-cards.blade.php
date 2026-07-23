@@ -3,8 +3,6 @@
 ])
 
 @php
-    use App\Support\PersianDigits;
-
     $categories = $categories ?? config('partsmall.home_part_categories', []);
     $accents = [
         'from-[#1a2332] via-[#243044] to-[#2d3a4f]',
@@ -33,13 +31,10 @@
         data-part-category-cards
     >
         <div class="mb-7 text-center sm:mb-8 sm:text-start">
-            <p class="ps-section-label">دسته‌بندی قطعات</p>
+            <p class="ps-section-label">دسته‌های اصلی قطعات خودرو</p>
             <h2 id="home-part-categories-title" class="ps-section-title mt-1">
-                مسیر سریع به قطعات پرکاربرد
+                قطعات پرکاربرد
             </h2>
-            <p class="mt-2 text-sm text-ink-muted">
-                از هر دسته، قطعات نمونه را مستقیم باز کنید
-            </p>
         </div>
 
         <div class="ps-part-cats grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-4 lg:gap-6">
@@ -50,9 +45,6 @@
                 >
                     <div class="ps-part-cat__shell bg-gradient-to-br {{ $accents[$index % count($accents)] }}">
                         <div class="ps-part-cat__body">
-                            <span class="ps-part-cat__index" aria-hidden="true">
-                                {{ PersianDigits::convert(str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)) }}
-                            </span>
                             <h3 class="ps-part-cat__title">{{ $category['title'] ?? '' }}</h3>
                             <ul class="ps-part-cat__parts">
                                 @foreach (($category['parts'] ?? []) as $partName)

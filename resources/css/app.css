@@ -262,13 +262,6 @@
         text-align: center;
     }
 
-    .ps-part-cat__index {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        color: rgb(242 124 34 / 0.9);
-    }
-
     .ps-part-cat__title {
         max-width: 12rem;
         font-size: 1.15rem;
