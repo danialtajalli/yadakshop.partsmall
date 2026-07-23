@@ -7,12 +7,12 @@
     <div class="mt-6 border-t border-line/80 pt-5">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
             <div class="min-w-0">
-                <p class="text-sm font-semibold text-ink">فیلتر بر اساس برند</p>
+                <p class="text-sm font-semibold text-ink">فیلتر بر اساس کمپانی سازنده</p>
                 <p class="mt-0.5 text-xs text-ink-muted">فروشگاه‌های مرتبط با هر کمپانی را ببینید</p>
             </div>
 
             <div class="min-w-0 w-full sm:max-w-sm">
-                <label for="shop-company-filter" class="sr-only">برند</label>
+                <label for="shop-company-filter" class="sr-only">کمپانی سازنده</label>
                 <div class="ps-searchable-select">
                     <select
                         id="shop-company-filter"
@@ -25,7 +25,7 @@
                             data-url="{{ route('shops.index') }}"
                             @selected($selected === null)
                         >
-                            همه برندها
+                            همه کمپانی سازندهها
                         </option>
                         @foreach ($companies as $company)
                             <option
@@ -56,7 +56,7 @@
                             decoding="async"
                         >
                     @endif
-                    <span class="text-ink-muted">برند فعال:</span>
+                    <span class="text-ink-muted">کمپانی سازنده فعال:</span>
                     {{ $selected->name }}
                 </span>
                 <a
