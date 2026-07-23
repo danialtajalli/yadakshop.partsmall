@@ -29,10 +29,10 @@
 
             <div class="relative px-4 py-9 sm:px-7 sm:py-11 lg:px-10 lg:py-12">
                 <div class="ps-stats-strip__intro mb-9 text-center sm:mb-11">
-                    <p class="text-[11px] font-semibold tracking-[0.22em] text-brand-soft/90 sm:text-xs">
+                    <p class="text-xl font-semibold tracking-[0.22em] text-brand-soft/90 sm:text-xs">
                         پارتس‌مال
                     </p>
-                    <h2 class="mx-auto mt-3 max-w-2xl text-2xl font-black leading-snug tracking-tight text-white sm:text-3xl lg:text-[2.35rem] lg:leading-tight">
+                    <h2 class="mx-auto mt-3 max-w-2xl text-xl font-black leading-snug tracking-tight text-white sm:text-3xl lg:text-[2.35rem] lg:leading-tight">
                         اعتباری به وسعت یک بازار
                     </h2>
                     <div class="mx-auto mt-4 flex items-center justify-center gap-3" aria-hidden="true">
