@@ -37,6 +37,7 @@ function keepsEmptyOptionSelectable(select) {
             '[data-repair-locator-state]',
             '[data-repair-locator-city]',
             '[data-shops-filter-state]',
+            '[data-shops-filter-city]',
             '[data-vehicle-company]',
             '[data-vehicle-car]',
             '[data-vehicle-model]',
@@ -47,6 +48,12 @@ function keepsEmptyOptionSelectable(select) {
 }
 
 function resolveDropdownParent(select) {
+    const shopsFilterMenu = select.closest('[data-shops-filter-menu]');
+
+    if (shopsFilterMenu) {
+        return jQuery(shopsFilterMenu);
+    }
+
     const panel = select.closest('[data-ps-modal-panel]');
 
     if (panel) {
@@ -221,6 +228,8 @@ function initStandaloneSearchableSelects() {
             '[data-listing-city]',
             '[data-repair-locator-state]',
             '[data-repair-locator-city]',
+            '[data-shops-filter-state]',
+            '[data-shops-filter-city]',
             '[data-vehicle-company]',
             '[data-vehicle-car]',
             '[data-vehicle-model]',
@@ -231,6 +240,23 @@ function initStandaloneSearchableSelects() {
         }
 
         initSearchableSelect(select);
+    });
+}
+
+function initShopsFilters() {
+    document.querySelectorAll('[data-shops-filter]').forEach(function (root) {
+        const stateSelect = root.querySelector('[data-shops-filter-state]');
+        const citySelect = root.querySelector('[data-shops-filter-city]');
+
+        if (! stateSelect || ! citySelect) {
+            return;
+        }
+
+        bindStateCityGroup(
+            stateSelect,
+            citySelect,
+            parseCitiesByState(root.dataset.citiesByState),
+        );
     });
 }
 
@@ -523,6 +549,7 @@ function initShopCompanyFilters() {
 export function initLocationSelects() {
     initListingFilters();
     initRepairLocators();
+    initShopsFilters();
     initVehicleFilters();
     initShopCompanyFilters();
     initStandaloneSearchableSelects();

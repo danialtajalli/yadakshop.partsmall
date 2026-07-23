@@ -103,8 +103,8 @@
 
 
     {{-- Shops --}}
-    <section id="shops" class="mb-12 scroll-mt-20 overflow-hidden rounded-2xl border border-line bg-white shadow-card ps-shops-section">
-        <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 sm:px-6">
+    <section id="shops" class="mb-12 mt-4 scroll-mt-20 rounded-2xl border border-line bg-white shadow-card ps-shops-section">
+        <div class="rounded-t-2xl border-b border-line bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 sm:px-6">
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div class="min-w-0">
                     <h2 class="ps-section-title text-2xl font-bold tracking-tight text-ink sm:text-3xl">لیست فروشگاه ها</h2>
@@ -112,7 +112,11 @@
                 </div>
 
                 @if ($shops->isNotEmpty())
-                    <div class="relative shrink-0" data-shops-filter>
+                    <div
+                        class="relative w-full sm:w-auto sm:shrink-0"
+                        data-shops-filter
+                        data-cities-by-state='@json($shopFilterCitiesByState)'
+                    >
                         <button
                             type="button"
                             class="ps-btn-secondary inline-flex items-center gap-2"
@@ -130,7 +134,7 @@
                         <div
                             id="shops-filter-menu"
                             data-shops-filter-menu
-                            class="absolute end-0 z-30 mt-2 hidden w-72 rounded-xl border border-line bg-white p-4 shadow-card"
+                            class="absolute inset-x-0 z-50 mt-2 hidden rounded-xl border border-line bg-white p-4 shadow-card sm:inset-x-auto sm:end-0 sm:w-80"
                         >
                             <label class="mb-4 flex cursor-pointer items-center gap-2.5 text-sm text-ink">
                                 <input
@@ -141,19 +145,35 @@
                                 <span>فقط فروشگاه مورد اعتماد</span>
                             </label>
 
-                            <div>
-                                <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
-                                <div class="ps-searchable-select">
-                                    <select
-                                        id="shops-filter-state"
-                                        data-shops-filter-state
-                                        data-searchable-select
-                                    >
-                                        <option value="">همه استان‌ها</option>
-                                        @foreach ($shopFilterStates as $state)
-                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="shops-filter-state" class="mb-1.5 block text-xs font-medium text-ink-muted">استان</label>
+                                    <div class="ps-searchable-select">
+                                        <select
+                                            id="shops-filter-state"
+                                            data-shops-filter-state
+                                            data-searchable-select
+                                        >
+                                            <option value="">همه استان‌ها</option>
+                                            @foreach ($shopFilterStates as $state)
+                                                <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="shops-filter-city" class="mb-1.5 block text-xs font-medium text-ink-muted">شهر</label>
+                                    <div class="ps-searchable-select">
+                                        <select
+                                            id="shops-filter-city"
+                                            data-shops-filter-city
+                                            data-searchable-select
+                                            disabled
+                                        >
+                                            <option value="">همه شهرها</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,6 +256,7 @@
                         class="ps-card-interactive relative flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-3.5 {{ $shopIndex >= 10 ? 'hidden sm:flex' : '' }}"
                         data-shop-card
                         data-shop-state-id="{{ $shop->city?->state_id }}"
+                        data-shop-city-id="{{ $shop->city_id }}"
                         data-shop-verified="{{ $shop->verified ? '1' : '0' }}"
                     >
                         <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -514,6 +535,7 @@
                     const filterToggle = document.querySelector('[data-shops-filter-toggle]');
                     const filterMenu = document.querySelector('[data-shops-filter-menu]');
                     const filterState = document.querySelector('[data-shops-filter-state]');
+                    const filterCity = document.querySelector('[data-shops-filter-city]');
                     const filterVerified = document.querySelector('[data-shops-filter-verified]');
                     const filterEmpty = document.querySelector('[data-shops-filter-empty]');
                     const shopsSection = document.getElementById('shops');
@@ -525,6 +547,30 @@
                     const mobileMedia = window.matchMedia('(max-width: 639px)');
                     const filterReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                     let filterApplyTimer = null;
+                    let suppressFilterApply = false;
+
+                    const selectValue = function (select) {
+                        if (! (select instanceof HTMLSelectElement)) {
+                            return '';
+                        }
+
+                        let value = '';
+
+                        if (window.jQuery) {
+                            const $select = window.jQuery(select);
+
+                            if ($select.hasClass('select2-hidden-accessible')) {
+                                const selected = $select.val();
+                                value = Array.isArray(selected) ? (selected[0] ?? '') : (selected ?? '');
+                            }
+                        }
+
+                        if (value === '' || value == null) {
+                            value = select.value || select.selectedOptions?.[0]?.value || '';
+                        }
+
+                        return String(value ?? '');
+                    };
 
                     const randomFilterDelayMs = function () {
                         if (filterReducedMotion) {
@@ -539,39 +585,53 @@
                             return;
                         }
 
+                        suppressFilterApply = true;
+
                         shopsSection.classList.toggle('is-filter-loading', isLoading);
                         filterLoadingOverlay.toggleAttribute('hidden', !isLoading);
                         filterLoadingOverlay.setAttribute('aria-hidden', String(!isLoading));
 
-                        if (filterState) {
-                            filterState.disabled = isLoading;
-
-                            if (window.jQuery?.(filterState).hasClass('select2-hidden-accessible')) {
-                                window.jQuery(filterState).prop('disabled', isLoading).trigger('change.select2');
-                            }
-                        }
-
+                        // Keep selects enabled so Select2 retains the chosen values while the
+                        // overlay is shown; only block the verified checkbox interaction.
                         if (filterVerified) {
                             filterVerified.disabled = isLoading;
                         }
+
+                        if (filterToggle) {
+                            filterToggle.disabled = isLoading;
+                        }
+
+                        suppressFilterApply = false;
                     };
 
                     const scheduleApplyShopFilters = function () {
+                        if (suppressFilterApply) {
+                            return;
+                        }
+
                         if (filterApplyTimer !== null) {
                             window.clearTimeout(filterApplyTimer);
                         }
+
+                        const snapshot = {
+                            stateId: selectValue(filterState),
+                            cityId: selectValue(filterCity),
+                            verifiedOnly: Boolean(filterVerified?.checked),
+                        };
 
                         setFilterLoading(true);
 
                         filterApplyTimer = window.setTimeout(function () {
                             filterApplyTimer = null;
-                            applyShopFilters();
+                            applyShopFilters(snapshot);
                             setFilterLoading(false);
                         }, randomFilterDelayMs());
                     };
 
-                    const isFilterActive = function () {
-                        return (filterState?.value || '') !== '' || Boolean(filterVerified?.checked);
+                    const isFilterActive = function (snapshot) {
+                        return snapshot.stateId !== ''
+                            || snapshot.cityId !== ''
+                            || Boolean(snapshot.verifiedOnly);
                     };
 
                     const setCardFilterHidden = function (card, hidden) {
@@ -582,17 +642,20 @@
                         }
                     };
 
-                    const shopMatchesFilters = function (card) {
-                        const selectedStateId = filterState?.value || '';
-                        const verifiedOnly = Boolean(filterVerified?.checked);
+                    const shopMatchesFilters = function (card, snapshot) {
                         const cardStateId = String(card.getAttribute('data-shop-state-id') ?? '');
+                        const cardCityId = String(card.getAttribute('data-shop-city-id') ?? '');
                         const cardVerified = card.getAttribute('data-shop-verified') === '1';
 
-                        if (selectedStateId !== '' && cardStateId !== selectedStateId) {
+                        if (snapshot.stateId !== '' && cardStateId !== snapshot.stateId) {
                             return false;
                         }
 
-                        if (verifiedOnly && !cardVerified) {
+                        if (snapshot.cityId !== '' && cardCityId !== snapshot.cityId) {
+                            return false;
+                        }
+
+                        if (snapshot.verifiedOnly && !cardVerified) {
                             return false;
                         }
 
@@ -631,12 +694,18 @@
                         filterEmpty?.classList.add('hidden');
                     };
 
-                    const applyShopFilters = function () {
+                    const applyShopFilters = function (snapshot) {
                         if (!shopsList) {
                             return;
                         }
 
-                        if (!isFilterActive()) {
+                        const activeSnapshot = snapshot || {
+                            stateId: selectValue(filterState),
+                            cityId: selectValue(filterCity),
+                            verifiedOnly: Boolean(filterVerified?.checked),
+                        };
+
+                        if (!isFilterActive(activeSnapshot)) {
                             shopCards.forEach(function (card) {
                                 setCardFilterHidden(card, false);
                             });
@@ -648,7 +717,7 @@
                         let visibleCount = 0;
 
                         shopCards.forEach(function (card) {
-                            const match = shopMatchesFilters(card);
+                            const match = shopMatchesFilters(card, activeSnapshot);
 
                             setCardFilterHidden(card, !match);
 
@@ -661,6 +730,35 @@
                         loadMoreWrap?.classList.add('hidden');
                         signupCard?.classList.remove('hidden');
                         filterEmpty?.classList.toggle('hidden', visibleCount > 0);
+                    };
+
+                    const bindFilterSelect = function (select) {
+                        if (! select || ! window.jQuery) {
+                            return;
+                        }
+
+                        window.jQuery(select)
+                            .off('.shopsProductFilter')
+                            .on(
+                                'change.shopsProductFilter select2:select.shopsProductFilter select2:clear.shopsProductFilter',
+                                scheduleApplyShopFilters,
+                            );
+                    };
+
+                    const bindShopFilterControls = function () {
+                        bindFilterSelect(filterState);
+                        bindFilterSelect(filterCity);
+
+                        // Fallback: Select2 may init after first bind attempt.
+                        if (window.jQuery && filterRoot) {
+                            window.jQuery(filterRoot)
+                                .off('.shopsProductFilterDelegate')
+                                .on(
+                                    'change.shopsProductFilterDelegate select2:select.shopsProductFilterDelegate select2:clear.shopsProductFilterDelegate',
+                                    '[data-shops-filter-state], [data-shops-filter-city]',
+                                    scheduleApplyShopFilters,
+                                );
+                        }
                     };
 
                     filterToggle?.addEventListener('click', function (event) {
@@ -678,12 +776,26 @@
                             return;
                         }
 
-                        if (!filterRoot.contains(event.target)) {
-                            setFilterMenuOpen(false);
+                        const target = event.target;
+
+                        if (
+                            filterRoot.contains(target)
+                            || (target instanceof Element && target.closest('.select2-container, .select2-dropdown'))
+                        ) {
+                            return;
                         }
+
+                        setFilterMenuOpen(false);
                     });
 
-                    filterState?.addEventListener('change', scheduleApplyShopFilters);
+                    // Inline stack scripts run before deferred Vite modules, so jQuery/Select2
+                    // are often missing here. Bind after DOMContentLoaded when they exist.
+                    if (window.jQuery) {
+                        bindShopFilterControls();
+                    } else {
+                        document.addEventListener('DOMContentLoaded', bindShopFilterControls);
+                    }
+
                     filterVerified?.addEventListener('change', scheduleApplyShopFilters);
 
                     const filterClear = document.querySelector('[data-shops-filter-clear]');
@@ -696,6 +808,16 @@
                                 window.jQuery(filterState).val('').trigger('change');
                             } else {
                                 filterState.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
+
+                        if (filterCity) {
+                            filterCity.value = '';
+
+                            if (window.jQuery?.(filterCity).hasClass('select2-hidden-accessible')) {
+                                window.jQuery(filterCity).val('').trigger('change');
+                            } else {
+                                filterCity.dispatchEvent(new Event('change', { bubbles: true }));
                             }
                         }
 
