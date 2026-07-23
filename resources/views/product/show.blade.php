@@ -5,7 +5,7 @@
 @section('content')
     <x-site.breadcrumb :items="$breadcrumbs" />
 
-    <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
+    <div class="mb-12 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
         <div class="min-w-0 flex-1 space-y-5">
             <div class="rounded-2xl border border-line bg-white shadow-card" data-product-title-section>
                 <div class="bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
