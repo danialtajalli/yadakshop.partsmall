@@ -28,6 +28,22 @@
                 <div class="pointer-events-none absolute -end-10 -top-16 size-48 rounded-full bg-brand-soft/15 blur-3xl" aria-hidden="true"></div>
                 <div class="pointer-events-none absolute -bottom-20 start-1/3 size-40 rounded-full bg-brand/5 blur-2xl" aria-hidden="true"></div>
 
+                @if (isset($filterCompany) && $filterCompany && filled($filterCompany->logo_url ?? null))
+                    <div
+                        class="pointer-events-none absolute inset-y-0 end-0 w-[55%] max-w-md sm:w-[45%]"
+                        aria-hidden="true"
+                    >
+                        <img
+                            src="{{ $filterCompany->logo_url }}"
+                            alt=""
+                            class="absolute end-[-10%] top-1/2 h-[140%] w-auto max-w-none -translate-y-1/2 object-contain opacity-[0.12] sm:opacity-[0.14]"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-white"></div>
+                    </div>
+                @endif
+
                 <div class="relative min-w-0">
                     <p class="ps-section-label">فروشگاه‌ها</p>
                     <div class="mt-2 flex flex-wrap items-end justify-between gap-4">
@@ -46,7 +62,7 @@
 
                         <div class="shrink-0 rounded-2xl border border-line bg-white/80 px-4 py-3 text-center shadow-sm backdrop-blur-sm">
                             <p class="text-[11px] font-medium text-ink-muted">تعداد فروشگاه‌ها</p>
-                            <p class="mt-0.5 text-2xl font-black tabular-nums text-ink">{{ number_format($listings->total()) }}</p>
+                            <p class="mt-0.5 text-2xl font-black tabular-nums text-ink">{{ \App\Support\PersianDigits::convert(number_format($listings->total())) }}</p>
                         </div>
                     </div>
 
@@ -125,50 +141,10 @@
             </div>
 
             <div class="ps-shops-section__content" data-catalog-search-results>
-                <div class="mb-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
+                <div class="mb-4">
                     <p class="min-w-0 text-sm text-ink-muted">
                         {{ number_format($listings->total()) }} مورد یافت شد
                     </p>
-                    <div class="flex min-w-0 flex-wrap gap-2 text-sm">
-                        @php
-                            $listingFilterQuery = array_filter([
-                                'q' => $filters['q'] ?? null,
-                                'state_id' => $filters['state_id'] ?? null,
-                                'city_id' => $filters['city_id'] ?? null,
-                                'specialization_id' => $filters['specialization_id'] ?? null,
-                            ], fn ($value) => $value !== null && $value !== '');
-                        @endphp
-                        <a
-                            href="{{ ($filterCompany ?? null) ? route('shops.company', $filterCompany) : route('shops.index', $listingFilterQuery) }}"
-                            @class([
-                                'rounded-lg px-3 py-1.5 transition break-words',
-                                'bg-brand text-white' => $type === 'shop',
-                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'shop',
-                            ])
-                        >
-                            فروشگاه‌ها
-                        </a>
-                        <a
-                            href="{{ route('repair-shops.index', $listingFilterQuery) }}"
-                            @class([
-                                'rounded-lg px-3 py-1.5 transition break-words',
-                                'bg-brand text-white' => $type === 'repair_shop',
-                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'repair_shop',
-                            ])
-                        >
-                            تعمیرگاه‌ها
-                        </a>
-                        <a
-                            href="{{ route('representations.index', $listingFilterQuery) }}"
-                            @class([
-                                'rounded-lg px-3 py-1.5 transition break-words',
-                                'bg-brand text-white' => $type === 'representation',
-                                'text-ink-muted hover:bg-surface hover:text-ink' => $type !== 'representation',
-                            ])
-                        >
-                            نمایندگی‌ها
-                        </a>
-                    </div>
                 </div>
 
                 @if ($listings->isEmpty())

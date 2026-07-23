@@ -5,6 +5,8 @@
     $isCompaniesNavActive = request()->routeIs('companies.index', 'cars.index', 'models.index');
     $isPartsNavActive = request()->routeIs('car.parts', 'car.parts.vehicle', 'part.show', 'product.show');
     $isShopsNavActive = request()->routeIs('shops.index', 'shops.company', 'shop.profile');
+    $isRepairShopsNavActive = request()->routeIs('repair-shops.index', 'repair-shop.profile');
+    $isRepresentationsNavActive = request()->routeIs('representations.index', 'representation.profile');
 @endphp
 
 <header class="sticky top-0 z-40 border-b border-line/80 bg-white/90 backdrop-blur-md">
@@ -60,7 +62,23 @@
                         'bg-surface text-ink' => $isShopsNavActive,
                     ])
                     @if ($isShopsNavActive) aria-current="page" @endif
-                >فروشگاه‌های عضو</a>
+                >فروشگاه‌ها</a>
+                <a
+                    href="{{ route('repair-shops.index') }}"
+                    @class([
+                        'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isRepairShopsNavActive,
+                    ])
+                    @if ($isRepairShopsNavActive) aria-current="page" @endif
+                >تعمیرگاه‌ها</a>
+                <a
+                    href="{{ route('representations.index') }}"
+                    @class([
+                        'rounded-lg px-3 py-2 transition hover:bg-surface hover:text-ink',
+                        'bg-surface text-ink' => $isRepresentationsNavActive,
+                    ])
+                    @if ($isRepresentationsNavActive) aria-current="page" @endif
+                >نمایندگی‌ها</a>
                 @foreach ($headerNavigationPages as $navPage)
                     @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                         @continue
@@ -161,6 +179,22 @@
                 ])
                 @if ($isShopsNavActive) aria-current="page" @endif
             >فروشگاه‌ها</a>
+            <a
+                href="{{ route('repair-shops.index') }}"
+                @class([
+                    'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                    'bg-surface text-ink' => $isRepairShopsNavActive,
+                ])
+                @if ($isRepairShopsNavActive) aria-current="page" @endif
+            >تعمیرگاه‌ها</a>
+            <a
+                href="{{ route('representations.index') }}"
+                @class([
+                    'rounded-xl px-3 py-2.5 transition hover:bg-surface hover:text-ink',
+                    'bg-surface text-ink' => $isRepresentationsNavActive,
+                ])
+                @if ($isRepresentationsNavActive) aria-current="page" @endif
+            >نمایندگی‌ها</a>
             @foreach ($headerNavigationPages as $navPage)
                 @if ($navPage->slug == 'terms' || $navPage->slug == 'guide')
                     @continue
@@ -202,7 +236,7 @@
                     toggle.setAttribute('aria-label', nextIsOpen ? 'بستن منو' : 'باز کردن منو');
                     menu.setAttribute('aria-hidden', String(!nextIsOpen));
                     menu.classList.toggle('max-h-0', !nextIsOpen);
-                    menu.classList.toggle('max-h-96', nextIsOpen);
+                    menu.classList.toggle('max-h-[32rem]', nextIsOpen);
                     menu.classList.toggle('opacity-0', !nextIsOpen);
                     menu.classList.toggle('opacity-100', nextIsOpen);
                     menu.classList.toggle('-translate-y-2', !nextIsOpen);
