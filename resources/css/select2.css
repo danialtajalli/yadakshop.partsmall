@@ -159,6 +159,42 @@ dialog[data-ps-modal] .select2-dropdown.ps-select2-dropdown .select2-results {
     vertical-align: middle;
 }
 
+.ps-select2-all-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.ps-select2-all-option__icon {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+    border: 1px solid rgb(242 124 34 / 0.28);
+    background: rgb(242 124 34 / 0.1);
+    color: #c45d12;
+}
+
+.ps-select2-all-option__icon svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.ps-select2-all-option__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #3f4857;
+}
+
 .ps-select2-company-option__logo {
     width: 1.5rem;
     height: 1.5rem;

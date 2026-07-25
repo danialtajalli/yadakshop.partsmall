@@ -72,18 +72,21 @@
                 @if ($showSpecializationFilter)
                     <div class="col-span-2 min-w-0 lg:col-span-1">
                         <label for="listing-specialization" class="mb-1.5 block text-xs font-medium text-ink-muted">تخصص‌ها</label>
-                        <select
-                            id="listing-specialization"
-                            name="specialization_id"
-                            class="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand/40 focus:ring-2 focus:ring-brand/20"
-                        >
-                            <option value="">همه تخصص‌ها</option>
-                            @foreach ($specializations as $specialization)
-                                <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
-                                    {{ $specialization->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="ps-searchable-select">
+                            <select
+                                id="listing-specialization"
+                                name="specialization_id"
+                                data-listing-specialization
+                                data-searchable-select
+                            >
+                                <option value="" data-all-option>همه تخصص‌ها</option>
+                                @foreach ($specializations as $specialization)
+                                    <option value="{{ $specialization->id }}" @selected(($filters['specialization_id'] ?? null) == $specialization->id)>
+                                        {{ $specialization->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 @endif
             </div>

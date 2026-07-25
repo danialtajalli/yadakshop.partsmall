@@ -34,6 +34,7 @@ function keepsEmptyOptionSelectable(select) {
         [
             '[data-listing-state]',
             '[data-listing-city]',
+            '[data-listing-specialization]',
             '[data-repair-locator-state]',
             '[data-repair-locator-city]',
             '[data-shops-filter-state]',
@@ -69,7 +70,60 @@ function resolveDropdownParent(select) {
     return null;
 }
 
+function isAllSelectOption(option) {
+    if (option.id) {
+        return false;
+    }
+
+    const label = String(option.text || '').trim();
+
+    if (label === '') {
+        return false;
+    }
+
+    const element = option.element;
+
+    if (element?.hasAttribute('data-all-option')) {
+        return true;
+    }
+
+    // Persian "all …" defaults used across listing / filter selects.
+    return label.startsWith('همه');
+}
+
+function formatSelectAllOption(option) {
+    const label = String(option.text || '').trim() || 'همه';
+    const $row = jQuery('<span class="ps-select2-all-option"></span>');
+
+    $row.append(
+        jQuery('<span>', {
+            class: 'ps-select2-all-option__icon',
+            html: `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+                    <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+                    <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+                    <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+                </svg>
+            `,
+        }),
+    );
+
+    $row.append(
+        jQuery('<span>', {
+            class: 'ps-select2-all-option__label',
+            text: label,
+        }),
+    );
+
+    return $row;
+}
+
 function formatSelectOptionWithLogo(option) {
+    if (isAllSelectOption(option)) {
+        return formatSelectAllOption(option);
+    }
+
     if (! option.id) {
         return option.text;
     }
@@ -106,6 +160,14 @@ function formatSelectOptionWithLogo(option) {
     );
 
     return $row;
+}
+
+function formatSelectOption(option) {
+    if (isAllSelectOption(option)) {
+        return formatSelectAllOption(option);
+    }
+
+    return option.text;
 }
 
 function initSearchableSelect(select) {
@@ -151,6 +213,9 @@ function initSearchableSelect(select) {
     if (select.hasAttribute('data-option-logos')) {
         options.templateResult = formatSelectOptionWithLogo;
         options.templateSelection = formatSelectOptionWithLogo;
+    } else if (keepEmptyOption) {
+        options.templateResult = formatSelectOption;
+        options.templateSelection = formatSelectOption;
     }
 
     $select.select2(options);

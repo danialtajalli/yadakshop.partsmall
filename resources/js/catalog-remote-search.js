@@ -73,7 +73,8 @@ export default function catalogRemoteSearch({
                 || document.getElementById('listing-state');
             const citySelect = form?.querySelector('[data-listing-city]')
                 || document.getElementById('listing-city');
-            const specializationSelect = form?.querySelector('[name="specialization_id"]')
+            const specializationSelect = form?.querySelector('[data-listing-specialization]')
+                || form?.querySelector('[name="specialization_id"]')
                 || document.getElementById('listing-specialization');
 
             this.stateId = this.selectValue(stateSelect);
@@ -98,7 +99,8 @@ export default function catalogRemoteSearch({
 
             const stateSelect = form.querySelector('[data-listing-state]');
             const citySelect = form.querySelector('[data-listing-city]');
-            const specializationSelect = form.querySelector('[name="specialization_id"]');
+            const specializationSelect = form.querySelector('[data-listing-specialization]')
+                || form.querySelector('[name="specialization_id"]');
 
             const onStateChange = () => {
                 if (this.clearing) {
