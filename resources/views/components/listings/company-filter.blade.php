@@ -56,7 +56,7 @@
                             data-url="{{ route('shops.index') }}"
                             @selected($selected === null)
                         >
-                            همه کمپانی سازندهها
+                            همه کمپانی‌های سازنده
                         </option>
                         @foreach ($companies as $company)
                             <option
