@@ -121,7 +121,7 @@
 
 
     {{-- Shops --}}
-    <section id="shops" class="mb-12 mt-4 scroll-mt-20 rounded-2xl border border-line bg-white shadow-card ps-shops-section">
+    <section id="shops" class="mb-12 mt-12 scroll-mt-20 rounded-2xl border border-line bg-white shadow-card ps-shops-section" style="margin-top: 5rem">
         <div class="rounded-t-2xl border-b border-line bg-gradient-to-l from-gray-100 via-white to-white px-5 py-5 sm:px-6">
             <div class="flex flex-wrap items-end justify-between gap-4">
                 <div class="min-w-0">
