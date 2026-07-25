@@ -27,8 +27,9 @@
                         </span>
                         <a
                             href="{{ route('shops.index') }}"
-                            class="text-xs font-medium text-ink-muted transition hover:text-ink"
+                            class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-muted transition hover:text-ink"
                         >
+                            <i class="fa-solid fa-arrow-right text-[10px]" aria-hidden="true"></i>
                             بازگشت به همه فروشگاه‌ها
                         </a>
                     </div>
