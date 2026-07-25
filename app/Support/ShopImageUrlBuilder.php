@@ -12,20 +12,22 @@ class ShopImageUrlBuilder
 {
     public static function build(string $modelType, ImageType $imageType, int|string $modelId, string $path): string
     {
-        return asset(str_replace(
+        return asset(str_replace('//', '/',
+            str_replace(
             ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
             [$modelType, $imageType->value, (string) $modelId, $path],
-            config('partsmall.image_url')),
-        );
+            config('partsmall.image_url'))
+        ));
     }
 
     public static function buildCompanyLogoUrl(string $modelType, int|string $modelId, string $path): string
     {
-        return asset(str_replace(
+        return asset(str_replace('//', '/',
+            str_replace(
             ['{model_type}', '{image_type}', '{model_id}', '{image_name}'],
             [$modelType, '', (string) $modelId, $path],
-            config('partsmall.image_url')),
-        );
+            config('partsmall.image_url'))
+        ));
     }
 
     public static function attachShopMedia(Model $model, string $modelType = 'shop'): void
