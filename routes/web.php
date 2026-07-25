@@ -9,6 +9,7 @@ use App\Http\Controllers\PartSelectionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\RepairShopController;
+use App\Http\Controllers\Scripts\ConsolidateModelCategoriesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShopCommentController;
 use App\Http\Controllers\ShopController;
@@ -53,3 +54,6 @@ Route::post('forms/contact', [ContactFormController::class, 'store'])
 Route::get('page/contact', [ContactController::class, 'show'])->name('page.contact');
 Route::get('page/{slug}', [PageController::class, 'show'])
     ->name('page.show');
+
+Route::get('scripts/consolidate-model-categories', ConsolidateModelCategoriesController::class)
+    ->name('scripts.consolidate-model-categories');

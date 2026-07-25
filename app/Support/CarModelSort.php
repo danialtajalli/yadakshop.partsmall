@@ -40,6 +40,7 @@ class CarModelSort
     {
         return match ($categorySlug) {
             'year-miladi' => 0,
+            // year-shamsi is merged into year-fa (سال شمسی); keep both for older data.
             'year-shamsi', 'year-fa' => 1,
             'cc' => 2,
             default => 3,
