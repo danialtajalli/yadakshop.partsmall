@@ -46,7 +46,7 @@
                         'sm:grid-cols-2 lg:grid-cols-4' => $group['key'] !== 'stores' && $group['key'] !== 'repair_shops',
                     ])>
                         @foreach ($group['items'] as $item)
-                            @if (in_array($item['type'], ['فروشگاه', 'تعمیرگاه', 'نمایندگی'], true))
+                            @if (in_array($item['type'], ['فروشگاه', 'تعمیرگاه', 'نمایندگی', 'کمپانی', 'خودرو'], true))
                                 <x-search.result-card :item="$item" />
                             @else
                                 <a href="{{ $item['url'] }}" class="ps-card-interactive flex min-w-0 items-center gap-3 p-3">

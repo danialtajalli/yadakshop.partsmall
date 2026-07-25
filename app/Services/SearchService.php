@@ -154,8 +154,8 @@ class SearchService
      */
     private function vehicleGroup(string $query): array
     {
-        $companies = Company::search($query)->query(fn ($builder) => $builder->with('cars'))->get();
-        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company']))->get();
+        $companies = Company::search($query)->query(fn ($builder) => $builder->with(['cars', 'images']))->get();
+        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company.images']))->get();
         $items = $companies->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
             ->concat($cars->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
             ->concat($this->contextualVehicleItems($query))
@@ -182,12 +182,12 @@ class SearchService
         }
 
         $companies = Company::query()
-            ->with('cars')
+            ->with(['cars', 'images'])
             ->get()
             ->filter(fn (Company $company): bool => $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($company->name)));
 
         $cars = Car::query()
-            ->with(['company', 'models'])
+            ->with(['company.images', 'models'])
             ->get()
             ->filter(fn (Car $car): bool => $this->containsAnyOrderedTokenSet($queryTokens, [
                 $this->normalizer->tokens($car->name),
@@ -359,7 +359,7 @@ class SearchService
                 'subtitle' => $result->country,
                 'url' => route('cars.index', ['company' => $result->slug]),
                 'type' => 'کمپانی',
-                'image_url' => null,
+                'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof Car => [
                 'title' => $result->name,
@@ -368,7 +368,7 @@ class SearchService
                     ? route('models.index', ['company' => $result->company->slug, 'car' => $result->slug])
                     : CatalogUrls::companies(),
                 'type' => 'خودرو',
-                'image_url' => null,
+                'image_url' => $this->imageUrlFor($result->company ?? $result),
             ],
             // $result instanceof CarModel => $this->mapCarModel($result),
             default => [
@@ -387,8 +387,17 @@ class SearchService
             $result instanceof Shop => $this->shopImageUrl($result),
             $result instanceof RepairShop => $this->repairShopImageUrl($result),
             $result instanceof Representation => $this->representationImageUrl($result),
+            $result instanceof Company => $this->companyImageUrl($result),
             default => null,
         };
+    }
+
+    private function companyImageUrl(Company $company): ?string
+    {
+        $company->loadMissing('images');
+        $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+        return $logo ? ShopImageUrlBuilder::companyLogoUrl($logo) : null;
     }
 
     private function shopImageUrl(Shop $shop): ?string
