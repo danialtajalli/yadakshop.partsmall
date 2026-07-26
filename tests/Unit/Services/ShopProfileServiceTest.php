@@ -98,6 +98,34 @@ class ShopProfileServiceTest extends TestCase
         $this->assertSame('مخفی', $data['shop']->name);
     }
 
+    public function test_it_increments_visited_count_on_profile_view(): void
+    {
+        $shop = Shop::create([
+            'name' => 'بازدید',
+            'slug' => 'visited-shop',
+            'visited_count' => 2050,
+            'order' => 1,
+        ]);
+        $shop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.webp']);
+
+        $data = $this->service->getProfilePageData('visited-shop');
+
+        $this->assertSame(2051, $data['shop']->visited_count);
+        $this->assertSame(2051, $shop->fresh()->visited_count);
+    }
+
+    public function test_new_shops_get_random_visited_count_between_two_thousand_and_twenty_one_hundred(): void
+    {
+        $shop = Shop::create([
+            'name' => 'فروشگاه جدید',
+            'slug' => 'new-visited-shop',
+            'order' => 1,
+        ]);
+
+        $this->assertGreaterThanOrEqual(2000, $shop->visited_count);
+        $this->assertLessThanOrEqual(2100, $shop->visited_count);
+    }
+
     public function test_it_only_returns_confirmed_comments(): void
     {
         $shop = $this->createShopWithRelations();

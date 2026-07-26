@@ -45,6 +45,8 @@ class ShopProfileService
             throw (new ModelNotFoundException)->setModel(Shop::class, [$slug]);
         }
 
+        $this->incrementVisitedCount($shop);
+
         $shop->website_show = $shop->links->firstWhere('link_type', LinkType::Website);
         $shop->links = $shop->links->where('link_type', '!=', LinkType::Website);
 
@@ -68,6 +70,11 @@ class ShopProfileService
             'commentsCount' => $shop->comments->count(),
             'relatedShops' => $this->loadRelatedShops($shop),
         ];
+    }
+
+    public function incrementVisitedCount(Shop $shop): void
+    {
+        $shop->increment('visited_count');
     }
 
     /** @return Collection<int, Shop> */

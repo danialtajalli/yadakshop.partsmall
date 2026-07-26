@@ -13,9 +13,10 @@
             ? preg_replace('#^https?://#', '', $websiteLink->link_type->actionUrl($websiteLink->name))
             : null;
         $shareUrl = route('shop.profile', $shop->slug);
+        $qrImageUrl = \App\Support\ShopImageUrlBuilder::shopQrCodeUrl($shop->slug);
         $locationLabel = collect([$shop->city?->name, $shop->city?->state?->name])->filter()->implode('، ');
         $hasMap = $shop->latitude && $shop->longitude;
-        $pageViewCount = 2000 + (abs(crc32($shop->slug)) % 1500) + 1;
+        $pageViewCount = (int) ($shop->visited_count ?? 0);
         $qrDialogId = 'shop-qr-gallery-'.md5($shareUrl);
     @endphp
 
@@ -25,104 +26,127 @@
         ['label' => $shop->name, 'active' => true],
     ]" />
 
-    <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
+    <header class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($shop->cover ?? null)
-            <div class="h-28 w-full overflow-hidden border-b border-line sm:h-36">
+            <div class="relative h-36 w-full overflow-hidden sm:h-44">
                 <img src="{{ $shop->cover }}" alt="" class="size-full object-cover">
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent" aria-hidden="true"></div>
             </div>
         @endif
 
-        <div class="px-4 py-4 sm:px-6 sm:py-5">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+        <div class="border-b border-line bg-gradient-to-l from-surface via-white to-white px-4 py-5 sm:px-6 sm:py-6">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
+                <div class="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
+                    <x-ui.company-logo
+                        :name="$shop->name"
+                        :logo-url="$shop->logo ?? null"
+                        size="xl"
+                        @class([
+                            'shrink-0',
+                            'ring-1 ring-line' => ! filled($shop->cover ?? null),
+                            'relative z-[1] -mt-12 shadow-card ring-2 ring-white sm:-mt-14' => filled($shop->cover ?? null),
+                        ])
+                    />
 
-                <x-ui.company-logo
-                    :name="$shop->name"
-                    :logo-url="$shop->logo ?? null"
-                    size="xl"
-                    class="shrink-0 ring-1 ring-line"
-                />
-                <div class="min-w-0 flex-1">
-                    <div class="flex min-w-0 flex-wrap items-center gap-2">
-                        <h1 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">{{ $shop->name }}</h1>
-                        <x-shop.open-status :open="$isOpen" variant="compact" />
-                    </div>
+                    <div class="min-w-0 flex-1 space-y-3 sm:pt-0.5">
+                        <div class="space-y-1.5">
+                            <h1 class="text-balance text-2xl font-bold leading-tight tracking-tight text-ink sm:text-3xl">
+                                {{ $shop->name }}
+                            </h1>
 
-                    @if ($shop->secondary_name)
-                        <p class="mt-2 text-sm text-ink-muted">{{ $shop->secondary_name }}</p>
-                    @endif
+                            @if ($shop->secondary_name)
+                                <p class="text-sm leading-6 text-ink-muted sm:text-[15px]">{{ $shop->secondary_name }}</p>
+                            @endif
+                        </div>
 
-                    <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted sm:text-sm">
-                        @if ($averageRating)
-                            <span class="inline-flex items-center gap-1 font-medium text-accent">
-                                <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
-                                {{ number_format($averageRating, 1) }}
-                            </span>
-                        @endif
+                        <div class="flex flex-wrap items-center gap-2">
+                            <x-shop.open-status :open="$isOpen" variant="compact" />
 
-                        @if ($averageRating && $commentsCount > 0)
-                            <span class="text-line" aria-hidden="true">·</span>
-                        @endif
+                            @if ($shop->verified ?? false)
+                                <x-shop.trusted-badge />
+                            @endif
+                        </div>
 
-                        @if ($commentsCount > 0)
-                            <span>{{ number_format($commentsCount) }} نظر</span>
-                        @endif
-
-                        @if (($averageRating || $commentsCount > 0) && $locationLabel)
-                            <span class="text-line" aria-hidden="true">·</span>
-                        @endif
-
-                        @if ($locationLabel)
-                            <span class="inline-flex items-center gap-1">
-                                <i class="fa-solid fa-location-dot text-[11px] text-brand" aria-hidden="true"></i>
-                                @if ($hasMap)
-                                    <a href="#shop-location" class="transition hover:text-ink">{{ $locationLabel }}</a>
-                                @else
-                                    {{ $locationLabel }}
+                        @if ($averageRating || $commentsCount > 0 || $locationLabel || $websiteUrl)
+                            <ul class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-muted" role="list">
+                                @if ($averageRating)
+                                    <li class="inline-flex items-center gap-1.5 font-semibold text-accent">
+                                        <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
+                                        <span class="tabular-nums">{{ number_format($averageRating, 1) }}</span>
+                                        <span class="sr-only">از ۵</span>
+                                    </li>
                                 @endif
-                            </span>
+
+                                @if ($commentsCount > 0)
+                                    <li class="inline-flex items-center gap-1.5">
+                                        <i class="fa-regular fa-comment text-[12px] text-brand" aria-hidden="true"></i>
+                                        <span class="tabular-nums">{{ number_format($commentsCount) }} نظر</span>
+                                    </li>
+                                @endif
+
+                                @if ($locationLabel)
+                                    <li class="inline-flex min-w-0 items-center gap-1.5">
+                                        <i class="fa-solid fa-location-dot text-[12px] text-brand" aria-hidden="true"></i>
+                                        @if ($hasMap)
+                                            <a href="#shop-location" class="truncate transition hover:text-ink">{{ $locationLabel }}</a>
+                                        @else
+                                            <span class="truncate">{{ $locationLabel }}</span>
+                                        @endif
+                                    </li>
+                                @endif
+
+                                @if ($websiteUrl)
+                                    <li class="inline-flex min-w-0 items-center gap-1.5">
+                                        <i class="fa-solid fa-globe text-[12px] text-[#2563eb]" aria-hidden="true"></i>
+                                        <a
+                                            href="{{ $websiteUrl }}"
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="truncate font-medium text-ink transition hover:text-brand"
+                                            dir="ltr"
+                                            title="{{ $websiteUrl }}"
+                                        >{{ $websiteLabel }}</a>
+                                    </li>
+                                @endif
+                            </ul>
                         @endif
-                    </div>
-                    <div class="mt-5">
-                        @if ($shop->verified ?? false)
-                            <x-shop.trusted-badge />
-                        @endif
+
+                        <div class="flex flex-wrap items-center gap-2 pt-1">
+                            <div class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs text-ink-muted">
+                                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+                                <span class="tabular-nums font-semibold text-ink">{{ number_format($pageViewCount) }}</span>
+                                <span>بازدید</span>
+                            </div>
+
+                            <button
+                                type="button"
+                                data-shop-share
+                                data-share-url="{{ $shareUrl }}"
+                                data-share-title="{{ $shop->name }}"
+                                class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                            >
+                                <i class="fa-solid fa-share-nodes text-[12px]" aria-hidden="true"></i>
+                                <span data-shop-share-label>اشتراک‌گذاری</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <aside class="flex shrink-0 items-start gap-3 border-t border-line pt-3 sm:border-t-0 sm:border-s sm:ps-5 sm:pt-0">
+                <aside class="shrink-0 border-t border-line pt-4 lg:w-[9.5rem] lg:border-t-0 lg:border-s lg:ps-6 lg:pt-0">
+                    <p class="mb-2 text-xs font-medium text-ink-muted lg:text-center">QR صفحه فروشگاه</p>
                     <x-shop.qr-gallery
                         variant="hero"
                         :url="$shareUrl"
+                        :image-url="$qrImageUrl"
                         :title="$shop->name"
                         :dialog-id="$qrDialogId"
-                        :caption-url="$websiteUrl"
-                        :caption-label="$websiteLabel"
-                        class="w-[7.5rem] sm:w-[8.25rem]"
+                        class="mx-auto w-[7.75rem] sm:w-[8.5rem] lg:w-full"
                     />
-
-                    <div class="flex flex-col gap-2 pt-0.5">
-                        <div class="inline-flex items-center gap-1.5 rounded-lg bg-surface px-2.5 py-1.5 text-[11px] text-ink-muted">
-                            <i class="fa-regular fa-eye" aria-hidden="true"></i>
-                            <span class="tabular-nums font-semibold text-ink">{{ number_format($pageViewCount) }}</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            data-shop-share
-                            data-share-url="{{ $shareUrl }}"
-                            data-share-title="{{ $shop->name }}"
-                            class="inline-flex size-9 items-center justify-center rounded-lg border border-line bg-white text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-                            aria-label="اشتراک‌گذاری"
-                            title="اشتراک‌گذاری"
-                        >
-                            <i class="fa-solid fa-share-nodes text-sm" aria-hidden="true"></i>
-                            <span class="sr-only" data-shop-share-label>اشتراک‌گذاری</span>
-                        </button>
-                    </div>
+                    <p class="mt-2 text-[11px] leading-5 text-ink-muted lg:text-center">برای اشتراک سریع اسکن کنید</p>
                 </aside>
             </div>
         </div>
-    </div>
+    </header>
 
     <div class="mb-3 grid gap-8 lg:grid-cols-12">
         <aside class="order-1 space-y-6 lg:order-2 lg:col-span-4">
@@ -358,6 +382,7 @@
     <x-shop.qr-gallery
         variant="dialog"
         :url="$shareUrl"
+        :image-url="$qrImageUrl"
         :title="$shop->name"
         :dialog-id="$qrDialogId"
     />

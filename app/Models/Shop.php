@@ -26,6 +26,7 @@ class Shop extends Model
         'person_responsible_email',
         'website_show',
         'order',
+        'visited_count',
         'latitude',
         'longitude',
         'city_id',
@@ -48,6 +49,7 @@ class Shop extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'order' => 'integer',
+            'visited_count' => 'integer',
             'off' => 'boolean',
         ];
     }
