@@ -51,6 +51,12 @@ class ShopImageUrlBuilder
         return self::buildCompanyLogoUrl('company', $image->company_id, $image->path);
     }
 
+    public static function shopQrCodeUrl(string $shopSlug): string
+    {
+        $shopSlug = strtolower($shopSlug);
+        return asset('panel/assets/uploads/img/'.$shopSlug.'qrcode.png');
+    }
+
     public static function attachRepairShopMedia(RepairShop $repairShop): void
     {
         $logo = $repairShop->images->firstWhere('type', ImageType::Logo);

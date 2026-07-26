@@ -1,5 +1,6 @@
 @props([
     'url',
+    'imageUrl' => null,
     'title' => '',
     'variant' => 'sidebar',
     'dialogId' => null,
@@ -9,6 +10,7 @@
 
 @php
     $resolvedDialogId = $dialogId ?? ('shop-qr-gallery-'.md5($url));
+    $hasQrImage = filled($imageUrl);
 @endphp
 
 @if ($variant === 'dialog')
@@ -17,6 +19,7 @@
         data-ps-qr-gallery
         data-ps-qr-url="{{ $url }}"
         data-ps-qr-title="{{ $title }}"
+        @if ($hasQrImage) data-ps-qr-image-url="{{ $imageUrl }}" @endif
         class="ps-qr-gallery fixed inset-0 z-[70] m-0 max-h-none w-full max-w-none border-0 bg-transparent p-0 shadow-none backdrop:bg-ink/75 open:flex open:items-center open:justify-center"
         aria-label="نمایش QR صفحه فروشگاه"
     >
@@ -44,12 +47,25 @@
                     data-ps-qr-stage
                 >
                     <div class="ps-qr-gallery__image-wrap origin-center transition-transform duration-200 ease-out" data-ps-qr-image-wrap>
-                        <x-shop.qr-placeholder
-                            :seed="$url"
-                            :size="280"
-                            class="max-h-full max-w-full rounded-xl bg-white p-3 shadow-lg ring-1 ring-white/20"
-                            data-ps-qr-image
-                        />
+                        @if ($hasQrImage)
+                            <img
+                                src="{{ $imageUrl }}"
+                                alt="QR صفحه {{ $title }}"
+                                width="280"
+                                height="280"
+                                class="max-h-full max-w-full rounded-xl bg-white p-3 shadow-lg ring-1 ring-white/20"
+                                data-ps-qr-image
+                                loading="lazy"
+                                decoding="async"
+                            >
+                        @else
+                            <x-shop.qr-placeholder
+                                :seed="$url"
+                                :size="280"
+                                class="max-h-full max-w-full rounded-xl bg-white p-3 shadow-lg ring-1 ring-white/20"
+                                data-ps-qr-image
+                            />
+                        @endif
                     </div>
                 </div>
 
@@ -89,11 +105,23 @@
         aria-controls="{{ $resolvedDialogId }}"
         aria-label="مشاهده QR صفحه"
     >
-        <x-shop.qr-placeholder
-            :seed="$url"
-            :size="32"
-            class="rounded ring-1 ring-line transition group-hover:ring-brand/20"
-        />
+        @if ($hasQrImage)
+            <img
+                src="{{ $imageUrl }}"
+                alt=""
+                width="32"
+                height="32"
+                class="size-8 rounded bg-white object-contain ring-1 ring-line transition group-hover:ring-brand/20"
+                loading="lazy"
+                decoding="async"
+            >
+        @else
+            <x-shop.qr-placeholder
+                :seed="$url"
+                :size="32"
+                class="rounded ring-1 ring-line transition group-hover:ring-brand/20"
+            />
+        @endif
         <span class="text-[11px] font-medium text-ink-muted transition group-hover:text-ink">QR صفحه</span>
     </button>
 @elseif ($variant === 'hero')
@@ -111,11 +139,23 @@
             aria-controls="{{ $resolvedDialogId }}"
             aria-label="مشاهده QR صفحه"
         >
-            <x-shop.qr-placeholder
-                :seed="$url"
-                :size="104"
-                class="h-auto w-full rounded-md"
-            />
+            @if ($hasQrImage)
+                <img
+                    src="{{ $imageUrl }}"
+                    alt="QR صفحه {{ $title }}"
+                    width="104"
+                    height="104"
+                    class="h-auto w-full rounded-md object-contain"
+                    loading="lazy"
+                    decoding="async"
+                >
+            @else
+                <x-shop.qr-placeholder
+                    :seed="$url"
+                    :size="104"
+                    class="h-auto w-full rounded-md"
+                />
+            @endif
         </button>
 
         @if ($resolvedCaptionUrl)
@@ -140,11 +180,23 @@
             aria-haspopup="dialog"
             aria-controls="{{ $resolvedDialogId }}"
         >
-            <x-shop.qr-placeholder
-                :seed="$url"
-                :size="88"
-                class="rounded-md ring-1 ring-line transition group-hover:ring-brand/20"
-            />
+            @if ($hasQrImage)
+                <img
+                    src="{{ $imageUrl }}"
+                    alt="QR صفحه {{ $title }}"
+                    width="88"
+                    height="88"
+                    class="rounded-md bg-white object-contain ring-1 ring-line transition group-hover:ring-brand/20"
+                    loading="lazy"
+                    decoding="async"
+                >
+            @else
+                <x-shop.qr-placeholder
+                    :seed="$url"
+                    :size="88"
+                    class="rounded-md ring-1 ring-line transition group-hover:ring-brand/20"
+                />
+            @endif
             <span class="text-xs font-medium text-ink-muted transition group-hover:text-ink">مشاهده QR صفحه</span>
         </button>
         <p class="text-center text-[11px] leading-5 text-ink-muted">برای اشتراک سریع پروفایل اسکن کنید</p>
@@ -308,14 +360,25 @@
                     });
 
                     dialog.querySelector('[data-ps-qr-download]')?.addEventListener('click', function () {
-                        const svg = dialog.querySelector('[data-ps-qr-image]');
                         const title = dialog.dataset.psQrTitle || 'shop-qr';
+                        const safeName = title.replace(/\s+/g, '-').toLowerCase();
+                        const imageUrl = dialog.dataset.psQrImageUrl || '';
+                        const image = dialog.querySelector('[data-ps-qr-image]');
 
-                        if (!(svg instanceof SVGElement)) {
+                        if (imageUrl !== '') {
+                            const link = document.createElement('a');
+                            link.href = imageUrl;
+                            link.download = safeName + '-qr.png';
+                            link.click();
+
                             return;
                         }
 
-                        const clone = svg.cloneNode(true);
+                        if (!(image instanceof SVGElement)) {
+                            return;
+                        }
+
+                        const clone = image.cloneNode(true);
                         clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
                         const blob = new Blob([new XMLSerializer().serializeToString(clone)], {
@@ -324,7 +387,7 @@
                         const objectUrl = URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = objectUrl;
-                        link.download = title.replace(/\s+/g, '-').toLowerCase() + '-qr.svg';
+                        link.download = safeName + '-qr.svg';
                         link.click();
                         URL.revokeObjectURL(objectUrl);
                     });
