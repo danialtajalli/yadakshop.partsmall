@@ -1,6 +1,6 @@
 @php
-    $displayNumber = config('partsmall.floating_call.display', '021 77 222 4 99');
-    $telNumber = config('partsmall.floating_call.tel', '02177222499');
+    $displayNumber = config('partsmall.floating_call.display', '021-91556162');
+    $telNumber = config('partsmall.floating_call.tel', '02191556162');
 @endphp
 
 <div

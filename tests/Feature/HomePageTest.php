@@ -56,8 +56,8 @@ class HomePageTest extends TestCase
         $response->assertSee('id="mobile-meilisearch-parts-search"', false);
         $response->assertSee('action="'.route('search.index').'"', false);
         $response->assertSee('data-floating-call', false);
-        $response->assertSee('021 77 222 4 99', false);
-        $response->assertSee('href="tel:02177222499"', false);
+        $response->assertSee('02191556162', false);
+        $response->assertSee('href="tel:02191556162"', false);
     }
 
     public function test_home_page_shows_featured_entities_and_parts(): void

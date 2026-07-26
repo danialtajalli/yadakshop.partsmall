@@ -6,7 +6,7 @@ return [
 
     'contact' => [
         'image_url' => '/img/contact.webp',
-        'phone' => env('PARTSMALL_CONTACT_PHONE', '021 77 222 4 99'),
+        'phone' => env('PARTSMALL_CONTACT_PHONE', '02191556162'),
         'mobile' => env('PARTSMALL_CONTACT_MOBILE', '0935-7884727'),
         'email' => env('PARTSMALL_CONTACT_EMAIL', 'info@partsmall.ir'),
         'address' => env('PARTSMALL_CONTACT_ADDRESS', 'تهران - بهارستان'),
@@ -14,8 +14,8 @@ return [
     ],
 
     'floating_call' => [
-        'display' => env('PARTSMALL_FLOATING_CALL_DISPLAY', '021 77 222 4 99'),
-        'tel' => env('PARTSMALL_FLOATING_CALL_TEL', '02177222499'),
+        'display' => env('PARTSMALL_FLOATING_CALL_DISPLAY', '021-91556162'),
+        'tel' => env('PARTSMALL_FLOATING_CALL_TEL', '02191556162'),
     ],
 
     'theme_color' => '#f27c22',
