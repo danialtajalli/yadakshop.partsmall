@@ -29,9 +29,20 @@
 
             <div class="relative px-4 py-9 sm:px-7 sm:py-11 lg:px-10 lg:py-12">
                 <div class="ps-stats-strip__intro mb-9 text-center sm:mb-11">
-                    <p class="text-xl font-semibold tracking-[0.22em] text-brand-soft/90 sm:text-xs">
-                        پارتس‌مال
-                    </p>
+                    <div class="flex flex-col items-center gap-3">
+                        <img
+                            src="{{ asset('panel/assets/uploads/img/favicon.webp') }}"
+                            alt="پارتس‌مال"
+                            class="size-12 rounded-2xl shadow-[0_10px_28px_-10px_rgb(242_124_34_/_0.55)] ring-1 ring-white/15 sm:size-14"
+                            width="56"
+                            height="56"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                        <p class="text-xl font-semibold tracking-[0.22em] text-brand-soft/90 sm:text-xs">
+                            پارتس‌مال
+                        </p>
+                    </div>
                     <h2 class="mx-auto mt-3 max-w-2xl text-xl font-black leading-snug tracking-tight text-white sm:text-3xl lg:text-[2.35rem] lg:leading-tight">
                         اعتباری به وسعت یک بازار
                     </h2>
