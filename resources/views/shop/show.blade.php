@@ -121,9 +121,12 @@
                             <button
                                 type="button"
                                 data-shop-share
+                                data-shop-share-target="shop-share-sheet"
                                 data-share-url="{{ $shareUrl }}"
                                 data-share-title="{{ $shop->name }}"
                                 class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                                aria-haspopup="dialog"
+                                aria-controls="shop-share-sheet"
                             >
                                 <i class="fa-solid fa-share-nodes text-[12px]" aria-hidden="true"></i>
                                 <span data-shop-share-label>اشتراک‌گذاری</span>
@@ -387,27 +390,15 @@
         :dialog-id="$qrDialogId"
     />
 
+    <x-shop.share-sheet
+        :url="$shareUrl"
+        :title="$shop->name"
+        dialog-id="shop-share-sheet"
+    />
+
     <x-shop.comment-success-modal />
 
     <x-ui.toast-host />
-
-    @push('scripts')
-        <script>
-            (function () {
-                const shareButton = document.querySelector('[data-shop-share]');
-
-                if (!shareButton) {
-                    return;
-                }
-
-                const shareUrl = shareButton.dataset.shareUrl || window.location.href;
-
-                shareButton.addEventListener('click', function () {
-                    window.psCopyAndToast?.(shareUrl, 'لینک صفحه کپی شد', 'کپی لینک انجام نشد');
-                });
-            })();
-        </script>
-    @endpush
 
     @if ($shop->phones->isNotEmpty())
         @push('overlays')

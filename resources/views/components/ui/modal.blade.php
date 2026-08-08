@@ -19,12 +19,27 @@
 </dialog>
 
 @once
+    @push('head')
+        <style>
+            dialog[data-ps-modal]:not([open]) {
+                display: none;
+            }
+
+            dialog[data-ps-modal][open] {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+    @endpush
+
     @push('scripts')
         <script>
             (function () {
                 const syncBodyScroll = function () {
                     const hasOpenModal = document.querySelector('dialog[data-ps-modal][open]') !== null;
-                    document.body.classList.toggle('ps-modal-open', hasOpenModal);
+                    const hasOpenGallery = document.querySelector('dialog[data-ps-qr-gallery][open]') !== null;
+                    document.body.classList.toggle('ps-modal-open', hasOpenModal || hasOpenGallery);
                 };
 
                 const bindModal = function (dialog) {
