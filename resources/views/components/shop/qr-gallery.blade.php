@@ -20,10 +20,10 @@
         data-ps-qr-url="{{ $url }}"
         data-ps-qr-title="{{ $title }}"
         @if ($hasQrImage) data-ps-qr-image-url="{{ $imageUrl }}" @endif
-        class="ps-qr-gallery fixed inset-0 z-[70] m-0 max-h-none w-full max-w-none border-0 bg-transparent p-0 shadow-none backdrop:bg-ink/75 open:flex open:items-center open:justify-center"
+        class="ps-qr-gallery fixed inset-0 z-[70] m-0 max-h-none w-full max-w-none border-0 bg-transparent p-4 shadow-none backdrop:bg-ink/75"
         aria-label="نمایش QR صفحه فروشگاه"
     >
-        <div class="ps-qr-gallery__shell relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink shadow-2xl">
+        <div class="ps-qr-gallery__shell relative mx-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink shadow-2xl">
             <div class="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
                 <div class="min-w-0">
                     <p class="text-sm font-semibold text-white">QR صفحه فروشگاه</p>
@@ -208,6 +208,12 @@
         <style>
             .ps-qr-gallery:not([open]) {
                 display: none;
+            }
+
+            .ps-qr-gallery[open] {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .ps-qr-gallery__shell {
