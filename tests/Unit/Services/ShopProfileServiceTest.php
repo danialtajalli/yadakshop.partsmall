@@ -114,6 +114,23 @@ class ShopProfileServiceTest extends TestCase
         $this->assertSame(2051, $shop->fresh()->visited_count);
     }
 
+    public function test_it_increments_visited_count_at_most_twice_per_ip_per_day(): void
+    {
+        $shop = Shop::create([
+            'name' => 'بازدید محدود',
+            'slug' => 'visited-limit-shop',
+            'visited_count' => 2000,
+            'order' => 1,
+        ]);
+        $shop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.webp']);
+
+        $this->service->getProfilePageData('visited-limit-shop');
+        $this->service->getProfilePageData('visited-limit-shop');
+        $this->service->getProfilePageData('visited-limit-shop');
+
+        $this->assertSame(2002, $shop->fresh()->visited_count);
+    }
+
     public function test_new_shops_get_random_visited_count_between_two_thousand_and_twenty_one_hundred(): void
     {
         $shop = Shop::create([

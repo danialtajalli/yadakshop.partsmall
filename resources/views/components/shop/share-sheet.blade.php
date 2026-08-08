@@ -98,10 +98,10 @@
 
         <button
             type="button"
-            class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+            class="ps-share-sheet__copy mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
             data-ps-share-copy
         >
-            <i class="fa-solid fa-link text-sm text-brand" aria-hidden="true"></i>
+            <i class="fa-solid fa-link text-sm text-brand" data-ps-share-copy-icon aria-hidden="true"></i>
             <span data-ps-share-copy-label>کپی لینک</span>
         </button>
 
@@ -148,6 +148,58 @@
             dialog[data-ps-share-sheet] {
                 z-index: 70;
             }
+
+            .ps-share-sheet__copy.is-copied {
+                border-color: rgb(16 185 129 / 0.45);
+                background: rgb(236 253 245);
+                color: rgb(6 95 70);
+                animation: ps-share-copy-pulse 0.45s ease;
+            }
+
+            .ps-share-sheet__copy.is-copied [data-ps-share-copy-icon] {
+                color: rgb(16 185 129);
+            }
+
+            .ps-share-sheet__copy [data-ps-share-copy-label] {
+                display: inline-block;
+            }
+
+            .ps-share-sheet__copy.is-copied [data-ps-share-copy-label] {
+                animation: ps-share-copy-label 0.35s ease;
+            }
+
+            @keyframes ps-share-copy-pulse {
+                0% {
+                    transform: scale(1);
+                }
+
+                40% {
+                    transform: scale(1.02);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            @keyframes ps-share-copy-label {
+                0% {
+                    opacity: 0;
+                    transform: translateY(0.25rem);
+                }
+
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .ps-share-sheet__copy.is-copied,
+                .ps-share-sheet__copy.is-copied [data-ps-share-copy-label] {
+                    animation: none;
+                }
+            }
         </style>
     @endpush
 
@@ -167,17 +219,37 @@
 
                     dialog.querySelector('[data-ps-share-copy]')?.addEventListener('click', function () {
                         const url = dialog.dataset.psShareUrl || window.location.href;
+                        const button = dialog.querySelector('[data-ps-share-copy]');
                         const label = dialog.querySelector('[data-ps-share-copy-label]');
-                        const defaultLabel = label?.textContent?.trim() || 'کپی لینک';
+                        const icon = dialog.querySelector('[data-ps-share-copy-icon]');
+                        const defaultLabel = 'کپی لینک';
 
                         window.psCopyAndToast?.(url, 'لینک صفحه کپی شد', 'کپی لینک انجام نشد');
 
-                        if (label) {
-                            label.textContent = 'کپی شد';
-                            window.setTimeout(function () {
-                                label.textContent = defaultLabel;
-                            }, 2000);
+                        if (!button || !label) {
+                            return;
                         }
+
+                        button.classList.remove('is-copied');
+                        void button.offsetWidth;
+                        button.classList.add('is-copied');
+                        label.textContent = 'لینک کپی شد';
+
+                        if (icon) {
+                            icon.classList.remove('fa-link');
+                            icon.classList.add('fa-check');
+                        }
+
+                        window.clearTimeout(Number(button.dataset.copyResetTimer || 0));
+                        button.dataset.copyResetTimer = String(window.setTimeout(function () {
+                            button.classList.remove('is-copied');
+                            label.textContent = defaultLabel;
+
+                            if (icon) {
+                                icon.classList.remove('fa-check');
+                                icon.classList.add('fa-link');
+                            }
+                        }, 2200));
                     });
 
                     dialog.querySelector('[data-ps-share-instagram]')?.addEventListener('click', function () {

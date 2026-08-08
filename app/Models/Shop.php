@@ -85,6 +85,10 @@ class Shop extends Model
             if ($shop->order === null) {
                 $shop->order = (static::max('order') ?? 0) + 1;
             }
+
+            if ($shop->visited_count === null) {
+                $shop->visited_count = random_int(2000, 2100);
+            }
         });
     }
 

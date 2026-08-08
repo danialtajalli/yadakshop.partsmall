@@ -9,12 +9,16 @@ use App\Models\Phone;
 use App\Models\Shop;
 use App\Support\EnglishDigits;
 use App\Support\ShopImageUrlBuilder;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\RateLimiter;
+
 class ShopProfileService
 {
     private const RELATED_SHOPS_LIMIT = 8;
+
+    private const MAX_VISITS_PER_IP_PER_DAY = 2;
 
     /**
      * @return array{
@@ -74,7 +78,18 @@ class ShopProfileService
 
     public function incrementVisitedCount(Shop $shop): void
     {
-        $shop->increment('visited_count');
+        $ip = request()->ip() ?: '0.0.0.0';
+        $key = 'shop-profile-visit:'.$shop->getKey().':'.$ip;
+        $decaySeconds = max(1, (int) now()->diffInSeconds(now()->copy()->endOfDay()));
+
+        RateLimiter::attempt(
+            $key,
+            self::MAX_VISITS_PER_IP_PER_DAY,
+            function () use ($shop): void {
+                $shop->increment('visited_count');
+            },
+            $decaySeconds,
+        );
     }
 
     /** @return Collection<int, Shop> */

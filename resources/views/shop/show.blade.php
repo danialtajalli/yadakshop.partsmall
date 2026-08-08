@@ -9,8 +9,8 @@
     @php
         $websiteLink = $shop->website_show;
         $websiteUrl = $websiteLink ? $websiteLink->link_type->actionUrl($websiteLink->name) : null;
-        $websiteLabel = $websiteLink
-            ? preg_replace('#^https?://#', '', $websiteLink->link_type->actionUrl($websiteLink->name))
+        $websiteLabel = $websiteUrl
+            ? trim((string) preg_replace('#^https?://#i', '', $websiteUrl), '/')
             : null;
         $shareUrl = route('shop.profile', $shop->slug);
         $qrImageUrl = \App\Support\ShopImageUrlBuilder::shopQrCodeUrl($shop->slug);
@@ -101,10 +101,10 @@
                                         <a
                                             href="{{ $websiteUrl }}"
                                             target="_blank"
-                                            rel="noopener"
+                                            rel="noopener sponsored nofollow"
                                             class="truncate font-medium text-ink transition hover:text-brand"
                                             dir="ltr"
-                                            title="{{ $websiteUrl }}"
+                                            title="{{ $websiteLabel }}"
                                         >{{ $websiteLabel }}</a>
                                     </li>
                                 @endif
