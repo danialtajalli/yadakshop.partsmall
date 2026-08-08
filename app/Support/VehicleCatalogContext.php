@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\ImageType;
 use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\Company;
@@ -25,7 +26,14 @@ class VehicleCatalogContext
         $companySlug = !empty($companySlug) ? ($request->string('company')->trim()->toString()) : $company_data;
 
         if ($companySlug !== '') {
-            $company = Company::query()->where('slug', $companySlug)->first();
+            $company = Company::query()
+                ->with('images')
+                ->where('slug', $companySlug)
+                ->first();
+
+            if ($company !== null) {
+                self::attachCompanyLogo($company);
+            }
         }
 
         $carSlug = $request->string('car')->trim()->toString();
@@ -49,6 +57,15 @@ class VehicleCatalogContext
         }
 
         return new self($company, $car, $model);
+    }
+
+    public static function attachCompanyLogo(Company $company): void
+    {
+        $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+        $company->logo_url = $logo
+            ? ShopImageUrlBuilder::companyLogoUrl($logo)
+            : null;
     }
 
     /**

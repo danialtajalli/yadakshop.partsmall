@@ -18,13 +18,19 @@
     <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
         <div class="min-w-0 flex-1">
             <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
-                <div class="border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
-                    <x-ui.section-heading
-                        label="قطعات"
-                        :title="$title"
-                        :description="$description"
-                        heading="h1"
-                    />
+                <div class="relative border-b border-line bg-gradient-to-l from-gray-100 via-white px-5 py-6 sm:px-8 sm:py-8">
+                    @if ($context->company)
+                        <x-ui.company-logo-wash :logo-url="$context->company->logo_url ?? null" />
+                    @endif
+
+                    <div class="relative min-w-0">
+                        <x-ui.section-heading
+                            label="قطعات"
+                            :title="$title"
+                            :description="$description"
+                            heading="h1"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

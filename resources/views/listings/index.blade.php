@@ -28,20 +28,8 @@
                 <div class="pointer-events-none absolute -end-10 -top-16 size-48 rounded-full bg-brand-soft/15 blur-3xl" aria-hidden="true"></div>
                 <div class="pointer-events-none absolute -bottom-20 start-1/3 size-40 rounded-full bg-brand/5 blur-2xl" aria-hidden="true"></div>
 
-                @if (isset($filterCompany) && $filterCompany && filled($filterCompany->logo_url ?? null))
-                    <div
-                        class="pointer-events-none absolute inset-y-0 end-0 w-[55%] max-w-md sm:w-[45%]"
-                        aria-hidden="true"
-                    >
-                        <img
-                            src="{{ $filterCompany->logo_url }}"
-                            alt=""
-                            class="absolute end-[-10%] top-1/2 h-[140%] w-auto max-w-none -translate-y-1/2 object-contain opacity-[0.12] sm:opacity-[0.14]"
-                            loading="lazy"
-                            decoding="async"
-                        >
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-white"></div>
-                    </div>
+                @if (isset($filterCompany) && $filterCompany)
+                    <x-ui.company-logo-wash :logo-url="$filterCompany->logo_url ?? null" />
                 @endif
 
                 <div class="relative min-w-0">
