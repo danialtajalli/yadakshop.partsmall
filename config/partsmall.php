@@ -18,6 +18,11 @@ return [
         'tel' => env('PARTSMALL_FLOATING_CALL_TEL', '02191556162'),
     ],
 
+    /*
+     | Public base URL encoded into shop profile QR codes.
+     */
+    'qr_profile_base_url' => env('PARTSMALL_QR_PROFILE_BASE_URL', 'https://partsmall.ir'),
+
     'theme_color' => '#f27c22',
 
     /*

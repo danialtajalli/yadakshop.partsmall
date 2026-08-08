@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToCity;
+use App\Support\ShopQrCodeGenerator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 use Laravel\Scout\Searchable;
 
 class Shop extends Model
@@ -88,6 +90,18 @@ class Shop extends Model
 
             if ($shop->visited_count === null) {
                 $shop->visited_count = random_int(2000, 2100);
+            }
+        });
+
+        static::created(function (Shop $shop): void {
+            try {
+                ShopQrCodeGenerator::generate($shop);
+            } catch (\Throwable $exception) {
+                Log::warning('Shop QR generation failed after create.', [
+                    'shop_id' => $shop->id,
+                    'slug' => $shop->slug,
+                    'error' => $exception->getMessage(),
+                ]);
             }
         });
     }
