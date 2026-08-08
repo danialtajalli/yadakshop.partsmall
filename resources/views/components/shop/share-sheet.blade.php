@@ -7,8 +7,12 @@
 @php
     $encodedUrl = rawurlencode($url);
     $encodedText = rawurlencode($title !== '' ? $title : $url);
+    $emailSubject = rawurlencode($title !== '' ? $title : 'پارتس‌مال');
+    $emailBody = rawurlencode(($title !== '' ? $title."\n\n" : '').$url);
     $telegramShareUrl = 'https://t.me/share/url?url='.$encodedUrl.'&text='.$encodedText;
     $baleShareUrl = 'https://ble.ir/share/url?url='.$encodedUrl;
+    $twitterShareUrl = 'https://twitter.com/intent/tweet?url='.$encodedUrl.'&text='.$encodedText;
+    $emailShareUrl = 'mailto:?subject='.$emailSubject.'&body='.$emailBody;
 @endphp
 
 <x-ui.modal :id="$dialogId" class="z-[70]" data-ps-share-sheet data-ps-share-url="{{ $url }}" data-ps-share-title="{{ $title }}">
@@ -44,18 +48,6 @@
             </a>
 
             <a
-                href = "#"
-                type="button"
-                class="ps-share-sheet__channel"
-                data-ps-share-instagram
-            >
-                <span class="ps-share-sheet__icon bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]">
-                    <i class="fa-brands fa-instagram text-lg text-white" aria-hidden="true"></i>
-                </span>
-                <span>اینستاگرام</span>
-            </a>
-
-            <a
                 href="{{ $baleShareUrl }}"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -76,23 +68,25 @@
             </a>
 
             <a
-                href = "#"
-                type="button"
+                href="{{ $twitterShareUrl }}"
+                target="_blank"
+                rel="noopener noreferrer"
                 class="ps-share-sheet__channel"
-                data-ps-share-rubika
             >
-                <span class="ps-share-sheet__icon bg-transparent">
-                    <img
-                        src="{{ asset('img/brands/rubika.png') }}"
-                        alt=""
-                        width="28"
-                        height="28"
-                        class="size-7 rounded-md object-contain"
-                        loading="lazy"
-                        decoding="async"
-                    >
+                <span class="ps-share-sheet__icon bg-[#1DA1F2]">
+                    <i class="fa-brands fa-twitter text-lg text-white" aria-hidden="true"></i>
                 </span>
-                <span>روبیکا</span>
+                <span>توییتر</span>
+            </a>
+
+            <a
+                href="{{ $emailShareUrl }}"
+                class="ps-share-sheet__channel"
+            >
+                <span class="ps-share-sheet__icon bg-[#EA4335]">
+                    <i class="fa-solid fa-envelope text-lg text-white" aria-hidden="true"></i>
+                </span>
+                <span>ایمیل</span>
             </a>
         </div>
 
@@ -252,29 +246,6 @@
                         }, 2200));
                     });
 
-                    dialog.querySelector('[data-ps-share-instagram]')?.addEventListener('click', function () {
-                        const url = dialog.dataset.psShareUrl || window.location.href;
-
-                        window.psCopyAndToast?.(
-                            url,
-                            'لینک کپی شد؛ در اینستاگرام بچسبانید',
-                            'کپی لینک انجام نشد',
-                        );
-
-                        window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
-                    });
-
-                    dialog.querySelector('[data-ps-share-rubika]')?.addEventListener('click', function () {
-                        const url = dialog.dataset.psShareUrl || window.location.href;
-
-                        window.psCopyAndToast?.(
-                            url,
-                            'لینک کپی شد؛ در روبیکا بچسبانید',
-                            'کپی لینک انجام نشد',
-                        );
-
-                        window.open('https://m.rubika.ir/', '_blank', 'noopener,noreferrer');
-                    });
                 };
 
                 document.querySelectorAll('dialog[data-ps-share-sheet]').forEach(bindShareSheet);
