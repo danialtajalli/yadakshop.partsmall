@@ -8,17 +8,19 @@ use App\Models\Car;
 use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Company;
-use App\Models\Image;
 use App\Models\Part;
 use App\Models\Shop;
 use App\Models\State;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
+use __PHP_Incomplete_Class;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ProductService
 {
     private const RELATED_PRODUCTS_LIMIT = 8;
+    private const FILTER_CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -55,7 +57,7 @@ class ProductService
 
         $shops->each(function (Shop $shop) use ($company, $car): void {
             $shop->description = $this->sanitizeDescription($shop->description, $company, $car);
-            $this->loadImagesForShops($shop);
+            ShopImageUrlBuilder::attachShopMedia($shop);
         });
 
         $car->name = strtoupper($car->name);
@@ -98,7 +100,8 @@ class ProductService
         return [
             'name' => $company->name.' '.$car->name,
             'title' => 'به گروه تلگرام '.$company->name.' '.$car->name.' سواران بپیوندید',
-            'url' => $company->links()->where('link_type', LinkType::Telegram)->first()->name??'#',
+            'url' => $company->links->firstWhere('link_type', LinkType::Telegram)?->name
+                ?? 'https://t.me/'.$company->slug.'_saravan_partsmall',
         ];
     }
 
@@ -147,33 +150,39 @@ class ProductService
     private function locationFilterData(): array
     {
         return [
-            'states' => State::query()->orderBy('name')->get(['id', 'name']),
-            'citiesByState' => City::query()
-                ->orderBy('name')
-                ->get(['id', 'name', 'state_id'])
-                ->groupBy('state_id')
-                ->map(fn (Collection $cities) => $cities->map(fn (City $city) => [
-                    'id' => $city->id,
-                    'name' => $city->name,
-                ])->values()->all())
-                ->all(),
+            'states' => $this->states(),
+            'citiesByState' => $this->citiesGroupedByState(),
         ];
     }
 
-    private function loadImagesForShops(Shop $shop): void
+    /** @return Collection<int, State> */
+    private function states(): Collection
     {
-        $shop->images->each(function (Image $image) use ($shop) : void {
-            if($image->type === ImageType::Cover)
-            {
-                $shop->cover = ShopImageUrlBuilder::build('shop', $image->type, $shop->id, $image->path);
-            }
-            elseif($image->type === ImageType::Logo)
-            {
-                $shop->logo = ShopImageUrlBuilder::build('shop', $image->type, $shop->id, $image->path);
-            }
+        /** @var Collection<int, State> $states */
+        $states = $this->rememberFilterData('product:states', fn (): Collection => State::query()
+            ->orderBy('name')
+            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
 
-            $image->save();
-        });
+        return $states;
+    }
+
+    /**
+     * @return array<int, list<array{id: int, name: string}>>
+     */
+    private function citiesGroupedByState(): array
+    {
+        /** @var array<int, list<array{id: int, name: string}>> $cities */
+        $cities = $this->rememberFilterData('product:cities-by-state', fn (): array => City::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'state_id'])
+            ->groupBy('state_id')
+            ->map(fn (Collection $cities) => $cities->map(fn (City $city) => [
+                'id' => $city->id,
+                'name' => $city->name,
+            ])->values()->all())
+            ->all(), fn (mixed $value): bool => is_array($value));
+
+        return $cities;
     }
 
     private function sanitizeDescription(?string $description, Company $company, Car $car): ?string
@@ -200,11 +209,11 @@ class ProductService
     private function loadRelatedProducts(Company $company, Car $car, CarModel $model, Part $part): Collection
     {
         return Part::query()
-            ->with('partsCategory')
+            ->with('partsCategory:id,name')
             ->whereKeyNot($part->id)
-            ->inRandomOrder()
+            ->orderBy('id')
             ->limit(self::RELATED_PRODUCTS_LIMIT)
-            ->get()
+            ->get(['id', 'name', 'slug', 'parts_category_id'])
             ->each(function (Part $related) use ($company, $car, $model): void {
                 $related->setAttribute('title', $this->buildTitle($related, $company, $car, $model));
                 $related->setAttribute('url', route('product.show', [
@@ -223,9 +232,11 @@ class ProductService
     {
         $cards = [];
         $wages = $part->wages->values();
-        foreach ($wages as $wage) {
+        $categories = $part->repairCategories->values();
 
-            $cards[$wage->name] = [
+        foreach ($wages->take(3) as $index => $wage) {
+            $cards[] = [
+                'type' => $categories->get($index)?->name,
                 'cost' => $wage
                     ? (int) (($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000)
                     : null,
@@ -251,7 +262,14 @@ class ProductService
         $query = fn() =>$query()
             ->visibleUnderProduct()
             ->ordered()
-            ->with(['phones', 'links', 'city.state', 'images'])
+            ->with([
+                'phones:id,shop_id,phone_number,type',
+                'links:id,shop_id,link_type,name',
+                'city.state:id,name',
+                'images' => fn ($query) => $query
+                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+            ])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 
         $shops = $query()
@@ -269,6 +287,35 @@ class ProductService
         }
 
         return $shops;
+    }
+
+    private function rememberFilterData(string $key, callable $callback, ?callable $isValid = null): mixed
+    {
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        $cached = Cache::get($key);
+
+        if (($cached !== null || Cache::has($key)) && $this->isValidCachedFilterData($cached, $isValid)) {
+            return $cached;
+        }
+
+        Cache::forget($key);
+
+        $value = $callback();
+        Cache::put($key, $value, self::FILTER_CACHE_TTL);
+
+        return $value;
+    }
+
+    private function isValidCachedFilterData(mixed $value, ?callable $isValid): bool
+    {
+        if ($value instanceof __PHP_Incomplete_Class) {
+            return false;
+        }
+
+        return $isValid === null || $isValid($value);
     }
 
     /** @return Collection<int, State> */

@@ -24,7 +24,13 @@ class RepresentationProfileService
     public function getProfilePageData(string $slug): array
     {
         $representation = Representation::query()
-            ->with(['city.state', 'company.images'])
+            ->with([
+                'city.state:id,name',
+                'company:id,name,slug',
+                'company.images' => fn ($query) => $query
+                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->where('type', ImageType::Logo),
+            ])
             ->where('slug', $slug)
             ->first();
 

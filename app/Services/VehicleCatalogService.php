@@ -16,14 +16,17 @@ use App\Support\Pagination;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
+use __PHP_Incomplete_Class;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class VehicleCatalogService
 {
     private const PARTS_PER_PAGE = 24;
+    private const CATALOG_CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -37,19 +40,7 @@ class VehicleCatalogService
     {
         $context = VehicleCatalogContext::fromRequest($request);
 
-        $companies = Company::query()
-            ->with(['images', 'cars.models'])
-            ->withCount('cars')
-            ->orderBy('id')
-            ->get();
-
-        $companies->each(function (Company $company): void {
-            $logo = $company->images->firstWhere('type', ImageType::Logo);
-
-            $company->logo_url = $logo
-                ? ShopImageUrlBuilder::companyLogoUrl($logo)
-                : null;
-        });
+        $companies = $this->companiesForIndex();
 
         return [
             'companies' => $companies,
@@ -79,10 +70,10 @@ class VehicleCatalogService
             throw (new ModelNotFoundException)->setModel(Company::class, [$companySlug]);
         }
 
-        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+        $companies = $this->companyOptions();
 
         $carsQuery = Car::query()
-            ->with('company')
+            ->with('company:id,name,slug')
             ->withCount('models')
             ->orderBy('name');
 
@@ -136,9 +127,9 @@ class VehicleCatalogService
     {
         $context = VehicleCatalogContext::fromRequest($request, $company ?? null, $car ?? null);
 
-        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+        $companies = $this->companyOptions();
 
-        $carsQuery = Car::query()->with('company')->orderBy('name');
+        $carsQuery = Car::query()->with('company:id,name,slug')->orderBy('name');
 
         if ($context->company !== null) {
             $carsQuery->where('company_id', $context->company->id);
@@ -155,7 +146,11 @@ class VehicleCatalogService
             $context->car->name = strtoupper(($context->car->name));
 
         $modelsQuery = CarModel::query()
-            ->with(['cars.company', 'category'])
+            ->with([
+                'cars:id,name,slug,company_id',
+                'cars.company:id,name,slug',
+                'category:id,name,slug',
+            ])
             ->orderBy('name');
 
         if ($context->car !== null) {
@@ -215,9 +210,9 @@ class VehicleCatalogService
             throw (new ModelNotFoundException);
         }
 
-        $companies = Company::query()->orderBy('name')->get(['id', 'name', 'slug']);
+        $companies = $this->companyOptions();
 
-        $carsQuery = Car::query()->with('company')->orderBy('name');
+        $carsQuery = Car::query()->with('company:id,name,slug')->orderBy('name');
 
         if ($context->company !== null) {
             $carsQuery->where('company_id', $context->company->id);
@@ -238,7 +233,7 @@ class VehicleCatalogService
         ];
 
         $partsQuery = Part::query()
-            ->with('partsCategory')
+            ->with('partsCategory:id,name')
             ->orderBy('category_description');
 
         if ($filters['q']) {
@@ -296,7 +291,7 @@ class VehicleCatalogService
 
         return [
             'parts' => $parts,
-            'categories' => \App\Models\PartsCategory::query()->orderBy('name')->get(),
+            'categories' => $this->partCategories(),
             'companies' => $companies,
             'cars' => $cars,
             'context' => $context,
@@ -305,6 +300,86 @@ class VehicleCatalogService
             'description' => $description,
             'filters' => $filters,
         ];
+    }
+
+    /** @return Collection<int, Company> */
+    private function companiesForIndex(): Collection
+    {
+        /** @var Collection<int, Company> $companies */
+        $companies = $this->rememberCatalogData('catalog:companies-index:v1', function (): Collection {
+            $companies = Company::query()
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
+                ->withCount('cars')
+                ->orderBy('id')
+                ->get(['id', 'name', 'slug']);
+
+            $companies->each(function (Company $company): void {
+                $logo = $company->images->firstWhere('type', ImageType::Logo);
+
+                $company->logo_url = $logo
+                    ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                    : null;
+            });
+
+            return $companies;
+        }, fn (mixed $value): bool => $value instanceof Collection);
+
+        return $companies;
+    }
+
+    /** @return Collection<int, Company> */
+    private function companyOptions(): Collection
+    {
+        /** @var Collection<int, Company> $companies */
+        $companies = $this->rememberCatalogData('catalog:company-options:v1', fn (): Collection => Company::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug']), fn (mixed $value): bool => $value instanceof Collection);
+
+        return $companies;
+    }
+
+    /** @return Collection<int, \App\Models\PartsCategory> */
+    private function partCategories(): Collection
+    {
+        /** @var Collection<int, \App\Models\PartsCategory> $categories */
+        $categories = $this->rememberCatalogData('catalog:part-categories:v1', fn (): Collection => \App\Models\PartsCategory::query()
+            ->orderBy('name')
+            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
+
+        return $categories;
+    }
+
+    private function rememberCatalogData(string $key, callable $callback, ?callable $isValid = null): mixed
+    {
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        $cached = Cache::get($key);
+
+        if (($cached !== null || Cache::has($key)) && $this->isValidCachedCatalogData($cached, $isValid)) {
+            return $cached;
+        }
+
+        Cache::forget($key);
+
+        $value = $callback();
+        Cache::put($key, $value, self::CATALOG_CACHE_TTL);
+
+        return $value;
+    }
+
+    private function isValidCachedCatalogData(mixed $value, ?callable $isValid): bool
+    {
+        if ($value instanceof __PHP_Incomplete_Class) {
+            return false;
+        }
+
+        return $isValid === null || $isValid($value);
     }
 
     private function transformPartForCatalog(Part $part, VehicleCatalogContext $context): Part

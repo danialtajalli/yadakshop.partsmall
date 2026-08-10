@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ImageType;
 use App\Models\Phone;
 use App\Models\RepairShop;
 use App\Support\EnglishDigits;
@@ -21,11 +22,13 @@ class RepairShopProfileService
     {
         $repairShop = RepairShop::query()
             ->with([
-                'city.state',
-                'images',
-                'phones',
-                'links',
-                'repairCategories',
+                'city.state:id,name',
+                'images' => fn ($query) => $query
+                    ->select(['id', 'repair_shop_id', 'type', 'path'])
+                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+                'phones:id,repair_shop_id,phone_number,type',
+                'links:id,repair_shop_id,link_type,name',
+                'repairCategories:id,name',
             ])
             ->whereKey($id)
             ->first();

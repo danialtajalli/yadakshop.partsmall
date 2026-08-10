@@ -13,6 +13,7 @@ use App\Models\State;
 use App\Support\PageTitle;
 use App\Support\Pagination;
 use App\Support\ShopImageUrlBuilder;
+use __PHP_Incomplete_Class;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -360,7 +361,7 @@ class DirectoryListingService
             });
 
             return $companies;
-        });
+        }, fn (mixed $value): bool => $value instanceof Collection);
 
         return $companies->values();
     }
@@ -381,7 +382,7 @@ class DirectoryListingService
                     'name' => $city->name,
                 ])->values()->all())
                 ->all();
-        });
+        }, fn (mixed $value): bool => is_array($value));
 
         return $cities;
     }
@@ -394,7 +395,7 @@ class DirectoryListingService
         /** @var Collection<int, State> $states */
         $states = $this->rememberFilterData('directory-listing:states', fn (): Collection => State::query()
             ->orderBy('name')
-            ->get(['id', 'name']));
+            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
 
         return $states;
     }
@@ -407,18 +408,38 @@ class DirectoryListingService
         /** @var Collection<int, RepairCategory> $categories */
         $categories = $this->rememberFilterData('directory-listing:repair-categories', fn (): Collection => RepairCategory::query()
             ->orderBy('name')
-            ->get(['id', 'name']));
+            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
 
         return $categories;
     }
 
-    private function rememberFilterData(string $key, callable $callback): mixed
+    private function rememberFilterData(string $key, callable $callback, ?callable $isValid = null): mixed
     {
         if (app()->environment('testing')) {
             return $callback();
         }
 
-        return Cache::remember($key, self::FILTER_CACHE_TTL, $callback);
+        $cached = Cache::get($key);
+
+        if (($cached !== null || Cache::has($key)) && $this->isValidCachedFilterData($cached, $isValid)) {
+            return $cached;
+        }
+
+        Cache::forget($key);
+
+        $value = $callback();
+        Cache::put($key, $value, self::FILTER_CACHE_TTL);
+
+        return $value;
+    }
+
+    private function isValidCachedFilterData(mixed $value, ?callable $isValid): bool
+    {
+        if ($value instanceof __PHP_Incomplete_Class) {
+            return false;
+        }
+
+        return $isValid === null || $isValid($value);
     }
 
     private function attachImageUrls(Model $model, string $modelType): void

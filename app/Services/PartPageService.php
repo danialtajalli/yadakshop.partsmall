@@ -10,10 +10,12 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
+use Illuminate\Support\Facades\Cache;
 
 class PartPageService
 {
     private const PER_PAGE = 60;
+    private const APPLICATION_CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -27,9 +29,9 @@ class PartPageService
     public function getPartPageData(string $slug, Request $request): array
     {
         $part = Part::query()
-            ->with('partsCategory')
+            ->with('partsCategory:id,name')
             ->where('slug', $slug)
-            ->first();
+            ->first(['id', 'name', 'description', 'category_description', 'slug', 'parts_category_id']);
 
         if ($part === null) {
             throw (new ModelNotFoundException)->setModel(Part::class, [$slug]);
@@ -53,8 +55,8 @@ class PartPageService
             'title' => PageTitle::appendPageNumber($part->name, $vehicleApplications->currentPage()),
             'breadcrumbs' => Pagination::buildBreadcrumbs(
                 [
-                    ['label' => 'خانه', 'url' => route('home')],
-                    ['label' => 'قطعات', 'url' => route('car.parts')],
+                    ['label' => 'ط®ط§ظ†ظ‡', 'url' => route('home')],
+                    ['label' => 'ظ‚ط·ط¹ط§طھ', 'url' => route('car.parts')],
                     ['label' => $part->name],
                 ],
                 $vehicleApplications->currentPage(),
@@ -110,33 +112,68 @@ class PartPageService
     {
         $applications = [];
 
-        $companies = Company::query()
-            ->with(['cars.models'])
-            ->orderBy('name')
-            ->get();
+        foreach ($this->vehicleApplicationMatrix() as $vehicle) {
+            $shortLabel = $part->name.' '.$vehicle['label'];
 
-        foreach ($companies as $company) {
-            foreach ($company->cars->sortBy('name') as $car) {
-                foreach ($car->models->sortBy('name') as $model) {
-                    $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
-                    $shortLabel = $part->name.' '. trim($company->name.' '.$car->name.' '.$modelName);
-                    $label = $shortLabel;
-
-                    $applications[] = [
-                        'label' => $label,
-                        'short_label' => $shortLabel,
-                        'url' => route('product.show', [
-                            'company' => $company->slug,
-                            'car' => $car->slug,
-                            'model' => $model->slug,
-                            'part' => $part->slug,
-                        ]),
-                    ];
-                }
-            }
+            $applications[] = [
+                'label' => $shortLabel,
+                'short_label' => $shortLabel,
+                'url' => route('product.show', [
+                    'company' => $vehicle['company_slug'],
+                    'car' => $vehicle['car_slug'],
+                    'model' => $vehicle['model_slug'],
+                    'part' => $part->slug,
+                ]),
+            ];
         }
 
         return $applications;
+    }
+
+    /**
+     * @return list<array{label: string, company_slug: string, car_slug: string, model_slug: string}>
+     */
+    private function vehicleApplicationMatrix(): array
+    {
+        /** @var list<array{label: string, company_slug: string, car_slug: string, model_slug: string}> $matrix */
+        $matrix = $this->rememberApplicationData('part-page:vehicle-application-matrix:v1', function (): array {
+            $applications = [];
+            $companies = Company::query()
+                ->with([
+                    'cars' => fn ($query) => $query->select(['id', 'company_id', 'name', 'slug']),
+                    'cars.models' => fn ($query) => $query->select(['models.id', 'models.name', 'models.slug']),
+                ])
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug']);
+
+            foreach ($companies as $company) {
+                foreach ($company->cars->sortBy('name') as $car) {
+                    foreach ($car->models->sortBy('name') as $model) {
+                        $modelName = is_numeric($model->name) ? 'سال '.$model->name : $model->name;
+
+                        $applications[] = [
+                            'label' => trim($company->name.' '.$car->name.' '.$modelName),
+                            'company_slug' => $company->slug,
+                            'car_slug' => $car->slug,
+                            'model_slug' => $model->slug,
+                        ];
+                    }
+                }
+            }
+
+            return $applications;
+        });
+
+        return $matrix;
+    }
+
+    private function rememberApplicationData(string $key, callable $callback): mixed
+    {
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        return Cache::remember($key, self::APPLICATION_CACHE_TTL, $callback);
     }
 
     private function sanitizeDescription(?string $description, Part $part): ?string
@@ -146,7 +183,7 @@ class PartPageService
         }
 
         return str_replace(
-            ['rn', 'xxx', 'ططط', 'ظظظ'],
+            ['rn', 'xxx', 'ط·ط·ط·', 'ط¸ط¸ط¸'],
             ['', $part->partsCategory?->name ?? '', ''],
             $description,
         );

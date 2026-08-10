@@ -33,13 +33,21 @@ class ShopProfileService
     {
         $shop = Shop::query()
             ->with([
-                'city.state',
-                'images',
-                'phones',
-                'links',
-                'partsCategories',
-                'companies.images',
-                'comments' => fn ($query) => $query->confirmed()->latest(),
+                'city.state:id,name',
+                'images' => fn ($query) => $query
+                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+                'phones:id,shop_id,phone_number,type',
+                'links:id,shop_id,link_type,name',
+                'partsCategories:id,name',
+                'companies:id,name,slug',
+                'companies.images' => fn ($query) => $query
+                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->where('type', ImageType::Logo),
+                'comments' => fn ($query) => $query
+                    ->confirmed()
+                    ->latest()
+                    ->select(['id', 'shop_id', 'fullname', 'rating', 'body', 'created_at']),
             ])
             ->withAvg(['comments as average_rating' => fn ($query) => $query->confirmed()], 'rating')
             ->where('slug', $slug)
@@ -102,6 +110,11 @@ class ShopProfileService
         }
 
         $relatedShops = Shop::query()
+            ->with([
+                'images' => fn ($query) => $query
+                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->where('type', ImageType::Logo),
+            ])
             ->whereKeyNot($shop->id)
             ->whereHas(
                 'companies',
@@ -110,7 +123,7 @@ class ShopProfileService
             ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
             ->ordered()
             ->limit(self::RELATED_SHOPS_LIMIT)
-            ->get();
+            ->get(['id', 'name', 'slug', 'verified', 'order']);
 
         $relatedShops->each(fn (Shop $relatedShop) => ShopImageUrlBuilder::attachShopMedia($relatedShop));
 

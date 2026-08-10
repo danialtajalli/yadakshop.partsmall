@@ -94,13 +94,19 @@ class SearchService
     {
         $shops = Shop::search($query)
             ->query(fn ($builder) => $builder
-                ->with(['city.state', 'images'])
+                ->with([
+                    'city.state:id,name',
+                    'images' => fn ($imageQuery) => $imageQuery
+                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
                 ->where('name', 'like', '%'.$query.'%')
-                ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
             );
 
         $representations = Representation::search($query)
-            ->query(fn ($builder) => $builder->with(['company', 'city.state'])->where('name', 'like', '%'.$query.'%'));
+            ->query(fn ($builder) => $builder
+                ->with(['company:id,name,slug', 'city.state:id,name'])
+                ->where('name', 'like', '%'.$query.'%'));
 
         $items = $shops->get()
             ->map(fn (Shop $shop): array => $this->mapResult($shop, 'shops'))
@@ -124,15 +130,22 @@ class SearchService
     private function buildGroup(string $key, string $label, string $model, string $query, array $with = [], array $searchableFields = []): array
     {
         $results = $model::search($query)
-            ->query(function ($builder) use ($with, $searchableFields, $query) {
+            ->query(function ($builder) use ($model, $with, $searchableFields, $query) {
                 if ($with !== []) {
                     $builder->with($with);
                 }
 
                 if ($searchableFields !== []) {
-                    $builder->where(function ($inner) use ($searchableFields, $query): void {
+                    $builder->where(function ($inner) use ($model, $searchableFields, $query): void {
                         foreach ($searchableFields as $field) {
                             $inner->orWhere($field, 'like', '%'.$query.'%');
+                        }
+
+                        if ($model === Part::class) {
+                            $inner->orWhereHas(
+                                'partsCategory',
+                                fn ($categoryQuery) => $categoryQuery->where('name', 'like', '%'.$query.'%'),
+                            );
                         }
                     });
                 }
@@ -154,8 +167,18 @@ class SearchService
      */
     private function vehicleGroup(string $query): array
     {
-        $companies = Company::search($query)->query(fn ($builder) => $builder->with(['cars', 'images']))->get();
-        $cars = Car::search($query)->query(fn ($builder) => $builder->with(['company.images']))->get();
+        $companies = Company::search($query)->query(fn ($builder) => $builder->with([
+            'cars:id,company_id,name,slug',
+            'images' => fn ($imageQuery) => $imageQuery
+                ->select(['id', 'company_id', 'type', 'path'])
+                ->where('type', ImageType::Logo),
+        ]))->get();
+        $cars = Car::search($query)->query(fn ($builder) => $builder->with([
+            'company:id,name,slug,country',
+            'company.images' => fn ($imageQuery) => $imageQuery
+                ->select(['id', 'company_id', 'type', 'path'])
+                ->where('type', ImageType::Logo),
+        ]))->get();
         $items = $companies->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
             ->concat($cars->map(fn (Car $car): array => $this->mapResult($car, 'cars')))
             ->concat($this->contextualVehicleItems($query))
@@ -182,13 +205,24 @@ class SearchService
         }
 
         $companies = Company::query()
-            ->with(['cars', 'images'])
-            ->get()
+            ->with([
+                'cars:id,company_id,name,slug',
+                'images' => fn ($imageQuery) => $imageQuery
+                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->where('type', ImageType::Logo),
+            ])
+            ->get(['id', 'name', 'slug', 'country'])
             ->filter(fn (Company $company): bool => $this->containsOrderedTokens($queryTokens, $this->normalizer->tokens($company->name)));
 
         $cars = Car::query()
-            ->with(['company.images', 'models'])
-            ->get()
+            ->with([
+                'company:id,name,slug,country',
+                'company.images' => fn ($imageQuery) => $imageQuery
+                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->where('type', ImageType::Logo),
+                'models:id,name,slug',
+            ])
+            ->get(['id', 'company_id', 'name', 'slug'])
             ->filter(fn (Car $car): bool => $this->containsAnyOrderedTokenSet($queryTokens, [
                 $this->normalizer->tokens($car->name),
                 $this->normalizer->tokens($car->slug),
@@ -335,14 +369,14 @@ class SearchService
             ],
             $result instanceof Shop => [
                 'title' => $result->name,
-                'subtitle' => $result->secondary_name ?: $result->state?->name,
+                'subtitle' => $result->secondary_name ?: $result->city?->state?->name,
                 'url' => route('shop.profile', $result->slug),
                 'type' => 'فروشگاه',
                 'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof RepairShop => [
                 'title' => $result->name,
-                'subtitle' => $result->work_description ?: $result->state?->name,
+                'subtitle' => $result->work_description ?: $result->city?->state?->name,
                 'url' => $result->profileUrl(),
                 'type' => 'تعمیرگاه',
                 'image_url' => $this->imageUrlFor($result),

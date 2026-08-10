@@ -27,9 +27,13 @@ class VehicleCatalogContext
 
         if ($companySlug !== '') {
             $company = Company::query()
-                ->with('images')
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
                 ->where('slug', $companySlug)
-                ->first();
+                ->first(['id', 'name', 'slug']);
 
             if ($company !== null) {
                 self::attachCompanyLogo($company);
@@ -43,7 +47,7 @@ class VehicleCatalogContext
             $car = Car::query()
                 ->where('slug', $carSlug)
                 ->where('company_id', $company->id)
-                ->first();
+                ->first(['id', 'name', 'slug', 'company_id']);
         }
 
         $modelSlug = $request->string('model')->trim()->toString();
@@ -53,7 +57,7 @@ class VehicleCatalogContext
             $model = CarModel::query()
                 ->where('slug', $modelSlug)
                 ->whereHas('cars', fn ($query) => $query->where('cars.id', $car->id))
-                ->first();
+                ->first(['id', 'name', 'slug', 'category_id']);
         }
 
         return new self($company, $car, $model);

@@ -66,10 +66,10 @@
                                 </div>
 
                                 <div class="grid gap-2">
-                                    @foreach ($repairCards as $wage_name => $wage)
+                                    @foreach ($repairCards as $wage)
                                         <div class="rounded-xl border border-line bg-white px-3 py-2.5">
                                             <div class="flex items-start justify-between gap-3">
-                                                <p class="min-w-0 text-xs font-semibold leading-5 text-ink/80">اجرت {{ $wage_name }}</p>
+                                                <p class="min-w-0 text-xs font-semibold leading-5 text-ink/80">اجرت {{ $wage['wage_name'] ?? $wage['type'] ?? '' }}</p>
                                                 <div class="shrink-0 text-start">
                                                     @if ($wage['cost'] !== null)
                                                         <p class="text-sm font-black tabular-nums text-ink">
