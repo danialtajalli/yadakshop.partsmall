@@ -4,6 +4,7 @@ namespace Tests\Unit\Services;
 
 use App\Enums\ImageType;
 use App\Models\City;
+use App\Models\Company;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\Shop;
@@ -11,6 +12,7 @@ use App\Models\State;
 use App\Services\DirectoryListingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Tests\TestCase;
 
 class DirectoryListingServiceTest extends TestCase
@@ -58,8 +60,8 @@ class DirectoryListingServiceTest extends TestCase
 
     public function test_shop_listing_filters_by_company(): void
     {
-        $company = \App\Models\Company::create(['name' => 'هیوندای', 'slug' => 'hyundai']);
-        $other = \App\Models\Company::create(['name' => 'کیا', 'slug' => 'kia']);
+        $company = Company::create(['name' => 'هیوندای', 'slug' => 'hyundai']);
+        $other = Company::create(['name' => 'کیا', 'slug' => 'kia']);
 
         $matching = $this->createShopWithLogo(['name' => 'فروشگاه هیوندای', 'slug' => 'hyundai-shop']);
         $matching->companies()->attach($company);
@@ -170,7 +172,7 @@ class DirectoryListingServiceTest extends TestCase
 
     public function test_shop_listing_paginates_results(): void
     {
-        foreach (range(1, 15) as $index) {
+        foreach (range(1, 30) as $index) {
             $this->createShopWithLogo([
                 'name' => "فروشگاه {$index}",
                 'slug' => "shop-{$index}",
@@ -180,13 +182,13 @@ class DirectoryListingServiceTest extends TestCase
 
         $data = $this->service->getShopListing(Request::create('/shops', 'GET'));
 
-        $this->assertCount(12, $data['listings']);
-        $this->assertSame(15, $data['listings']->total());
+        $this->assertCount(24, $data['listings']);
+        $this->assertSame(30, $data['listings']->total());
     }
 
     public function test_shop_listing_title_includes_page_number_on_later_pages(): void
     {
-        foreach (range(1, 25) as $index) {
+        foreach (range(1, 30) as $index) {
             $this->createShopWithLogo([
                 'name' => "فروشگاه {$index}",
                 'slug' => "shop-{$index}",
@@ -194,7 +196,13 @@ class DirectoryListingServiceTest extends TestCase
             ]);
         }
 
-        $data = $this->service->getShopListing(Request::create('/shops', 'GET', ['page' => 2]));
+        try {
+            Paginator::currentPageResolver(fn (): int => 2);
+
+            $data = $this->service->getShopListing(Request::create('/shops', 'GET', ['page' => 2]));
+        } finally {
+            Paginator::currentPageResolver(fn (): int => 1);
+        }
 
         $this->assertSame('فروشگاه‌های لوازم یدکی - صفحه 2', $data['title']);
         $this->assertSame('صفحه 2', $data['breadcrumbs'][2]['label']);

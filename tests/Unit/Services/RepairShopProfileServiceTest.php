@@ -8,6 +8,7 @@ use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\State;
 use App\Services\RepairShopProfileService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -49,12 +50,12 @@ class RepairShopProfileServiceTest extends TestCase
 
         $data = $this->service->getProfilePageData($repairShop->id, $repairShop->slug);
 
-        $this->assertSame('https://partsmall.ir/img/no_image_repair.jpg', $data['repairShop']->logo);
+        $this->assertSame(asset('panel/assets/uploads/img/no_image_repair.jpg'), $data['repairShop']->logo);
     }
 
     public function test_it_throws_not_found_for_unknown_id(): void
     {
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         $this->service->getProfilePageData(99999, 'missing-repair-shop');
     }
@@ -63,7 +64,7 @@ class RepairShopProfileServiceTest extends TestCase
     {
         $repairShop = $this->createRepairShopWithRelations();
 
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(ModelNotFoundException::class);
 
         $this->service->getProfilePageData($repairShop->id, 'wrong-slug');
     }
