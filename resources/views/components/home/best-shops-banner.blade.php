@@ -78,6 +78,8 @@
                     <div class="ps-best-shops__trio relative inline-flex flex-wrap items-end justify-center gap-4" data-best-shops-trio>
                         @foreach ($shops as $index => $shop)
                             @php
+                                $shopName = data_get($shop, 'name');
+                                $shopSlug = data_get($shop, 'slug');
                                 $rank = $index + 1;
                                 $medal = match ($rank) {
                                     1 => [
@@ -101,11 +103,11 @@
                                 };
                             @endphp
                             <a
-                                href="{{ route('shop.profile', $shop->slug) }}"
+                                href="{{ route('shop.profile', $shopSlug) }}"
                                 role="listitem"
                                 class="ps-best-shop-logo group relative z-10 inline-flex flex-col items-center"
                                 style="--best-shop-delay: {{ 180 + ($index * 140) }}ms"
-                                title="{{ $shop->name }} — {{ $medal['label'] }}"
+                                title="{{ $shopName }} — {{ $medal['label'] }}"
                             >
                                 <span class="{{ $medal['badge'] }}" aria-label="رتبه {{ $medal['label'] }}">
                                     <svg class="ps-best-shop-medal__icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -119,14 +121,14 @@
                                     $medal['frame'],
                                 ])>
                                     <x-ui.company-logo
-                                        :name="$shop->name"
-                                        :logo-url="$shop->logo ?? null"
+                                        :name="$shopName"
+                                        :logo-url="data_get($shop, 'logo')"
                                         size="md"
                                         @class([$medal['logo'] => true])
                                     />
                                 </span>
                                 <span class="mt-2 max-w-[4.75rem] truncate text-center text-[10px] font-semibold text-white/85 sm:max-w-[5.5rem] sm:text-[11px]">
-                                    {{ $shop->name }}
+                                    {{ $shopName }}
                                 </span>
                             </a>
                         @endforeach
@@ -144,7 +146,7 @@
                             </svg>
                         </span>
                         <span class="min-w-0 text-xs font-semibold leading-5 text-white">
-                            لوگوی شما
+                            لوگوی شما اینجا
                         </span>
                     </a>
                 </div>

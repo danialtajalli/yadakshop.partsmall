@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Page;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class PageService
 {
@@ -15,6 +16,7 @@ class PageService
         'guide',
         'terms',
     ];
+    private const NAVIGATION_CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -50,15 +52,35 @@ class PageService
      */
     public function getNavigationPages(): Collection
     {
-        $pages = Page::query()
-            ->whereIn('slug', self::NAVIGATION_SLUGS)
-            ->get()
-            ->keyBy('slug');
+        $pages = $this->rememberNavigationPages();
 
         return collect(self::NAVIGATION_SLUGS)
-            ->map(fn (string $slug) => $pages->get($slug))
+            ->map(fn (string $slug) => $pages[$slug] ?? null)
             ->filter()
+            ->map(fn (array $page): object => (object) $page)
             ->values();
+    }
+
+    /**
+     * @return array<string, array{title: ?string, slug: ?string}>
+     */
+    private function rememberNavigationPages(): array
+    {
+        $callback = fn (): array => Page::query()
+            ->whereIn('slug', self::NAVIGATION_SLUGS)
+            ->get(['title', 'slug'])
+            ->keyBy('slug')
+            ->map(fn (Page $page): array => [
+                'title' => $page->title,
+                'slug' => $page->slug,
+            ])
+            ->all();
+
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        return Cache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback);
     }
 
     private function sanitizeContent(?string $content): ?string

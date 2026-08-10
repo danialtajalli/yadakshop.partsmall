@@ -13,10 +13,12 @@ use App\Support\CarModelSort;
 use App\Support\ModelCategoryLabel;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class HomePageService
 {
     private const FEATURED_LIMIT = 17;
+    private const CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -54,10 +56,6 @@ class HomePageService
         $companies = $this->featuredCompanies();
         $companyPicker = $this->buildCompanyPicker($companies);
         $parts = $this->allParts();
-        $parts->transform(function (Part $part): Part {
-            $part->title = $part->name;
-            return $part;
-        });
 
         return [
             'shops' => $this->featuredShops(),
@@ -68,6 +66,7 @@ class HomePageService
             'representations' => $this->featuredRepresentations(),
             'bestShops' => $this->bestShowcaseShops(),
             'parts' => $parts,
+            'partCategoryParts' => $this->partCategoryParts(),
             'title' => "پارتس‌مال",
         ];
     }
@@ -77,20 +76,78 @@ class HomePageService
      */
     private function featuredCompanies(): Collection
     {
-        $companies = Company::query()
-            ->with(['images', 'cars.models.category'])
-            ->orderBy('id')
-            ->get();
+        return collect($this->rememberHomeData('home:companies:v1', function (): array {
+            $companies = Company::query()
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                    'cars' => fn ($query) => $query->select(['id', 'company_id', 'name', 'slug']),
+                    'cars.models' => fn ($query) => $query->select(['models.id', 'models.name', 'models.slug', 'models.category_id']),
+                    'cars.models.category:id,name,slug',
+                ])
+                ->orderBy('id')
+                ->get(['id', 'name', 'slug']);
 
-        $companies->each(function (Company $company): void {
-            $logo = $company->images->firstWhere('type', ImageType::Logo);
+            return $companies
+                ->map(function (Company $company): array {
+                    $logo = $company->images->firstWhere('type', ImageType::Logo);
+                    $cars = $company->cars
+                        ->sortBy('name')
+                        ->values()
+                        ->map(function ($car) use ($company): array {
+                            $modelCategories = $car->models
+                                ->sortBy('name')
+                                ->groupBy(fn ($model) => (string) ($model->category_id ?? 0))
+                                ->map(function ($models) use ($company, $car): array {
+                                    $category = $models->first()->category;
+                                    $categorySlug = ModelCategoryLabel::slug($category);
 
-            $company->logo_url = $logo
-                ? ShopImageUrlBuilder::companyLogoUrl($logo)
-                : null;
-        });
+                                    return [
+                                        'slug' => $categorySlug,
+                                        'label' => ModelCategoryLabel::display($category),
+                                        'models' => CarModelSort::prioritize(
+                                            $models
+                                                ->map(function ($model) use ($company, $car, $categorySlug): array {
+                                                    return [
+                                                        'slug' => $model->slug,
+                                                        'name' => CarModelLabel::display($model),
+                                                        'category_slug' => $categorySlug,
+                                                        'url' => route('car.parts.vehicle', [
+                                                            'company' => $company->slug,
+                                                            'car' => $car->slug,
+                                                            'model' => $model->slug,
+                                                        ]),
+                                                    ];
+                                                })
+                                                ->values(),
+                                        ),
+                                    ];
+                                })
+                                ->sortBy(fn (array $category): int => CarModelSort::bucketForCategory($category['slug']))
+                                ->values()
+                                ->all();
 
-        return $companies;
+                            return [
+                                'slug' => $car->slug,
+                                'name' => strtoupper($car->name),
+                                'modelCategories' => $modelCategories,
+                            ];
+                        })
+                        ->all();
+
+                    return [
+                        'slug' => $company->slug,
+                        'name' => $company->name,
+                        'logo_url' => $logo
+                            ? ShopImageUrlBuilder::buildCompanyLogoUrl('company', $company->id, $logo->path)
+                            : null,
+                        'has_models' => collect($cars)->contains(fn (array $car): bool => $car['modelCategories'] !== []),
+                        'cars' => $cars,
+                    ];
+                })
+                ->all();
+        }));
     }
 
     /**
@@ -113,50 +170,12 @@ class HomePageService
     private function buildCompanyPicker(Collection $companies): array
     {
         return $companies
-            ->map(function (Company $company): array {
+            ->map(function (array $company): array {
                 return [
-                    'slug' => $company->slug,
-                    'name' => $company->name,
-                    'logo_url' => $company->logo_url,
-                    'cars' => $company->cars
-                        ->sortBy('name')
-                        ->values()
-                        ->map(function ($car) use ($company): array {
-                            return [
-                                'slug' => $car->slug,
-                                'name' => strtoupper($car->name),
-                                'modelCategories' => $car->models
-                                    ->sortBy('name')
-                                    ->groupBy(fn ($model) => (string) ($model->category_id ?? 0))
-                                    ->map(function ($models, $categoryId) use ($company, $car): array {
-                                        $category = $models->first()->category;
-
-                                        return [
-                                            'slug' => ModelCategoryLabel::slug($category),
-                                            'label' => ModelCategoryLabel::display($category),
-                                            'models' => CarModelSort::prioritize(
-                                                $models
-                                                    ->map(function ($model) use ($company, $car, $category): array {
-                                                        return [
-                                                            'slug' => $model->slug,
-                                                            'name' => CarModelLabel::display($model),
-                                                            'category_slug' => ModelCategoryLabel::slug($category),
-                                                            'url' => route('car.parts.vehicle', [
-                                                                'company' => $company->slug,
-                                                                'car' => $car->slug,
-                                                                'model' => $model->slug,
-                                                            ]),
-                                                        ];
-                                                    })
-                                                    ->values(),
-                                            ),
-                                        ];
-                                    })
-                                    ->sortBy(fn (array $category): int => CarModelSort::bucketForCategory($category['slug']))
-                                    ->values()
-                                    ->all(),
-                            ];
-                        })
+                    'slug' => $company['slug'],
+                    'name' => $company['name'],
+                    'logo_url' => $company['logo_url'],
+                    'cars' => collect($company['cars'])
                         ->filter(fn (array $car) => $car['modelCategories'] !== [])
                         ->values()
                         ->all(),
@@ -232,9 +251,9 @@ class HomePageService
             'carsByCompany' => $carsByCompany,
             'modelsByCar' => $modelsByCar,
             'parts' => $parts
-                ->map(fn (Part $part): array => [
-                    'slug' => $part->slug,
-                    'name' => $part->name,
+                ->map(fn (array $part): array => [
+                    'slug' => $part['slug'],
+                    'name' => $part['name'],
                 ])
                 ->values()
                 ->all(),
@@ -252,16 +271,24 @@ class HomePageService
             return collect();
         }
 
-        $shops = Shop::query()
-            ->with(['images'])
-            ->whereIn('id', $ids)
-            ->get()
-            ->sortBy(fn (Shop $shop) => array_search($shop->id, $ids, true))
-            ->values();
-
-        $shops->each(fn (Shop $shop) => ShopImageUrlBuilder::attachShopMedia($shop, 'shop'));
-
-        return $shops;
+        return collect($this->rememberHomeData('home:best-shops:'.md5(json_encode($ids)), function () use ($ids): array {
+            return Shop::query()
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
+                ->whereIn('id', $ids)
+                ->get(['id', 'name', 'slug'])
+                ->sortBy(fn (Shop $shop) => array_search($shop->id, $ids, true))
+                ->values()
+                ->map(fn (Shop $shop): array => [
+                    'name' => $shop->name,
+                    'slug' => $shop->slug,
+                    'logo' => $this->shopLogoUrl($shop),
+                ])
+                ->all();
+        }));
     }
 
     /**
@@ -269,16 +296,25 @@ class HomePageService
      */
     private function featuredShops(): Collection
     {
-        $shops = Shop::query()
-            ->with(['images'])
-            ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
-            ->ordered()
-            ->limit(self::FEATURED_LIMIT)
-            ->get();
-
-        $shops->each(fn (Shop $shop) => ShopImageUrlBuilder::attachShopMedia($shop, 'shop'));
-
-        return $shops;
+        return collect($this->rememberHomeData('home:featured-shops:v1', function (): array {
+            return Shop::query()
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
+                ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
+                ->ordered()
+                ->limit(self::FEATURED_LIMIT)
+                ->get(['id', 'name', 'slug', 'verified', 'order'])
+                ->map(fn (Shop $shop): array => [
+                    'name' => $shop->name,
+                    'slug' => $shop->slug,
+                    'verified' => (bool) $shop->verified,
+                    'logo' => $this->shopLogoUrl($shop),
+                ])
+                ->all();
+        }));
     }
 
     /**
@@ -286,15 +322,24 @@ class HomePageService
      */
     private function featuredRepairShops(): Collection
     {
-        $repairShops = RepairShop::query()
-            ->with(['images'])
-            ->orderBy('name')
-            ->limit(self::FEATURED_LIMIT)
-            ->get();
-
-        $repairShops->each(fn (RepairShop $shop) => ShopImageUrlBuilder::attachRepairShopMedia($shop));
-
-        return $repairShops;
+        return collect($this->rememberHomeData('home:featured-repair-shops:v1', function (): array {
+            return RepairShop::query()
+                ->with([
+                    'images' => fn ($query) => $query
+                        ->select(['id', 'repair_shop_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
+                ->orderBy('name')
+                ->limit(self::FEATURED_LIMIT)
+                ->get(['id', 'name', 'slug'])
+                ->map(fn (RepairShop $shop): array => [
+                    'name' => $shop->name,
+                    'slug' => $shop->slug,
+                    'profile_url' => $shop->profileUrl(),
+                    'logo' => $this->repairShopLogoUrl($shop),
+                ])
+                ->all();
+        }));
     }
 
     /**
@@ -302,14 +347,18 @@ class HomePageService
      */
     private function featuredRepresentations(): Collection
     {
-        $representations = Representation::query()
-            ->orderBy('name')
-            ->limit(self::FEATURED_LIMIT)
-            ->get();
-
-        $representations->each(fn (Representation $representation) => ShopImageUrlBuilder::attachRepresentationMedia($representation));
-
-        return $representations;
+        return collect($this->rememberHomeData('home:featured-representations:v1', function (): array {
+            return Representation::query()
+                ->orderBy('name')
+                ->limit(self::FEATURED_LIMIT)
+                ->get(['id', 'name', 'slug', 'logo'])
+                ->map(fn (Representation $representation): array => [
+                    'name' => $representation->name,
+                    'slug' => $representation->slug,
+                    'logo' => $this->representationLogoUrl($representation),
+                ])
+                ->all();
+        }));
     }
 
     /**
@@ -317,9 +366,81 @@ class HomePageService
      */
     private function allParts(): Collection
     {
-        return Part::query()
-            ->with('partsCategory')
-            ->orderBy('name')
-            ->get();
+        return collect($this->rememberHomeData('home:parts:v1', function (): array {
+            return Part::query()
+                ->with('partsCategory:id,name')
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug', 'parts_category_id'])
+                ->map(fn (Part $part): array => [
+                    'name' => $part->name,
+                    'title' => $part->name,
+                    'slug' => $part->slug,
+                    'partsCategory' => $part->partsCategory
+                        ? ['name' => $part->partsCategory->name]
+                        : null,
+                ])
+                ->all();
+        }));
+    }
+
+    /**
+     * @return array<string, array{slug: string}>
+     */
+    private function partCategoryParts(): array
+    {
+        $categories = config('partsmall.home_part_categories', []);
+        $partNames = collect($categories)
+            ->flatMap(fn (array $category) => $category['parts'] ?? [])
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($partNames->isEmpty()) {
+            return [];
+        }
+
+        return $this->rememberHomeData('home:part-category-parts:v1', fn (): array => Part::query()
+            ->whereIn('name', $partNames->all())
+            ->get(['name', 'slug'])
+            ->mapWithKeys(fn (Part $part): array => [
+                $part->name => ['slug' => $part->slug],
+            ])
+            ->all());
+    }
+
+    private function shopLogoUrl(Shop $shop): ?string
+    {
+        $logo = $shop->images->firstWhere('type', ImageType::Logo);
+
+        return $logo?->path
+            ? ShopImageUrlBuilder::build('shop', ImageType::Logo, $shop->id, $logo->path)
+            : null;
+    }
+
+    private function repairShopLogoUrl(RepairShop $shop): string
+    {
+        $logo = $shop->images->firstWhere('type', ImageType::Logo);
+
+        return $logo?->path
+            ? ShopImageUrlBuilder::build('repair', ImageType::Logo, $shop->id, $logo->path)
+            : asset('panel/assets/uploads/img/no_image_repair.jpg');
+    }
+
+    private function representationLogoUrl(Representation $representation): string
+    {
+        $logoPath = $representation->getRawOriginal('logo');
+
+        return filled($logoPath)
+            ? ShopImageUrlBuilder::build('representation', ImageType::Logo, $representation->id, basename((string) $logoPath))
+            : asset('panel/assets/uploads/img/no_image_representation.jpg');
+    }
+
+    private function rememberHomeData(string $key, callable $callback): mixed
+    {
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        return Cache::remember($key, self::CACHE_TTL, $callback);
     }
 }

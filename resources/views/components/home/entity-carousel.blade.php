@@ -41,20 +41,25 @@
             <div class="ps-carousel-viewport px-2 sm:px-4" data-entity-carousel-viewport dir="ltr" tabindex="0">
                 <div class="ps-carousel-track" data-entity-carousel-track>
                     @foreach ($items as $item)
+                        @php
+                            $name = data_get($item, 'name');
+                            $slug = data_get($item, 'slug');
+                            $profileUrl = data_get($item, 'profile_url') ?? (is_object($item) && method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $slug));
+                        @endphp
                         <article class="ps-carousel-slide">
                             <a
-                                href="{{ method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $item->slug) }}"
+                                href="{{ $profileUrl }}"
                                 class="ps-card-interactive flex h-full flex-col items-center gap-3 p-4 text-center"
                                 draggable="false"
                             >
                                 <x-ui.company-logo
-                                    :name="$item->name"
-                                    :logo-url="$item->logo ?? null"
+                                    :name="$name"
+                                    :logo-url="data_get($item, 'logo')"
                                     size="carousel"
                                     draggable="false"
                                 />
                                 <h3 class="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-5 text-ink">
-                                    {{ $item->name }}
+                                    {{ $name }}
                                 </h3>
                             </a>
                         </article>

@@ -19,22 +19,27 @@
 
     <div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         @foreach ($items as $item)
+            @php
+                $name = data_get($item, 'name');
+                $slug = data_get($item, 'slug');
+                $profileUrl = data_get($item, 'profile_url') ?? (is_object($item) && method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $slug));
+            @endphp
             <a
-                href="{{ method_exists($item, 'profileUrl') ? $item->profileUrl() : route($profileRoute, $item->slug) }}"
+                href="{{ $profileUrl }}"
                 class="ps-card-interactive flex items-center gap-3 p-3"
             >
                 <x-ui.company-logo
-                    :name="$item->name"
-                    :logo-url="$item->logo ?? null"
+                    :name="$name"
+                    :logo-url="data_get($item, 'logo')"
                     size="grid"
                 />
 
                 <span class="min-w-0">
                     <span class="flex min-w-0 flex-wrap items-center gap-1.5">
                         <span class="line-clamp-2 text-sm font-semibold leading-5 text-ink">
-                            {{ $item->name }}
+                            {{ $name }}
                         </span>
-                        @if ($item->verified ?? false)
+                        @if (data_get($item, 'verified'))
                             <x-shop.trusted-badge compact label="مورد اعتماد" />
                         @endif
                     </span>
@@ -56,7 +61,7 @@
             </span>
 
             <span class="min-w-0">
-                <span class="block text-sm font-bold text-ink">لوگوی شما اینجا</span>
+                <span class="block text-sm font-bold text-ink">لوگوی شما می‌تواند اینجا باشد</span>
                 <span class="mt-0.5 block text-xs text-ink-muted">ثبت نام</span>
             </span>
         </a>

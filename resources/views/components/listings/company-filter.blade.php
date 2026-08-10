@@ -35,7 +35,7 @@
                     </div>
                 @else
                     <div class="min-w-0">
-                        <p class="text-sm font-semibold text-ink">فیلتر بر اساس کمپانی سازنده</p>
+                        <p class="text-sm font-semibold text-ink">فیلتر بر اساس برند</p>
                         <p class="mt-0.5 text-xs text-ink-muted">فروشگاه‌های مرتبط با هر کمپانی را ببینید</p>
                     </div>
                 @endif

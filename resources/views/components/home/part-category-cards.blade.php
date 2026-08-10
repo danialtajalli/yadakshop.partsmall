@@ -1,5 +1,6 @@
 @props([
     'categories' => null,
+    'partsByName' => [],
 ])
 
 @php
@@ -10,18 +11,7 @@
         'from-[#182030] via-[#222c3e] to-[#2b364a]',
     ];
 
-    $partNames = collect($categories)
-        ->flatMap(fn (array $category) => $category['parts'] ?? [])
-        ->filter()
-        ->unique()
-        ->values();
-
-    $partsByName = $partNames->isEmpty()
-        ? collect()
-        : \App\Models\Part::query()
-            ->whereIn('name', $partNames->all())
-            ->get(['name', 'slug'])
-            ->keyBy('name');
+    $partsByName = collect($partsByName);
 @endphp
 
 @if ($categories !== [])
@@ -54,7 +44,7 @@
                                     <li>
                                         @if ($part)
                                             <a
-                                                href="{{ route('part.show', $part->slug) }}"
+                                                href="{{ route('part.show', data_get($part, 'slug')) }}"
                                                 class="ps-part-cat__part-link"
                                             >{{ $partName }}</a>
                                         @else

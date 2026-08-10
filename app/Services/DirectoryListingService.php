@@ -13,6 +13,7 @@ use App\Models\State;
 use App\Support\PageTitle;
 use App\Support\Pagination;
 use App\Support\ShopImageUrlBuilder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ use Illuminate\Support\Collection;
 class DirectoryListingService
 {
     private const PER_PAGE = 24;
+    private const FILTER_CACHE_TTL = 86400;
 
     /**
      * @return array{
@@ -44,7 +46,12 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = Shop::query()
-            ->with(['city.state', 'images'])
+            ->with([
+                'city.state:id,name',
+                'images' => fn ($relation) => $relation
+                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+            ])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
 
         if ($company !== null) {
@@ -101,7 +108,13 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = RepairShop::query()
-            ->with(['city.state', 'images', 'repairCategories']);
+            ->with([
+                'city.state:id,name',
+                'images' => fn ($relation) => $relation
+                    ->select(['id', 'repair_shop_id', 'type', 'path'])
+                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+                'repairCategories:id,name',
+            ]);
 
         $this->applyCommonFilters($query, $filters, [
             'name',
@@ -152,7 +165,10 @@ class DirectoryListingService
         $filters = $this->filtersFromRequest($request);
 
         $query = Representation::query()
-            ->with(['city.state', 'company']);
+            ->with([
+                'city.state:id,name',
+                'company:id,name',
+            ]);
 
         $this->applyCommonFilters($query, $filters, [
             'name',
@@ -270,7 +286,7 @@ class DirectoryListingService
         bool $showSpecializationFilter,
         ?Company $filterCompany = null,
     ): array {
-        $states = State::query()->orderBy('name')->get(['id', 'name']);
+        $states = $this->states();
         $cities = $filters['state_id']
             ? City::query()->where('state_id', $filters['state_id'])->orderBy('name')->get(['id', 'name', 'state_id'])
             : collect();
@@ -309,7 +325,7 @@ class DirectoryListingService
             'cities' => $cities,
             'citiesByState' => $this->citiesGroupedByState(),
             'specializations' => $showSpecializationFilter
-                ? RepairCategory::query()->orderBy('name')->get(['id', 'name'])
+                ? $this->repairCategories()
                 : collect(),
             'filters' => $filters,
             'showSpecializationFilter' => $showSpecializationFilter,
@@ -323,21 +339,30 @@ class DirectoryListingService
      */
     private function shopFilterCompanies(): Collection
     {
-        $companies = Company::query()
-            ->with('images')
-            ->whereHas('shops')
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug']);
+        /** @var Collection<int, Company> $companies */
+        $companies = $this->rememberFilterData('directory-listing:shop-filter-companies', function (): Collection {
+            $companies = Company::query()
+                ->with([
+                    'images' => fn ($relation) => $relation
+                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->where('type', ImageType::Logo),
+                ])
+                ->whereHas('shops')
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug']);
 
-        $companies->each(function (Company $company): void {
-            $logo = $company->images->firstWhere('type', ImageType::Logo);
+            $companies->each(function (Company $company): void {
+                $logo = $company->images->firstWhere('type', ImageType::Logo);
 
-            $company->logo_url = $logo
-                ? ShopImageUrlBuilder::companyLogoUrl($logo)
-                : null;
+                $company->logo_url = $logo
+                    ? ShopImageUrlBuilder::companyLogoUrl($logo)
+                    : null;
+            });
+
+            return $companies;
         });
 
-        return $companies;
+        return $companies->values();
     }
 
     /**
@@ -345,15 +370,55 @@ class DirectoryListingService
      */
     private function citiesGroupedByState(): array
     {
-        return City::query()
+        /** @var array<int, list<array{id: int, name: string}>> $cities */
+        $cities = $this->rememberFilterData('directory-listing:cities-by-state', function (): array {
+            return City::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'state_id'])
+                ->groupBy('state_id')
+                ->map(fn (Collection $cities) => $cities->map(fn (City $city) => [
+                    'id' => $city->id,
+                    'name' => $city->name,
+                ])->values()->all())
+                ->all();
+        });
+
+        return $cities;
+    }
+
+    /**
+     * @return Collection<int, State>
+     */
+    private function states(): Collection
+    {
+        /** @var Collection<int, State> $states */
+        $states = $this->rememberFilterData('directory-listing:states', fn (): Collection => State::query()
             ->orderBy('name')
-            ->get(['id', 'name', 'state_id'])
-            ->groupBy('state_id')
-            ->map(fn (Collection $cities) => $cities->map(fn (City $city) => [
-                'id' => $city->id,
-                'name' => $city->name,
-            ])->values()->all())
-            ->all();
+            ->get(['id', 'name']));
+
+        return $states;
+    }
+
+    /**
+     * @return Collection<int, RepairCategory>
+     */
+    private function repairCategories(): Collection
+    {
+        /** @var Collection<int, RepairCategory> $categories */
+        $categories = $this->rememberFilterData('directory-listing:repair-categories', fn (): Collection => RepairCategory::query()
+            ->orderBy('name')
+            ->get(['id', 'name']));
+
+        return $categories;
+    }
+
+    private function rememberFilterData(string $key, callable $callback): mixed
+    {
+        if (app()->environment('testing')) {
+            return $callback();
+        }
+
+        return Cache::remember($key, self::FILTER_CACHE_TTL, $callback);
     }
 
     private function attachImageUrls(Model $model, string $modelType): void

@@ -2,13 +2,11 @@
 
 namespace App\Support;
 
-use App\Models\Part;
-
 class PartIcon
 {
-    public static function type(Part $part): string
+    public static function type(mixed $part): string
     {
-        $name = mb_strtolower(trim($part->name));
+        $name = mb_strtolower(trim((string) data_get($part, 'name', '')));
 
         foreach (PartIconDefinitions::nameRules() as $rule) {
             foreach ($rule['patterns'] as $pattern) {
@@ -18,7 +16,7 @@ class PartIcon
             }
         }
 
-        $categoryName = $part->partsCategory?->name;
+        $categoryName = data_get($part, 'partsCategory.name');
 
         if ($categoryName !== null) {
             $categoryIcons = PartIconDefinitions::categoryIcons();

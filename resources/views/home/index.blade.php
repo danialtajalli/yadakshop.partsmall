@@ -88,24 +88,29 @@
 
                 <div id="home-companies-grid" class="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                     @foreach ($companies as $company)
+                        @php
+                            $companySlug = data_get($company, 'slug');
+                            $companyName = data_get($company, 'name');
+                            $companyHasModels = (bool) data_get($company, 'has_models');
+                        @endphp
                         <button
                             type="button"
-                            @if ($company->cars->flatMap->models->isNotEmpty())
+                            @if ($companyHasModels)
                                 data-company-picker-trigger
-                                data-company-slug="{{ $company->slug }}"
+                                data-company-slug="{{ $companySlug }}"
                             @endif
                             class="home-company-card ps-card-interactive flex w-full flex-col items-center p-2 text-center disabled:cursor-not-allowed disabled:opacity-60 sm:p-4"
-                            data-company-name="{{ $company->name }}"
-                            @disabled($company->cars->flatMap->models->isEmpty())
+                            data-company-name="{{ $companyName }}"
+                            @disabled(! $companyHasModels)
                         >
                             <x-ui.company-logo
                                 class="mb-2"
-                                :name="$company->name"
-                                :logo-url="$company->logo_url"
+                                :name="$companyName"
+                                :logo-url="data_get($company, 'logo_url')"
                                 size="sm"
                             />
-                            <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $company->name }}</h3>
-                            @if ($company->cars->flatMap->models->isEmpty())
+                            <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $companyName }}</h3>
+                            @if (! $companyHasModels)
                                 <p class="mt-1 text-[10px] leading-4 text-ink-muted sm:text-xs">خودرویی ثبت نشده است</p>
                             @endif
                         </button>
@@ -117,7 +122,7 @@
         @endif
     </section>
 
-    <x-home.part-category-cards />
+    <x-home.part-category-cards :parts-by-name="$partCategoryParts" />
 
     <x-home.best-shops-banner :shops="$bestShops" />
 
@@ -160,9 +165,9 @@
                     @foreach ($parts as $part)
                         <x-ui.part-card
                             :part="$part"
-                            :url="route('part.show', $part->slug)"
+                            :url="route('part.show', data_get($part, 'slug'))"
                             class="home-part-card flex-col gap-1.5 p-2 sm:flex-row sm:gap-2.5 sm:p-3 [&_h3]:whitespace-normal [&_h3]:text-xs [&_h3]:leading-4 sm:[&_h3]:truncate sm:[&_h3]:text-sm [&_p]:hidden sm:[&_p]:block [&_svg]:size-4 sm:[&_svg]:size-[1.125rem]"
-                            data-part-name="{{ $part->title }}"
+                            data-part-name="{{ data_get($part, 'title') }}"
                         />
                     @endforeach
                 </div>
