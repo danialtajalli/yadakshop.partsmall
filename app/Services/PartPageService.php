@@ -6,15 +6,16 @@ use App\Models\Company;
 use App\Models\Part;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\SafeCache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as Paginator;
-use Illuminate\Support\Facades\Cache;
 
 class PartPageService
 {
     private const PER_PAGE = 60;
+
     private const APPLICATION_CACHE_TTL = 86400;
 
     /**
@@ -173,7 +174,7 @@ class PartPageService
             return $callback();
         }
 
-        return Cache::remember($key, self::APPLICATION_CACHE_TTL, $callback);
+        return SafeCache::remember($key, self::APPLICATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
     }
 
     private function sanitizeDescription(?string $description, Part $part): ?string

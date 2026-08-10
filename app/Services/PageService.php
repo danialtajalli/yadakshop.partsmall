@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Page;
+use App\Support\SafeCache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 class PageService
 {
@@ -16,6 +16,7 @@ class PageService
         'guide',
         'terms',
     ];
+
     private const NAVIGATION_CACHE_TTL = 86400;
 
     /**
@@ -80,7 +81,7 @@ class PageService
             return $callback();
         }
 
-        return Cache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback);
+        return SafeCache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
     }
 
     private function sanitizeContent(?string $content): ?string

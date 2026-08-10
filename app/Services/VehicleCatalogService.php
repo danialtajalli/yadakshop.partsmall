@@ -8,24 +8,25 @@ use App\Models\CarModel;
 use App\Models\Company;
 use App\Models\ModelCategory;
 use App\Models\Part;
+use App\Models\PartsCategory;
 use App\Support\CarModelLabel;
 use App\Support\CatalogUrls;
 use App\Support\ModelCategoryLabel;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
 use App\Support\VehicleCatalogContext;
-use __PHP_Incomplete_Class;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 class VehicleCatalogService
 {
     private const PARTS_PER_PAGE = 24;
+
     private const CATALOG_CACHE_TTL = 86400;
 
     /**
@@ -83,8 +84,9 @@ class VehicleCatalogService
 
         $cars = $carsQuery->get();
 
-        $cars->transform(function($car){
+        $cars->transform(function ($car) {
             $car->name = strtoupper(($car->name));
+
             return $car;
         });
 
@@ -137,13 +139,15 @@ class VehicleCatalogService
 
         $cars = $carsQuery->get();
 
-        $cars->transform(function($car){
+        $cars->transform(function ($car) {
             $car->name = strtoupper(($car->name));
+
             return $car;
         });
 
-        if($context?->car?->name)
+        if ($context?->car?->name) {
             $context->car->name = strtoupper(($context->car->name));
+        }
 
         $modelsQuery = CarModel::query()
             ->with([
@@ -192,7 +196,7 @@ class VehicleCatalogService
     /**
      * @return array{
      *     parts: LengthAwarePaginator|Collection<int, Part>,
-     *     categories: Collection<int, \App\Models\PartsCategory>,
+     *     categories: Collection<int, PartsCategory>,
      *     companies: Collection<int, Company>,
      *     cars: Collection<int, Car>,
      *     context: VehicleCatalogContext,
@@ -219,13 +223,15 @@ class VehicleCatalogService
         }
 
         $cars = $carsQuery->get();
-        $cars->transform(function($car){
+        $cars->transform(function ($car) {
             $car->name = strtoupper(($car->name));
+
             return $car;
         });
 
-        if($context?->car?->name)
+        if ($context?->car?->name) {
             $context->car->name = strtoupper(($context->car->name));
+        }
 
         $filters = [
             'q' => $request->string('q')->trim()->toString() ?: null,
@@ -342,11 +348,11 @@ class VehicleCatalogService
         return $companies;
     }
 
-    /** @return Collection<int, \App\Models\PartsCategory> */
+    /** @return Collection<int, PartsCategory> */
     private function partCategories(): Collection
     {
-        /** @var Collection<int, \App\Models\PartsCategory> $categories */
-        $categories = $this->rememberCatalogData('catalog:part-categories:v1', fn (): Collection => \App\Models\PartsCategory::query()
+        /** @var Collection<int, PartsCategory> $categories */
+        $categories = $this->rememberCatalogData('catalog:part-categories:v1', fn (): Collection => PartsCategory::query()
             ->orderBy('name')
             ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
 
@@ -359,27 +365,7 @@ class VehicleCatalogService
             return $callback();
         }
 
-        $cached = Cache::get($key);
-
-        if (($cached !== null || Cache::has($key)) && $this->isValidCachedCatalogData($cached, $isValid)) {
-            return $cached;
-        }
-
-        Cache::forget($key);
-
-        $value = $callback();
-        Cache::put($key, $value, self::CATALOG_CACHE_TTL);
-
-        return $value;
-    }
-
-    private function isValidCachedCatalogData(mixed $value, ?callable $isValid): bool
-    {
-        if ($value instanceof __PHP_Incomplete_Class) {
-            return false;
-        }
-
-        return $isValid === null || $isValid($value);
+        return SafeCache::remember($key, self::CATALOG_CACHE_TTL, $callback, $isValid);
     }
 
     private function transformPartForCatalog(Part $part, VehicleCatalogContext $context): Part

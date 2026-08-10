@@ -9,17 +9,18 @@ use App\Models\CarModel;
 use App\Models\City;
 use App\Models\Company;
 use App\Models\Part;
+use App\Models\RepairCategory;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
-use __PHP_Incomplete_Class;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Cache;
 
 class ProductService
 {
     private const RELATED_PRODUCTS_LIMIT = 8;
+
     private const FILTER_CACHE_TTL = 86400;
 
     /**
@@ -35,7 +36,7 @@ class ProductService
      *     title: string,
      *     breadcrumbs: list<array<string, mixed>>,
      *     repairLocator: ?array{
-     *         category: \App\Models\RepairCategory,
+     *         category: RepairCategory,
      *         carName: string,
      *         buttonLabel: string,
      *         states: Collection<int, State>,
@@ -48,7 +49,8 @@ class ProductService
      *     signupUrl: string,
      * }
      */
-    public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part,): array {
+    public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part): array
+    {
         $car->description = $this->sanitizeDescription($car->description, $company, $car);
         $part->description = $this->sanitizeDescription($part->description, $company, $car);
 
@@ -107,7 +109,7 @@ class ProductService
 
     /**
      * @return ?array{
-     *     category: \App\Models\RepairCategory,
+     *     category: RepairCategory,
      *     carName: string,
      *     buttonLabel: string,
      *     states: Collection<int, State>,
@@ -125,7 +127,6 @@ class ProductService
 
         $location = $this->locationFilterData();
 
-
         $repairLocators = [];
         foreach ($categories as $category) {
             $repairLocators[] = [
@@ -138,6 +139,7 @@ class ProductService
 
             ];
         }
+
         return $repairLocators;
     }
 
@@ -238,7 +240,7 @@ class ProductService
             $cards[] = [
                 'type' => $categories->get($index)?->name,
                 'cost' => $wage
-                    ? (int) (($wage->variable * ($wage->coefficient??1) * $company->wage_strike) * 100000)
+                    ? (int) (($wage->variable * ($wage->coefficient ?? 1) * $company->wage_strike) * 100000)
                     : null,
                 'wage_name' => $wage?->name,
             ];
@@ -250,16 +252,13 @@ class ProductService
     /** @return Collection<int, Shop> */
     private function loadShopsForPart(Part $part, int $company_id): Collection
     {
-        if(in_array($company_id, [1, 2]))
-        {
+        if (in_array($company_id, [1, 2])) {
             $query = fn () => Shop::whereIn('id', [1, 2, 3]);
-        }
-        else
-        {
+        } else {
             $query = fn () => Shop::query();
         }
 
-        $query = fn() =>$query()
+        $query = fn () => $query()
             ->visibleUnderProduct()
             ->ordered()
             ->with([
@@ -295,27 +294,7 @@ class ProductService
             return $callback();
         }
 
-        $cached = Cache::get($key);
-
-        if (($cached !== null || Cache::has($key)) && $this->isValidCachedFilterData($cached, $isValid)) {
-            return $cached;
-        }
-
-        Cache::forget($key);
-
-        $value = $callback();
-        Cache::put($key, $value, self::FILTER_CACHE_TTL);
-
-        return $value;
-    }
-
-    private function isValidCachedFilterData(mixed $value, ?callable $isValid): bool
-    {
-        if ($value instanceof __PHP_Incomplete_Class) {
-            return false;
-        }
-
-        return $isValid === null || $isValid($value);
+        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid);
     }
 
     /** @return Collection<int, State> */

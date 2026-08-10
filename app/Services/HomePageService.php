@@ -5,19 +5,20 @@ namespace App\Services;
 use App\Enums\ImageType;
 use App\Models\Company;
 use App\Models\Part;
-use App\Models\Representation;
 use App\Models\RepairShop;
+use App\Models\Representation;
 use App\Models\Shop;
 use App\Support\CarModelLabel;
 use App\Support\CarModelSort;
 use App\Support\ModelCategoryLabel;
+use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 class HomePageService
 {
     private const FEATURED_LIMIT = 17;
+
     private const CACHE_TTL = 86400;
 
     /**
@@ -67,7 +68,7 @@ class HomePageService
             'bestShops' => $this->bestShowcaseShops(),
             'parts' => $parts,
             'partCategoryParts' => $this->partCategoryParts(),
-            'title' => "پارتس‌مال",
+            'title' => 'پارتس‌مال',
         ];
     }
 
@@ -399,7 +400,7 @@ class HomePageService
             return [];
         }
 
-        return $this->rememberHomeData('home:part-category-parts:v1', fn (): array => Part::query()
+        return $this->rememberHomeData('home:part-category-parts:'.md5(json_encode($partNames->all())), fn (): array => Part::query()
             ->whereIn('name', $partNames->all())
             ->get(['name', 'slug'])
             ->mapWithKeys(fn (Part $part): array => [
@@ -441,6 +442,6 @@ class HomePageService
             return $callback();
         }
 
-        return Cache::remember($key, self::CACHE_TTL, $callback);
+        return SafeCache::remember($key, self::CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
     }
 }

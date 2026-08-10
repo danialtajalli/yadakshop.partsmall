@@ -6,15 +6,14 @@ use App\Enums\ImageType;
 use App\Models\City;
 use App\Models\Company;
 use App\Models\RepairCategory;
-use App\Models\Representation;
 use App\Models\RepairShop;
+use App\Models\Representation;
 use App\Models\Shop;
 use App\Models\State;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
-use __PHP_Incomplete_Class;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +23,7 @@ use Illuminate\Support\Collection;
 class DirectoryListingService
 {
     private const PER_PAGE = 24;
+
     private const FILTER_CACHE_TTL = 86400;
 
     /**
@@ -419,27 +419,7 @@ class DirectoryListingService
             return $callback();
         }
 
-        $cached = Cache::get($key);
-
-        if (($cached !== null || Cache::has($key)) && $this->isValidCachedFilterData($cached, $isValid)) {
-            return $cached;
-        }
-
-        Cache::forget($key);
-
-        $value = $callback();
-        Cache::put($key, $value, self::FILTER_CACHE_TTL);
-
-        return $value;
-    }
-
-    private function isValidCachedFilterData(mixed $value, ?callable $isValid): bool
-    {
-        if ($value instanceof __PHP_Incomplete_Class) {
-            return false;
-        }
-
-        return $isValid === null || $isValid($value);
+        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid);
     }
 
     private function attachImageUrls(Model $model, string $modelType): void
