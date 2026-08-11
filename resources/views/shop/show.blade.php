@@ -125,17 +125,43 @@
                             </ul>
                         @endif
 
-                        <div class="flex flex-wrap items-center gap-2 pt-1">
-                            <div class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs text-ink-muted">
+                        <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                            <div class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 text-xs text-ink-muted">
                                 <i class="fa-regular fa-eye" aria-hidden="true"></i>
                                 <span class="tabular-nums font-semibold text-ink">{{ number_format($pageViewCount) }}</span>
                                 <span>بازدید</span>
                             </div>
+
+                            <button
+                                type="button"
+                                class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 text-xs font-medium text-ink-muted transition hover:border-brand/30 hover:bg-brand-soft/40 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 lg:hidden"
+                                data-ps-qr-open="{{ $qrDialogId }}"
+                                aria-haspopup="dialog"
+                                aria-controls="{{ $qrDialogId }}"
+                                aria-label="مشاهده QR صفحه"
+                            >
+                                <i class="fa-solid fa-qrcode text-[12px]" aria-hidden="true"></i>
+                                <span>QR صفحه</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                data-shop-share
+                                data-shop-share-target="shop-share-sheet"
+                                data-share-url="{{ $shareUrl }}"
+                                data-share-title="{{ $shop->name }}"
+                                class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 text-xs font-medium text-ink-muted transition hover:border-brand/30 hover:bg-brand-soft/40 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 lg:hidden"
+                                aria-haspopup="dialog"
+                                aria-controls="shop-share-sheet"
+                            >
+                                <i class="fa-solid fa-share-nodes text-[12px]" aria-hidden="true"></i>
+                                <span data-shop-share-label>اشتراک‌گذاری</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <aside class="shrink-0 border-t border-line pt-4 lg:w-[9.5rem] lg:border-t-0 lg:border-s lg:ps-6 lg:pt-0">
+                <aside class="hidden shrink-0 lg:block lg:w-[9.5rem]">
                     <p class="mb-2 text-xs font-medium text-ink-muted lg:text-center">QR صفحه فروشگاه</p>
                     <x-shop.qr-gallery
                         variant="hero"
@@ -143,7 +169,7 @@
                         :image-url="$qrImageUrl"
                         :title="$shop->name"
                         :dialog-id="$qrDialogId"
-                        class="mx-auto w-[7.75rem] sm:w-[8.5rem] lg:w-full"
+                        class="mx-auto w-full"
                     />
                     <button
                         type="button"
