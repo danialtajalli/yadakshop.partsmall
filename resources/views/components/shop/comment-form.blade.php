@@ -87,10 +87,13 @@
                 name="mobile"
                 id="{{ $mobileId }}"
                 autocomplete="tel"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 dir="ltr"
                 x-model="form.mobile"
+                @input="sanitizeMobile"
                 :class="hasFieldError('mobile') ? '{{ $errorClass }}' : ''"
-                class="{{ $inputClass }}"
+                class="{{ $inputClass }} tabular-nums"
             >
         </div>
     </div>

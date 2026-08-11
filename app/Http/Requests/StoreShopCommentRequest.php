@@ -13,6 +13,17 @@ class StoreShopCommentRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('mobile')) {
+            return;
+        }
+
+        $this->merge([
+            'mobile' => preg_replace('/\D/', '', $this->toEnglishDigits((string) $this->input('mobile'))) ?? '',
+        ]);
+    }
+
     /** @return array<string, mixed> */
     public function rules(): array
     {
@@ -66,6 +77,32 @@ class StoreShopCommentRequest extends FormRequest
     {
         return filled(config('services.turnstile.secret'))
             && ! app()->environment('testing');
+    }
+
+    private function toEnglishDigits(string $value): string
+    {
+        return strtr($value, [
+            '۰' => '0',
+            '۱' => '1',
+            '۲' => '2',
+            '۳' => '3',
+            '۴' => '4',
+            '۵' => '5',
+            '۶' => '6',
+            '۷' => '7',
+            '۸' => '8',
+            '۹' => '9',
+            '٠' => '0',
+            '١' => '1',
+            '٢' => '2',
+            '٣' => '3',
+            '٤' => '4',
+            '٥' => '5',
+            '٦' => '6',
+            '٧' => '7',
+            '٨' => '8',
+            '٩' => '9',
+        ]);
     }
 
     /** @return array<string, string> */

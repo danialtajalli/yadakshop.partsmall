@@ -2,6 +2,16 @@ function toPersianDigits(value) {
     return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
 }
 
+function toEnglishDigits(value) {
+    return String(value)
+        .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)))
+        .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)));
+}
+
+function digitsOnly(value) {
+    return toEnglishDigits(value).replace(/\D/g, '');
+}
+
 export default function shopCommentForm({ action, csrf }) {
     return {
         action,
@@ -31,6 +41,11 @@ export default function shopCommentForm({ action, csrf }) {
         setRating(value) {
             this.form.rating = value;
             delete this.fieldErrors.rating;
+        },
+
+        sanitizeMobile() {
+            this.form.mobile = digitsOnly(this.form.mobile);
+            delete this.fieldErrors.mobile;
         },
 
         starFill(star) {
@@ -88,7 +103,7 @@ export default function shopCommentForm({ action, csrf }) {
                 const body = new FormData();
                 body.set('_token', this.csrf);
                 body.set('fullname', this.form.fullname);
-                body.set('mobile', this.form.mobile);
+                body.set('mobile', digitsOnly(this.form.mobile));
                 body.set('body', this.form.body);
                 body.set('rating', this.form.rating ? String(this.form.rating) : '');
 
