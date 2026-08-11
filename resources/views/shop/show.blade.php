@@ -18,6 +18,12 @@
         $hasMap = $shop->latitude && $shop->longitude;
         $pageViewCount = (int) ($shop->visited_count ?? 0);
         $qrDialogId = 'shop-qr-gallery-'.md5($shareUrl);
+        $shopHeadingMetaItems = collect([
+            ['key' => 'rating', 'visible' => (bool) $averageRating],
+            ['key' => 'comments', 'visible' => $commentsCount > 0],
+            ['key' => 'location', 'visible' => (bool) $locationLabel],
+            ['key' => 'website', 'visible' => (bool) $websiteUrl],
+        ])->filter(fn (array $item): bool => $item['visible'])->values();
     @endphp
 
     <x-site.breadcrumb :items="[
@@ -67,47 +73,55 @@
                             @endif
                         </div>
 
-                        @if ($averageRating || $commentsCount > 0 || $locationLabel || $websiteUrl)
+                        @if ($shopHeadingMetaItems->isNotEmpty())
                             <ul class="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-muted" role="list">
-                                @if ($averageRating)
-                                    <li class="inline-flex items-center gap-1.5 font-semibold text-accent">
-                                        <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
-                                        <span class="tabular-nums">{{ number_format($averageRating, 1) }}</span>
-                                        <span class="sr-only">از ۵</span>
-                                    </li>
-                                @endif
+                                @foreach ($shopHeadingMetaItems as $index => $metaItem)
+                                    @if ($index > 0)
+                                        <li class="h-4 w-px self-center bg-line" aria-hidden="true"></li>
+                                    @endif
 
-                                @if ($commentsCount > 0)
-                                    <li class="inline-flex items-center gap-1.5">
-                                        <i class="fa-regular fa-comment text-[12px] text-brand" aria-hidden="true"></i>
-                                        <span class="tabular-nums">{{ number_format($commentsCount) }} نظر</span>
-                                    </li>
-                                @endif
+                                    @switch($metaItem['key'])
+                                        @case('rating')
+                                            <li class="inline-flex items-center gap-1.5 font-semibold text-accent">
+                                                <svg class="size-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292Z"/></svg>
+                                                <span class="tabular-nums">{{ number_format($averageRating, 1) }}</span>
+                                                <span class="sr-only">از ۵</span>
+                                            </li>
+                                            @break
 
-                                @if ($locationLabel)
-                                    <li class="inline-flex min-w-0 items-center gap-1.5">
-                                        <i class="fa-solid fa-location-dot text-[12px] text-brand" aria-hidden="true"></i>
-                                        @if ($hasMap)
-                                            <a href="#shop-location" class="truncate transition hover:text-ink">{{ $locationLabel }}</a>
-                                        @else
-                                            <span class="truncate">{{ $locationLabel }}</span>
-                                        @endif
-                                    </li>
-                                @endif
+                                        @case('comments')
+                                            <li class="inline-flex items-center gap-1.5">
+                                                <i class="fa-regular fa-comment text-[12px] text-brand" aria-hidden="true"></i>
+                                                <span class="tabular-nums">{{ number_format($commentsCount) }} نظر</span>
+                                            </li>
+                                            @break
 
-                                @if ($websiteUrl)
-                                    <li class="inline-flex min-w-0 items-center gap-1.5">
-                                        <i class="fa-solid fa-globe text-[12px] text-[#2563eb]" aria-hidden="true"></i>
-                                        <a
-                                            href="{{ $websiteUrl }}"
-                                            target="_blank"
-                                            rel="noopener sponsored nofollow"
-                                            class="truncate font-medium text-ink transition hover:text-brand"
-                                            dir="ltr"
-                                            title="{{ $websiteLabel }}"
-                                        >{{ $websiteLabel }}</a>
-                                    </li>
-                                @endif
+                                        @case('location')
+                                            <li class="inline-flex min-w-0 items-center gap-1.5">
+                                                <i class="fa-solid fa-location-dot text-[12px] text-brand" aria-hidden="true"></i>
+                                                @if ($hasMap)
+                                                    <a href="#shop-location" class="truncate transition hover:text-ink">{{ $locationLabel }}</a>
+                                                @else
+                                                    <span class="truncate">{{ $locationLabel }}</span>
+                                                @endif
+                                            </li>
+                                            @break
+
+                                        @case('website')
+                                            <li class="inline-flex min-w-0 items-center gap-1.5">
+                                                <i class="fa-solid fa-globe text-[12px] text-[#2563eb]" aria-hidden="true"></i>
+                                                <a
+                                                    href="{{ $websiteUrl }}"
+                                                    target="_blank"
+                                                    rel="noopener sponsored nofollow"
+                                                    class="truncate font-medium text-ink transition hover:text-brand"
+                                                    dir="ltr"
+                                                    title="{{ $websiteLabel }}"
+                                                >{{ $websiteLabel }}</a>
+                                            </li>
+                                            @break
+                                    @endswitch
+                                @endforeach
                             </ul>
                         @endif
 
@@ -117,20 +131,6 @@
                                 <span class="tabular-nums font-semibold text-ink">{{ number_format($pageViewCount) }}</span>
                                 <span>بازدید</span>
                             </div>
-
-                            <button
-                                type="button"
-                                data-shop-share
-                                data-shop-share-target="shop-share-sheet"
-                                data-share-url="{{ $shareUrl }}"
-                                data-share-title="{{ $shop->name }}"
-                                class="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-                                aria-haspopup="dialog"
-                                aria-controls="shop-share-sheet"
-                            >
-                                <i class="fa-solid fa-share-nodes text-[12px]" aria-hidden="true"></i>
-                                <span data-shop-share-label>اشتراک‌گذاری</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,19 @@
                         :dialog-id="$qrDialogId"
                         class="mx-auto w-[7.75rem] sm:w-[8.5rem] lg:w-full"
                     />
-                    <p class="mt-2 text-[11px] leading-5 text-ink-muted lg:text-center">برای اشتراک سریع اسکن کنید</p>
+                    <button
+                        type="button"
+                        data-shop-share
+                        data-shop-share-target="shop-share-sheet"
+                        data-share-url="{{ $shareUrl }}"
+                        data-share-title="{{ $shop->name }}"
+                        class="mx-auto mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition hover:border-brand/30 hover:bg-brand-soft/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                        aria-haspopup="dialog"
+                        aria-controls="shop-share-sheet"
+                    >
+                        <i class="fa-solid fa-share-nodes text-[12px]" aria-hidden="true"></i>
+                        <span data-shop-share-label>اشتراک‌گذاری</span>
+                    </button>
                 </aside>
             </div>
         </div>
