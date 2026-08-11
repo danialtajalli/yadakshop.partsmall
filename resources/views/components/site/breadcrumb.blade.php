@@ -7,7 +7,16 @@
 --}}
 
 @php
-    $crumbs = collect($items)->values();
+    $siteName = 'پارتس‌مال';
+    $crumbs = collect($items)
+        ->map(function (array $item) use ($siteName): array {
+            if (($item['label'] ?? null) === 'خانه') {
+                $item['label'] = $siteName;
+            }
+
+            return $item;
+        })
+        ->values();
     $lastIndex = $crumbs->count() - 1;
 
     $schemaElements = [];
