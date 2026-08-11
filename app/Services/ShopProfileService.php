@@ -12,6 +12,7 @@ use App\Support\ShopImageUrlBuilder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 class ShopProfileService
@@ -86,18 +87,46 @@ class ShopProfileService
 
     public function incrementVisitedCount(Shop $shop): void
     {
+        $this->ensureVisitedCountBaseline($shop);
+
         $ip = request()->ip() ?: '0.0.0.0';
-        $key = 'shop-profile-visit:'.$shop->getKey().':'.$ip;
+        $key = 'shop-profile-visit:'.$shop->getKey().':'.now()->toDateString().':'.$ip;
         $decaySeconds = max(1, (int) now()->diffInSeconds(now()->copy()->endOfDay()));
 
-        RateLimiter::attempt(
-            $key,
-            self::MAX_VISITS_PER_IP_PER_DAY,
-            function () use ($shop): void {
-                $shop->increment('visited_count');
-            },
-            $decaySeconds,
-        );
+        if (RateLimiter::tooManyAttempts($key, self::MAX_VISITS_PER_IP_PER_DAY)) {
+            return;
+        }
+
+        Shop::query()
+            ->whereKey($shop->getKey())
+            ->update([
+                'visited_count' => DB::raw('COALESCE(visited_count, 0) + 1'),
+            ]);
+
+        RateLimiter::hit($key, $decaySeconds);
+        $shop->visited_count = (int) Shop::query()
+            ->whereKey($shop->getKey())
+            ->value('visited_count');
+    }
+
+    private function ensureVisitedCountBaseline(Shop $shop): void
+    {
+        if ((int) ($shop->visited_count ?? 0) > 0) {
+            return;
+        }
+
+        Shop::query()
+            ->whereKey($shop->getKey())
+            ->where(fn ($query) => $query
+                ->whereNull('visited_count')
+                ->orWhere('visited_count', '<=', 0))
+            ->update([
+                'visited_count' => Shop::randomVisitedCountBaseline(),
+            ]);
+
+        $shop->visited_count = (int) Shop::query()
+            ->whereKey($shop->getKey())
+            ->value('visited_count');
     }
 
     /** @return Collection<int, Shop> */

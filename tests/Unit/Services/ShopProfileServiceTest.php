@@ -114,6 +114,41 @@ class ShopProfileServiceTest extends TestCase
         $this->assertSame(2051, $shop->fresh()->visited_count);
     }
 
+    public function test_it_increments_null_visited_count_on_profile_view(): void
+    {
+        $shop = Shop::create([
+            'name' => 'بازدید صفر',
+            'slug' => 'null-visited-shop',
+            'order' => 1,
+        ]);
+        $shop->forceFill(['visited_count' => null])->save();
+        $shop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.webp']);
+
+        $data = $this->service->getProfilePageData('null-visited-shop');
+
+        $this->assertGreaterThanOrEqual(Shop::VISITED_COUNT_BASELINE_MIN + 1, $data['shop']->visited_count);
+        $this->assertLessThanOrEqual(Shop::VISITED_COUNT_BASELINE_MAX + 1, $data['shop']->visited_count);
+        $this->assertSame($data['shop']->visited_count, $shop->fresh()->visited_count);
+    }
+
+    public function test_it_increments_zero_visited_count_from_random_baseline_on_profile_view(): void
+    {
+        $shop = Shop::create([
+            'name' => 'بازدید صفر عددی',
+            'slug' => 'zero-visited-shop',
+            'visited_count' => 0,
+            'order' => 1,
+        ]);
+        $shop->forceFill(['visited_count' => 0])->save();
+        $shop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.webp']);
+
+        $data = $this->service->getProfilePageData('zero-visited-shop');
+
+        $this->assertGreaterThanOrEqual(Shop::VISITED_COUNT_BASELINE_MIN + 1, $data['shop']->visited_count);
+        $this->assertLessThanOrEqual(Shop::VISITED_COUNT_BASELINE_MAX + 1, $data['shop']->visited_count);
+        $this->assertSame($data['shop']->visited_count, $shop->fresh()->visited_count);
+    }
+
     public function test_it_increments_visited_count_at_most_twice_per_ip_per_day(): void
     {
         $shop = Shop::create([
@@ -131,7 +166,7 @@ class ShopProfileServiceTest extends TestCase
         $this->assertSame(2002, $shop->fresh()->visited_count);
     }
 
-    public function test_new_shops_get_random_visited_count_between_two_thousand_and_twenty_one_hundred(): void
+    public function test_new_shops_get_random_visited_count_between_two_thousand_and_twenty_five_hundred(): void
     {
         $shop = Shop::create([
             'name' => 'فروشگاه جدید',
@@ -139,8 +174,8 @@ class ShopProfileServiceTest extends TestCase
             'order' => 1,
         ]);
 
-        $this->assertGreaterThanOrEqual(2000, $shop->visited_count);
-        $this->assertLessThanOrEqual(2100, $shop->visited_count);
+        $this->assertGreaterThanOrEqual(Shop::VISITED_COUNT_BASELINE_MIN, $shop->visited_count);
+        $this->assertLessThanOrEqual(Shop::VISITED_COUNT_BASELINE_MAX, $shop->visited_count);
     }
 
     public function test_it_only_returns_confirmed_comments(): void

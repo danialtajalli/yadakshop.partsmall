@@ -16,6 +16,10 @@ class Shop extends Model
     use BelongsToCity;
     use Searchable;
 
+    public const VISITED_COUNT_BASELINE_MIN = 2000;
+
+    public const VISITED_COUNT_BASELINE_MAX = 2500;
+
     protected $fillable = [
         'name',
         'secondary_name',
@@ -88,8 +92,8 @@ class Shop extends Model
                 $shop->order = (static::max('order') ?? 0) + 1;
             }
 
-            if ($shop->visited_count === null) {
-                $shop->visited_count = random_int(2000, 2100);
+            if ($shop->visited_count === null || $shop->visited_count <= 0) {
+                $shop->visited_count = self::randomVisitedCountBaseline();
             }
         });
 
@@ -154,5 +158,10 @@ class Shop extends Model
     public function scopeConfirmed(Builder $query): void
     {
         $query->where('confirmed', true);
+    }
+
+    public static function randomVisitedCountBaseline(): int
+    {
+        return random_int(self::VISITED_COUNT_BASELINE_MIN, self::VISITED_COUNT_BASELINE_MAX);
     }
 }
