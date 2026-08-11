@@ -172,7 +172,8 @@
                     @endforeach
                 </div>
 
-                <div id="home-parts-load-more-wrap" class="mt-5 hidden justify-center">
+                <div id="home-parts-load-more-wrap" class="mt-5 hidden flex-col items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-down animate-bounce text-sm text-brand" aria-hidden="true"></i>
                     <button
                         type="button"
                         id="home-parts-load-more"
