@@ -31,7 +31,6 @@ export default function catalogRemoteSearch({
             this.$nextTick(() => {
                 this.captureFilters();
                 this.bindFilterTriggers();
-                this.bindPagination();
             });
         },
 
@@ -165,39 +164,6 @@ export default function catalogRemoteSearch({
                         .on('select2:select.catalogRemoteSearch select2:clear.catalogRemoteSearch change.catalogRemoteSearch', onSpecializationChange);
                 }
             }
-        },
-
-        bindPagination() {
-            this.$el.addEventListener('click', (event) => {
-                const link = event.target.closest('a[href]');
-
-                if (! (link instanceof HTMLAnchorElement) || ! this.$el.contains(link)) {
-                    return;
-                }
-
-                const results = this.$el.querySelector(this.resultsSelector);
-
-                if (! results?.contains(link) || ! link.closest('nav')) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                let page = 1;
-
-                try {
-                    const url = new URL(link.href, window.location.origin);
-                    page = Number(url.searchParams.get('page') || 1);
-                } catch {
-                    page = 1;
-                }
-
-                if (! Number.isFinite(page) || page < 1) {
-                    page = 1;
-                }
-
-                this.runSearch({ page });
-            });
         },
 
         onQueryInput() {
