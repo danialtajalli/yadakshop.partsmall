@@ -6,7 +6,7 @@
                     <img src="{{ asset('panel/assets/uploads/img/favicon.webp') }}" class="size-9" alt="{{ config('app.name', 'پارتس‌مال') }}">
                     <span class="font-bold text-ink">{{ config('app.name', 'پارتس‌مال') }}</span>
                 </a>
-                <p class="mt-2 text-sm leading-relaxed text-ink-muted">فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو — همه در یکجا</p>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو <br> همه در یکجا</p>
             </div>
             <div>
                 <p class="text-sm font-semibold text-ink">دسترسی سریع</p>
@@ -29,7 +29,7 @@
         </div>
         <div class="mt-8 border-t border-line pt-6 text-center text-xs text-ink-muted/80" dir="rtl">
             <span>تمام حقوق این وب‌سایت برای پارتس‌مال محفوظ است.</span>
-            <span class="mx-1" aria-hidden="true">|</span>
+            <span class="mx-1" aria-hidden="true">©</span>
             <span dir="ltr">{{ date('Y') }}</span>
         </div>
     </div>
