@@ -69,7 +69,7 @@ class HomePageService
             'bestShops' => $this->bestShowcaseShops(),
             'parts' => $parts,
             'partCategoryParts' => $this->partCategoryParts(),
-            'title' => 'پارتس‌مال',
+            'title' => 'پارتسمال | مرجع لوازم یدکی خودرو',
             'metaDescription' => MetaDescription::home(),
         ];
     }

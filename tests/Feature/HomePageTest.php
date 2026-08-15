@@ -27,6 +27,7 @@ class HomePageTest extends TestCase
 
         $response->assertOk();
         $response->assertViewIs('home.index');
+        $response->assertSee('<title>پارتسمال | مرجع لوازم یدکی خودرو</title>', false);
         $response->assertSee('فروشگاه‌های لوازم یدکی', false);
         $response->assertSee('تعمیرگاه‌ها', false);
         $response->assertSee('نمایندگی‌ها', false);
