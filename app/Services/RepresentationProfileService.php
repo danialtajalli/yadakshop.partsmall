@@ -7,6 +7,7 @@ use App\Enums\LinkType;
 use App\Enums\PhoneType;
 use App\Models\Representation;
 use App\Support\EnglishDigits;
+use App\Support\MetaDescription;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -50,6 +51,7 @@ class RepresentationProfileService
         return [
             'representation' => $representation,
             'title' => $representation->name,
+            'metaDescription' => MetaDescription::representationProfile($representation->name),
             'serviceTypes' => $this->parseServiceTypes($representation->service_type),
             'contacts' => $this->buildContacts($representation),
             'socialLinks' => $this->buildSocialLinks($representation),

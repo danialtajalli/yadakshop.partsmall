@@ -11,6 +11,7 @@ use App\Models\Part;
 use App\Models\PartsCategory;
 use App\Support\CarModelLabel;
 use App\Support\CatalogUrls;
+use App\Support\MetaDescription;
 use App\Support\ModelCategoryLabel;
 use App\Support\PageTitle;
 use App\Support\Pagination;
@@ -50,6 +51,7 @@ class VehicleCatalogService
                 terminalLabel: 'کمپانی ها',
             ),
             'title' => 'لیست کمپانی‌ها',
+            'metaDescription' => MetaDescription::listing('کمپانی‌های خودرو'),
         ];
     }
 
@@ -105,6 +107,7 @@ class VehicleCatalogService
             ),
             'title' => $title,
             'description' => $description,
+            'metaDescription' => MetaDescription::catalog($title, $description),
         ];
     }
 
@@ -190,6 +193,7 @@ class VehicleCatalogService
             ),
             'title' => $title,
             'description' => $description,
+            'metaDescription' => MetaDescription::catalog($title, $description),
         ];
     }
 
@@ -304,6 +308,9 @@ class VehicleCatalogService
             'breadcrumbs' => $breadcrumbs,
             'title' => $title,
             'description' => $description,
+            'metaDescription' => $hasVehicleContext
+                ? MetaDescription::product($context->company->name.' '.$context->car->name.' '.CarModelLabel::display($context->model))
+                : MetaDescription::catalog($title, $description),
             'filters' => $filters,
         ];
     }

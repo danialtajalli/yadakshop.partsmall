@@ -12,6 +12,8 @@ use App\Models\Part;
 use App\Models\RepairCategory;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\CarModelLabel;
+use App\Support\MetaDescription;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
@@ -65,6 +67,7 @@ class ProductService
         $car->name = strtoupper($car->name);
 
         $title = $this->buildTitle($part, $company, $car, $model);
+        $metaLabel = $part->name.' '.$company->name.' '.$car->name.' '.CarModelLabel::display($model);
         $telegramCta = $this->buildTelegramCta($company, $car);
         $relatedProducts = $this->loadRelatedProducts($company, $car, $model, $part);
 
@@ -78,6 +81,7 @@ class ProductService
             'shopFilterStates' => $this->shopFilterStates($shops),
             'shopFilterCitiesByState' => $this->shopFilterCitiesByState($shops),
             'title' => $title,
+            'metaDescription' => MetaDescription::product($metaLabel),
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
                 company: $company,
                 car: $car,

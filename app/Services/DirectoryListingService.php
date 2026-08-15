@@ -10,6 +10,7 @@ use App\Models\RepairShop;
 use App\Models\Representation;
 use App\Models\Shop;
 use App\Models\State;
+use App\Support\MetaDescription;
 use App\Support\PageTitle;
 use App\Support\Pagination;
 use App\Support\SafeCache;
@@ -317,6 +318,7 @@ class DirectoryListingService
             'listings' => $listings,
             'type' => $type,
             'title' => PageTitle::appendPageNumber($title, $listings->currentPage()),
+            'metaDescription' => MetaDescription::listing($title),
             'breadcrumbs' => Pagination::buildBreadcrumbs(
                 $breadcrumbTrail,
                 $listings->currentPage(),

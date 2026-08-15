@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Page;
+use App\Support\MetaDescription;
 use App\Support\SafeCache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
@@ -41,6 +42,7 @@ class PageService
         return [
             'page' => $page,
             'title' => $page->title ?? $page->slug,
+            'metaDescription' => MetaDescription::page($page->title ?? $page->slug, $page->content),
             'breadcrumbs' => [
                 ['label' => 'خانه', 'url' => route('home')],
                 ['label' => $page->title ?? $page->slug, 'active' => true],

@@ -6,6 +6,7 @@ use App\Enums\ImageType;
 use App\Models\Phone;
 use App\Models\RepairShop;
 use App\Support\EnglishDigits;
+use App\Support\MetaDescription;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,6 +45,7 @@ class RepairShopProfileService
         return [
             'repairShop' => $repairShop,
             'title' => $repairShop->name,
+            'metaDescription' => MetaDescription::repairShopProfile($repairShop->name),
         ];
     }
 

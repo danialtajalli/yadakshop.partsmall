@@ -10,6 +10,7 @@ use App\Models\Representation;
 use App\Models\Shop;
 use App\Support\CarModelLabel;
 use App\Support\CarModelSort;
+use App\Support\MetaDescription;
 use App\Support\ModelCategoryLabel;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
@@ -69,6 +70,7 @@ class HomePageService
             'parts' => $parts,
             'partCategoryParts' => $this->partCategoryParts(),
             'title' => 'پارتس‌مال',
+            'metaDescription' => MetaDescription::home(),
         ];
     }
 

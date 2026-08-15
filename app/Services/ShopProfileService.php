@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Phone;
 use App\Models\Shop;
 use App\Support\EnglishDigits;
+use App\Support\MetaDescription;
 use App\Support\ShopImageUrlBuilder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -79,6 +80,7 @@ class ShopProfileService
         return [
             'shop' => $shop,
             'title' => "پروفایل " . $shop->name . " " . " در پارتس‌مال",
+            'metaDescription' => MetaDescription::shopProfile($shop->name),
             'averageRating' => $shop->average_rating !== null ? (float) $shop->average_rating : null,
             'commentsCount' => $shop->comments->count(),
             'relatedShops' => $this->loadRelatedShops($shop),

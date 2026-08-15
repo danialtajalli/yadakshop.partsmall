@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Company;
 use App\Models\Part;
+use App\Support\MetaDescription;
 use App\Support\PageTitle;
 use App\Support\Pagination;
 use App\Support\SafeCache;
@@ -54,6 +55,7 @@ class PartPageService
         return [
             'part' => $part,
             'title' => PageTitle::appendPageNumber($part->name, $vehicleApplications->currentPage()),
+            'metaDescription' => MetaDescription::part($part->name),
             'breadcrumbs' => Pagination::buildBreadcrumbs(
                 [
                     ['label' => 'ط®ط§ظ†ظ‡', 'url' => route('home')],

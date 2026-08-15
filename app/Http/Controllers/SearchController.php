@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\SearchService;
+use App\Support\MetaDescription;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -22,6 +23,7 @@ class SearchController extends Controller
             'groups' => $results['groups'],
             'total' => $results['total'],
             'title' => $query === '' ? 'جستجو' : 'جستجوی '.$query,
+            'metaDescription' => MetaDescription::search($query),
         ]);
     }
 }
