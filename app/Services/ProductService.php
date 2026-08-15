@@ -53,14 +53,14 @@ class ProductService
      */
     public function getProductPageData(Company $company, Car $car, CarModel $model, Part $part): array
     {
-        $car->description = $this->sanitizeDescription($car->description, $company, $car);
-        $part->description = $this->sanitizeDescription($part->description, $company, $car);
+        $car->description = $this->sanitizeDescription($car->description, $company, $car, $model);
+        $part->description = $this->sanitizeDescription($part->description, $company, $car, $model);
 
         $repairCards = $this->buildRepairCards($part, $company);
         $shops = $this->loadShopsForPart($part, $car->company_id);
 
-        $shops->each(function (Shop $shop) use ($company, $car): void {
-            $shop->description = $this->sanitizeDescription($shop->description, $company, $car);
+        $shops->each(function (Shop $shop) use ($company, $car, $model): void {
+            $shop->description = $this->sanitizeDescription($shop->description, $company, $car, $model);
             ShopImageUrlBuilder::attachShopMedia($shop);
         });
 
@@ -191,15 +191,15 @@ class ProductService
         return $cities;
     }
 
-    private function sanitizeDescription(?string $description, Company $company, Car $car): ?string
+    private function sanitizeDescription(?string $description, Company $company, Car $car, CarModel $model): ?string
     {
         if ($description === null || $description === '') {
             return $description;
         }
 
         return str_replace(
-            ['ظظظ', 'rn', 'ططط'],
-            [$company->name, '', $car->name],
+            ['ظظظ', 'rn', 'ططط', 'ممم'],
+            [$company->name, '', $car->name, CarModelLabel::display($model)],
             $description,
         );
     }

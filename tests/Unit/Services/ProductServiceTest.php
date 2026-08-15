@@ -35,7 +35,7 @@ class ProductServiceTest extends TestCase
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame(
-            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'shopFilterCitiesByState', 'title', 'breadcrumbs', 'repairLocators', 'relatedProducts', 'telegramTitle', 'telegramUrl', 'telegramName', 'signupUrl'],
+            ['company', 'car', 'model', 'part', 'repairCards', 'shops', 'shopFilterStates', 'shopFilterCitiesByState', 'title', 'metaDescription', 'breadcrumbs', 'repairLocators', 'relatedProducts', 'telegramTitle', 'telegramUrl', 'telegramName', 'signupUrl'],
             array_keys($data),
         );
         $this->assertSame('به گروه تلگرام هیوندای سانتافه سواران بپیوندید', $data['telegramTitle']);
@@ -51,14 +51,14 @@ class ProductServiceTest extends TestCase
     public function test_it_sanitizes_car_and_part_descriptions(): void
     {
         [$company, $car, $model, $part] = $this->seedProductGraph([
-            'car_description' => 'برند ظظظ و خودرو طططrnمتن',
-            'part_description' => 'ظظظ طططrn',
+            'car_description' => 'برند ظظظ و خودرو ططط مدل مممrnمتن',
+            'part_description' => 'ظظظ ططط مممrn',
         ]);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
-        $this->assertSame('برند هیوندای و خودرو سانتافهمتن', $data['car']->description);
-        $this->assertSame('هیوندای سانتافه', $data['part']->description);
+        $this->assertSame('برند هیوندای و خودرو سانتافه مدل نیومتن', $data['car']->description);
+        $this->assertSame('هیوندای سانتافه نیو', $data['part']->description);
     }
 
     public function test_it_leaves_null_descriptions_unchanged(): void
@@ -231,7 +231,7 @@ class ProductServiceTest extends TestCase
         $shop = Shop::create([
             'name' => 'فروشگاه',
             'slug' => 'shop',
-            'description' => 'ظظظ طططrn',
+            'description' => 'ظظظ ططط مممrn',
             'show_under_product' => true,
             'order' => 1,
         ]);
@@ -243,7 +243,7 @@ class ProductServiceTest extends TestCase
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
-        $this->assertSame('هیوندای سانتافه', $data['shops']->first()->description);
+        $this->assertSame('هیوندای سانتافه نیو', $data['shops']->first()->description);
     }
 
     public function test_it_loads_related_products_for_same_car_and_model(): void
