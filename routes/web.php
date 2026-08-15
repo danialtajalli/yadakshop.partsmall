@@ -46,7 +46,7 @@ Route::match(['get', 'post'], 'part/{part}', [PartController::class, 'show'])->n
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');
 
-Route::get('forms/contact', [ContactFormController::class, 'create'])->name('forms.contact.create');
+Route::get('forms/contact', function () {return abort(404);})->name('forms.contact.create');
 Route::post('forms/contact', [ContactFormController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('forms.contact.store');

@@ -27,4 +27,15 @@ class NotFoundPageTest extends TestCase
             ->assertSee('۴۰۴', false)
             ->assertSee('صفحه پیدا نشد', false);
     }
+
+    public function test_wrong_http_method_renders_custom_405_page(): void
+    {
+        $this->post(route('home'))
+            ->assertStatus(405)
+            ->assertSee('۴۰۵', false)
+            ->assertSee('روش درخواست مجاز نیست', false)
+            ->assertSee(route('home'), false)
+            ->assertSee(route('shops.index'), false)
+            ->assertSee(route('car.parts'), false);
+    }
 }
