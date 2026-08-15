@@ -9,7 +9,7 @@ function toEnglishDigits(value) {
 }
 
 function digitsOnly(value) {
-    return toEnglishDigits(value).replace(/\D/g, '');
+    return toEnglishDigits(value).replace(/\D/g, '').slice(0, 11);
 }
 
 export default function shopCommentForm({ action, csrf }) {

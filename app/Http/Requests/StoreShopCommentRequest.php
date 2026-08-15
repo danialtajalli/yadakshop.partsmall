@@ -29,7 +29,7 @@ class StoreShopCommentRequest extends FormRequest
     {
         $rules = [
             'fullname' => ['required', 'string', 'max:255'],
-            'mobile' => ['nullable', 'string', 'max:20', 'regex:/^09\d{9}$/', 'required'],
+            'mobile' => ['nullable', 'string', 'max:11', 'regex:/^09\d{9}$/', 'required'],
             'body' => ['required', 'string', 'min:10', 'max:2000'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'company_url' => ['prohibited'],
@@ -125,7 +125,7 @@ class StoreShopCommentRequest extends FormRequest
             'fullname.max' => 'نام نباید بیشتر از ۲۵۵ کاراکتر باشد.',
             'mobile.nullable' => 'شماره موبایل میتواند خالی باشد.',
             'mobile.string' => 'شماره موبایل باید یک رشته باشد.',
-            'mobile.max' => 'شماره موبایل نباید بیشتر از ۲۰ کاراکتر باشد.',
+            'mobile.max' => 'شماره موبایل نباید بیشتر از ۱۱ رقم باشد.',
             'mobile.regex' => 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567',
             'mobile.required' => 'لطفاً شماره موبایل خود را وارد کنید.',
             'body.required' => 'لطفاً متن نظر خود را وارد کنید.',

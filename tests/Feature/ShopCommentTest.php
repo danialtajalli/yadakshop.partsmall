@@ -206,6 +206,9 @@ class ShopCommentTest extends TestCase
         $response->assertSee('shopCommentForm', false);
         $response->assertSee('profile/'.$shop->slug.'/comments', false);
         $response->assertSee('data-rating-picker', false);
+        $response->assertSee('name="mobile"', false);
+        $response->assertSee('maxlength="11"', false);
+        $response->assertSee('pattern="09[0-9]{9}"', false);
     }
 
     private function createShop(): Shop
