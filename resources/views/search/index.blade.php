@@ -21,7 +21,7 @@
 
     @if ($query === '')
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-            <p class="text-sm text-ink-muted">برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، کمپانی، خودرو یا مدل را وارد کنید.</p>
+            <p class="text-sm text-ink-muted">برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، برند خودرو، خودرو یا مدل را وارد کنید.</p>
         </div>
     @elseif ($groups->isEmpty())
         <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
@@ -46,7 +46,7 @@
                         'sm:grid-cols-2 lg:grid-cols-4' => $group['key'] !== 'stores' && $group['key'] !== 'repair_shops',
                     ])>
                         @foreach ($group['items'] as $item)
-                            @if (in_array($item['type'], ['فروشگاه', 'تعمیرگاه', 'نمایندگی', 'کمپانی', 'خودرو'], true))
+                            @if (in_array($item['type'], ['فروشگاه', 'تعمیرگاه', 'نمایندگی', 'برند خودرو', 'خودرو'], true))
                                 <x-search.result-card :item="$item" />
                             @else
                                 <a href="{{ $item['url'] }}" class="ps-card-interactive flex min-w-0 items-center gap-3 p-3">

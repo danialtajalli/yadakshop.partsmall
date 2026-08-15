@@ -51,7 +51,7 @@ class SearchPageTest extends TestCase
         app(EngineManager::class)->forgetDrivers();
 
         $company = Company::create([
-            'name' => 'کمپانی آزمایش',
+            'name' => 'برند خودرو آزمایش',
             'slug' => 'test-company',
         ]);
 
@@ -97,7 +97,7 @@ class SearchPageTest extends TestCase
             ->assertSee('فروشگاه آزمایش', false)
             ->assertSee('تعمیرگاه آزمایش', false)
             ->assertSee('نمایندگی آزمایش', false)
-            ->assertSee('کمپانی آزمایش', false)
+            ->assertSee('برند خودرو آزمایش', false)
             ->assertSee('خودرو آزمایش', false)
             ->assertDontSee('مدل آزمایش', false);
     }
@@ -204,7 +204,7 @@ class SearchPageTest extends TestCase
     {
         $this->get(route('search.index'))
             ->assertOk()
-            ->assertSee('برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، کمپانی، خودرو یا مدل را وارد کنید.', false);
+            ->assertSee('برای جستجو، نام قطعه، فروشگاه، تعمیرگاه، نمایندگی، برند خودرو، خودرو یا مدل را وارد کنید.', false);
     }
 
     public function test_search_page_shows_photo_cards_for_directory_results(): void
@@ -213,7 +213,7 @@ class SearchPageTest extends TestCase
         app(EngineManager::class)->forgetDrivers();
 
         $company = Company::create([
-            'name' => 'کمپانی تصویر',
+            'name' => 'برند خودرو تصویر',
             'slug' => 'image-company',
         ]);
 

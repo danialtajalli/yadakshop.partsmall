@@ -21,7 +21,7 @@
                 <div class="min-w-0">
                     <p class="ps-section-label">انتخاب خودرو</p>
                     <h2 class="ps-section-title mt-0.5 text-lg sm:text-xl">قطعه مناسب خودروی خود را پیدا کنید</h2>
-                    <p class="mt-1 text-xs text-ink-muted sm:text-sm">کمپانی، خودرو و مدل را انتخاب کنید. انتخاب قطعه اختیاری است.</p>
+                    <p class="mt-1 text-xs text-ink-muted sm:text-sm">برند خودرو، خودرو و مدل را انتخاب کنید. انتخاب قطعه اختیاری است.</p>
                 </div>
 
                 <form
@@ -38,7 +38,7 @@
                 >
                     <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3">
                         <div class="min-w-0">
-                            <label for="vehicle-company" class="mb-1 block text-xs font-medium text-ink-muted">انتخاب کمپانی</label>
+                            <label for="vehicle-company" class="mb-1 block text-xs font-medium text-ink-muted">انتخاب برند خودرو</label>
                             <div class="ps-searchable-select">
                                 <select
                                     id="vehicle-company"
@@ -48,7 +48,7 @@
                                     data-option-logos
                                     required
                                 >
-                                    <option value="">انتخاب کمپانی سازنده</option>
+                                    <option value="">انتخاب برند خودرو</option>
                                     @foreach ($companies as $company)
                                         <option
                                             value="{{ $company['slug'] }}"

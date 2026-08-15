@@ -16,7 +16,7 @@
                     <i class="fa-solid fa-house text-xs" aria-hidden="true"></i>
                     بازگشت به خانه
                 </a>
-                <a href="{{ route('companies.index') }}" class="ps-btn-secondary">کمپانی‌ها</a>
+                <a href="{{ route('companies.index') }}" class="ps-btn-secondary">برندهای خودرو</a>
                 <a href="{{ route('car.parts') }}" class="ps-btn-secondary">قطعات</a>
             </div>
         </div>

@@ -46,7 +46,7 @@ class ImageForm
                     ->disabled(fn (): bool => self::contextOwnerField() === 'repair_shop_id'),
                 Select::make('company_id')
                     ->relationship('company', 'name')
-                    ->label('کمپانی')
+                    ->label('برند خودرو')
                     ->searchable()
                     ->preload()
                     ->live()
@@ -65,7 +65,7 @@ class ImageForm
                     ->helperText(fn (Get $get): string => blank($get('type'))
                         ? 'ابتدا نوع تصویر را انتخاب کنید.'
                         : (self::resolveOwner($get) === null
-                            ? 'ابتدا یکی از فروشگاه / تعمیرگاه / کمپانی را انتخاب کنید.'
+                            ? 'ابتدا یکی از فروشگاه / تعمیرگاه / برند خودرو را انتخاب کنید.'
                             : 'تصویر با نام مالک و در مسیر متناسب با نوع ذخیره می‌شود.'))
                     ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get): string {
                         $baseName = self::resolveOwnerFileBaseName($get);

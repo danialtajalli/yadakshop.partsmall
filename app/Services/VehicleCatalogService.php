@@ -48,10 +48,10 @@ class VehicleCatalogService
             'companies' => $companies,
             'context' => $context,
             'breadcrumbs' => VehicleCatalogBreadcrumbs::build(
-                terminalLabel: 'کمپانی ها',
+                terminalLabel: 'برندهای خودرو',
             ),
-            'title' => 'لیست کمپانی‌ها',
-            'metaDescription' => MetaDescription::listing('کمپانی‌های خودرو'),
+            'title' => 'لیست برندهای خودرو',
+            'metaDescription' => MetaDescription::listing('برندهای خودرو'),
         ];
     }
 

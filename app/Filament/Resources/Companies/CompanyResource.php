@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 
 class CompanyResource extends Resource
 {
-    protected static ?string $navigationLabel = 'کمپانی';
+    protected static ?string $navigationLabel = 'برند خودرو';
     protected static ?int $navigationSort = 6;
     protected static ?string $model = Company::class;
 

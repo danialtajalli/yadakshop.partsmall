@@ -46,7 +46,7 @@
                         'bg-surface text-ink' => $isCompaniesNavActive,
                     ])
                     @if ($isCompaniesNavActive) aria-current="page" @endif
-                >کمپانی ها</a>
+                >برندهای خودرو</a>
                 <a
                     href="{{ route('car.parts') }}"
                     @class([
@@ -162,7 +162,7 @@
                     'bg-surface text-ink' => $isCompaniesNavActive,
                 ])
                 @if ($isCompaniesNavActive) aria-current="page" @endif
-            >کمپانی ها</a>
+            >برندهای خودرو</a>
             <a
                 href="{{ route('car.parts') }}"
                 @class([

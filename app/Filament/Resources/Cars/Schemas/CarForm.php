@@ -24,7 +24,7 @@ class CarForm
                     ->label('نام لاتین ماشین')
                     ->required(),
                 Select::make('company_id')->searchable()
-                    ->label('کمپانی')
+                    ->label('برند خودرو')
                     ->relationship('company', 'name')
                     ->required()->searchable()->preload()->default(fn () => request('company_id')),
                 Select::make('model_id')->searchable()

@@ -21,7 +21,7 @@
                                 >
                             @endif
                             <span class="min-w-0">
-                                <span class="block text-[11px] font-medium text-ink-muted">کمپانی سازنده فعال</span>
+                                <span class="block text-[11px] font-medium text-ink-muted">برند خودرو فعال</span>
                                 <span class="block truncate">{{ $selected->name }}</span>
                             </span>
                         </span>
@@ -36,14 +36,14 @@
                 @else
                     <div class="min-w-0">
                         <p class="text-sm font-semibold text-ink">فیلتر بر اساس برند</p>
-                        <p class="mt-0.5 text-xs text-ink-muted">فروشگاه‌های مرتبط با هر کمپانی را ببینید</p>
+                        <p class="mt-0.5 text-xs text-ink-muted">فروشگاه‌های مرتبط با هر برند خودرو را ببینید</p>
                     </div>
                 @endif
             </div>
 
             {{-- Physical right (RTL start): company select --}}
             <div class="order-1 min-w-0 w-full sm:order-1 sm:max-w-sm sm:shrink-0">
-                <label for="shop-company-filter" class="sr-only">کمپانی سازنده</label>
+                <label for="shop-company-filter" class="sr-only">برند خودرو</label>
                 <div class="ps-searchable-select">
                     <select
                         id="shop-company-filter"
@@ -56,7 +56,7 @@
                             data-url="{{ route('shops.index') }}"
                             @selected($selected === null)
                         >
-                            همه کمپانی‌های سازنده
+                            همه برندهای خودرو
                         </option>
                         @foreach ($companies as $company)
                             <option

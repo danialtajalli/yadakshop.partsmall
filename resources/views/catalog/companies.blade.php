@@ -12,7 +12,7 @@
                     <x-ui.section-heading
                         label="خودرو"
                         :title="$title"
-                        description="کمپانی خودروی خود را انتخاب کنید تا خودروها و مدل‌های آن را ببینید"
+                        description="برند خودروی خود را انتخاب کنید تا خودروها و مدل‌های آن را ببینید"
                         heading="h1"
                     />
                 </div>
@@ -33,15 +33,15 @@
     >
         <x-catalog.search-bar
             id="company-search"
-            placeholder="جستجوی نام کمپانی..."
-            empty-message="کمپانیی با این نام یافت نشد."
+            placeholder="جستجوی نام برند خودرو..."
+            empty-message="برند خودرویی با این نام یافت نشد."
             alpine
             class="mb-0"
         />
 
         @if ($companies->isEmpty())
             <div class="rounded-2xl border border-dashed border-line bg-white px-6 py-12 text-center">
-                <p class="text-sm text-ink-muted">کمپانیی برای نمایش ثبت نشده است.</p>
+                <p class="text-sm text-ink-muted">برند خودرویی برای نمایش ثبت نشده است.</p>
             </div>
         @else
             <div id="companies-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

@@ -10,21 +10,21 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListCompanies extends ListRecords
 {
-    protected static ?string $title = 'لیست کمپانی ها';
+    protected static ?string $title = 'لیست برندهای خودرو';
     protected static string $resource = CompanyResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('افزودن کمپانی'),
+            CreateAction::make()->label('افزودن برند خودرو'),
         ];
     }
 
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('همه کمپانی ها'),
-            'wage_strike' => Tab::make('کمپانی های با ضریب اجرت')
+            'all' => Tab::make('همه برندهای خودرو'),
+            'wage_strike' => Tab::make('خودروهای با ضریب اجرت')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('wage_strike', '>=', 1)),
         ];
     }

@@ -392,7 +392,7 @@ class SearchService
                 'title' => $result->name,
                 'subtitle' => $result->country,
                 'url' => route('cars.index', ['company' => $result->slug]),
-                'type' => 'کمپانی',
+                'type' => 'برند خودرو',
                 'image_url' => $this->imageUrlFor($result),
             ],
             $result instanceof Car => [
