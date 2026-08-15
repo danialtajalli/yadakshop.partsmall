@@ -8,7 +8,7 @@ class MetaDescription
 
     public static function home(): string
     {
-        return 'فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو را در پارتس‌مال یکجا پیدا کنید.';
+        return 'لوازم یدکی خودرو، فروشگاه‌ها، تعمیرگاه‌ها، نمایندگی‌ها و قطعات خودرو را در پارتس‌مال یکجا پیدا کنید.';
     }
 
     public static function shopProfile(string $shopName): string
@@ -28,17 +28,29 @@ class MetaDescription
 
     public static function product(string $label): string
     {
-        return 'مشاهده قیمت، تعمیرگاه‌ها و لیست فروشندگان '.$label.' در پارتس‌مال.';
+        return self::limit('قیمت و فروشندگان '.$label.' را بررسی کنید؛ همراه با تعمیرگاه‌ها، اجرت‌های مرتبط و راه‌های تماس فروشگاه‌ها در پارتس‌مال.');
     }
 
     public static function part(string $partName): string
     {
-        return 'مشاهده خودروهای مرتبط، جزئیات، فروشندگان و قیمت '.$partName.' در پارتس‌مال.';
+        return 'مشاهده خودروهای مرتبط، جزئیات، فروشندگان و قیمت '.$partName.'همه خودرو ها در پارتس‌مال.';
     }
 
     public static function listing(string $title): string
     {
-        return 'جستجو، فیلتر و مشاهده '.$title.' در پارتس‌مال.';
+        $title = self::plainText($title);
+
+        return match (true) {
+            self::containsAny($title, ['فروشگاه']) => self::listingShops($title),
+            self::containsAny($title, ['تعمیرگاه']) => self::listingRepairShops($title),
+            self::containsAny($title, ['نمایندگی']) => self::listingRepresentations($title),
+            default => self::limit('جستجو، فیلتر و مشاهده '.$title.' همراه با جزئیات، موقعیت و راه‌های ارتباطی در پارتس‌مال.'),
+        };
+    }
+
+    public static function vehicleParts(string $label): string
+    {
+        return self::limit('فهرست لوازم یدکی '.$label.' را ببینید؛ قطعه مناسب را انتخاب کنید و به قیمت‌ها، فروشندگان و تعمیرگاه‌های مرتبط در پارتس‌مال برسید.');
     }
 
     public static function catalog(string $title, ?string $description = null): string
@@ -66,6 +78,16 @@ class MetaDescription
 
     public static function page(string $title, ?string $content = null): string
     {
+        $title = self::plainText($title);
+
+        if (self::containsAny($title, ['درباره'])) {
+            return self::limit('درباره پارتس‌مال؛ آشنایی با مرجع لوازم یدکی خودرو و هدف ما برای اتصال خریداران به فروشگاه‌ها، تعمیرگاه‌ها و نمایندگی‌های معتبر قطعات خودرو.');
+        }
+
+        if (self::containsAny($title, ['تماس'])) {
+            return self::limit('تماس با پارتس‌مال؛ ارسال پیام، مشاهده تلفن، ایمیل و آدرس، دریافت پشتیبانی و پیگیری همکاری فروشگاه‌ها، تعمیرگاه‌ها و نمایندگی‌های قطعات خودرو.');
+        }
+
         return self::fromText($content ?: $title.' در '.self::SITE_NAME);
     }
 
@@ -83,6 +105,21 @@ class MetaDescription
     private static function catalogCars(string $title): string
     {
         return self::limit('مشاهده '.$title.'، انتخاب خودرو و دسترسی به مدل‌ها، قطعات، قیمت‌ها و فروشندگان مرتبط در پارتس‌مال.');
+    }
+
+    private static function listingShops(string $title): string
+    {
+        return self::limit('جستجو و فیلتر '.$title.'، مشاهده برندهای تحت پوشش، آدرس، امتیاز، شهر و راه‌های تماس فروشندگان لوازم یدکی در پارتس‌مال.');
+    }
+
+    private static function listingRepairShops(string $title): string
+    {
+        return self::limit('جستجو و فیلتر '.$title.'، مشاهده تخصص‌ها، شهر، آدرس و راه‌های تماس تعمیرکاران خودرو و مراکز خدماتی در پارتس‌مال.');
+    }
+
+    private static function listingRepresentations(string $title): string
+    {
+        return self::limit('جستجو و فیلتر '.$title.'، مشاهده برند خودرو، خدمات، موقعیت، شهر و راه‌های تماس نمایندگی‌های مرتبط در پارتس‌مال.');
     }
 
     private static function catalogModels(string $title): string
@@ -125,8 +162,8 @@ class MetaDescription
 
     private static function limit(string $clean): string
     {
-        return mb_strlen($clean) > 155
-            ? rtrim(mb_substr($clean, 0, 152)).'...'
+        return mb_strlen($clean, 'UTF-8') > 155
+            ? rtrim(mb_substr($clean, 0, 152, 'UTF-8')).'...'
             : $clean;
     }
 }

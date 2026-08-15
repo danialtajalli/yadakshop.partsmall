@@ -309,7 +309,7 @@ class VehicleCatalogService
             'title' => $title,
             'description' => $description,
             'metaDescription' => $hasVehicleContext
-                ? MetaDescription::product($context->company->name.' '.$context->car->name.' '.CarModelLabel::display($context->model))
+                ? MetaDescription::vehicleParts($context->company->name.' '.$context->car->name.' '.CarModelLabel::display($context->model))
                 : MetaDescription::catalog($title, $description),
             'filters' => $filters,
         ];
