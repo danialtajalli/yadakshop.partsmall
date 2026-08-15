@@ -29,7 +29,24 @@ class PartCategoryResourceTest extends TestCase
     public function test_guest_is_redirected_from_admin_panel(): void
     {
         $this->get('/admin')
-            ->assertRedirect('/admin/login');
+            ->assertRedirect('/admin/login')
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+    }
+
+    public function test_admin_login_is_noindexed(): void
+    {
+        $this->get('/admin/login')
+            ->assertOk()
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow')
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+    }
+
+    public function test_public_routes_are_not_noindexed_by_admin_middleware(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertHeaderMissing('X-Robots-Tag')
+            ->assertDontSee('<meta name="robots"', false);
     }
 
     public function test_authenticated_user_can_access_part_category_pages(): void
@@ -38,7 +55,10 @@ class PartCategoryResourceTest extends TestCase
 
         $this->actingAs(User::factory()->create());
 
-        $this->get(PartCategoryResource::getUrl('index'))->assertOk();
+        $this->get(PartCategoryResource::getUrl('index'))
+            ->assertOk()
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow')
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false);
         $this->get(PartCategoryResource::getUrl('create'))->assertOk();
         $this->get(PartCategoryResource::getUrl('edit', ['record' => $category]))->assertOk();
     }
