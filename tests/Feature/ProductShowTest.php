@@ -9,6 +9,7 @@ use App\Models\Part;
 use App\Models\PartsCategory;
 use App\Models\RepairCategory;
 use App\Models\Shop;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +19,7 @@ class ProductShowTest extends TestCase
 
     public function test_product_show_returns_successful_response_for_valid_slugs(): void
     {
+        $this->travelTo(Carbon::parse('2026-08-15 10:42:00', config('app.timezone')));
         $this->seedProductGraph();
 
         $response = $this->get(route('product.show', [
@@ -34,7 +36,12 @@ class ProductShowTest extends TestCase
         $response->assertSee('هیوندای', false);
         $response->assertSee('سانتافه', false);
         $response->assertSee('لیست فروشگاه ها', false);
-        $response->assertSee('برای اطلاع از قیمت به‌روز این قطعه', false);
+        $response->assertSee('آخرین بروزرسانی قیمت', false);
+        $response->assertSee('پنج‌شنبه، ۲۲ مرداد ۱۴۰۵', false);
+        $response->assertDontSee('ساعت ۱۰:۴۲', false);
+        $this->assertSame(2, substr_count($response->getContent(), 'آخرین بروزرسانی قیمت'));
+        $response->assertSee('پیش از خرید، موجودی و قیمت نهایی این قطعه را از فروشنده بپرسید', false);
+        $response->assertDontSee('موجودی لحظه‌ای', false);
         $response->assertSee('اطلاعات تماس', false);
         $response->assertSee('فروشگاه شما میتواند اینجا باشد', false);
         $response->assertSee('ثبت نام', false);
@@ -64,6 +71,39 @@ class ProductShowTest extends TestCase
         $response->assertSee('name="specialization_id"', false);
         $response->assertSee('value="'.$repairCategory->id.'"', false);
         $response->assertSee(route('repair-shops.index'), false);
+    }
+
+    public function test_product_show_uses_yesterday_update_time_when_yesterday_is_not_off(): void
+    {
+        $this->travelTo(Carbon::parse('2026-08-16 10:42:00', config('app.timezone')));
+        $this->seedProductGraph();
+
+        $response = $this->get(route('product.show', [
+            'company' => 'hyundai',
+            'car' => 'santafe',
+            'model' => 'new',
+            'part' => 'arm',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('دیروز، ۲۴ مرداد ۱۴۰۵', false);
+    }
+
+    public function test_product_show_skips_configured_price_update_off_dates(): void
+    {
+        config(['partsmall.price_update_off_dates.jalali' => ['1405-05-24']]);
+        $this->travelTo(Carbon::parse('2026-08-16 10:42:00', config('app.timezone')));
+        $this->seedProductGraph();
+
+        $response = $this->get(route('product.show', [
+            'company' => 'hyundai',
+            'car' => 'santafe',
+            'model' => 'new',
+            'part' => 'arm',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('پنج‌شنبه، ۲۲ مرداد ۱۴۰۵', false);
     }
 
     public function test_product_show_returns_not_found_for_unknown_company(): void

@@ -6,7 +6,30 @@
     <x-site.breadcrumb :items="$breadcrumbs" />
 
     @php
+        use App\Support\PersianDigits;
+        use Carbon\Carbon;
+
         $hasRepairSection = filled($repairLocators) || count($repairCards) > 0;
+        $now = now(config('app.timezone'));
+        $lastUpdatedAt = $now->copy()->subDay();
+        $priceUpdateOffDates = config('partsmall.price_update_off_dates', []);
+        $gregorianOffDates = $priceUpdateOffDates['gregorian'] ?? [];
+        $jalaliOffDates = $priceUpdateOffDates['jalali'] ?? [];
+        $isPriceUpdateOffDay = static fn (Carbon $date): bool => $date->dayOfWeek === Carbon::FRIDAY
+            || in_array($date->toDateString(), $gregorianOffDates, true)
+            || in_array(jdate($date)->format('Y-m-d'), $jalaliOffDates, true);
+
+        while ($isPriceUpdateOffDay($lastUpdatedAt)) {
+            $lastUpdatedAt->subDay();
+        }
+
+        $lastUpdatedDay = match (true) {
+            $lastUpdatedAt->isSameDay($now) => 'امروز',
+            $lastUpdatedAt->isSameDay($now->copy()->subDay()) => 'دیروز',
+            default => jdate($lastUpdatedAt)->format('l'),
+        };
+        $lastUpdatedDate = PersianDigits::convert(jdate($lastUpdatedAt)->format('j F Y'));
+        $lastUpdatedLabel = $lastUpdatedDay.'، '.$lastUpdatedDate;
     @endphp
 
     <div class="mb-12 flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
@@ -92,6 +115,13 @@
         </div>
 
         <aside class="w-full shrink-0 md:w-72 lg:w-80">
+            <div class="mb-4 rounded-2xl border border-line bg-surface/60 px-4 py-3 text-sm shadow-card">
+                <p class="text-xs font-semibold text-ink-muted">آخرین بروزرسانی قیمت</p>
+                <time datetime="{{ $lastUpdatedAt->toIso8601String() }}" class="mt-1 block font-bold tabular-nums text-brand-dark">
+                    {{ $lastUpdatedLabel }}
+                </time>
+            </div>
+
             <div class="md:sticky md:top-24">
                 @if ($hasRepairSection)
                     <x-site.cta-sidebar
@@ -216,9 +246,12 @@
 
             <div class="ps-shops-section__content">
             <div class="mb-5 rounded-xl border border-line bg-surface/60 px-4 py-4 sm:px-5">
+                <div class="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-ink-muted">
+                    <span>آخرین بروزرسانی قیمت:</span>
+                    <time datetime="{{ $lastUpdatedAt->toIso8601String() }}" class="tabular-nums">{{ $lastUpdatedLabel }}</time>
+                </div>
                 <p class="text-sm leading-7 text-ink-muted">
-                    از آنجایی که تمام قطعات خودرو بر اساس قیمت دلار و موجودی لحظه‌ای شرکت‌های واردکننده قطعات خودرو تعیین می‌شود،
-                    برای اطلاع از قیمت به‌روز این قطعه، لطفاً با فروشگاه‌های زیر ارتباط برقرار کنید.
+                    برای مقایسه فروشگاه‌ها، موقعیت و راه‌های تماس را بررسی کنید و پیش از خرید، موجودی و قیمت نهایی این قطعه را از فروشنده بپرسید.
                 </p>
             </div>
 

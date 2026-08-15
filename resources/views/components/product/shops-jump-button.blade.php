@@ -26,7 +26,7 @@
                 </svg>
             </span>
             <span>
-                <span class="block font-semibold text-brand-dark">{{ number_format($shopsCount) }} فروشگاه مرتبط</span>
+                <span class="block font-semibold text-brand-dark">در {{ number_format($shopsCount) }} فروشگاه موجود می‌باشد</span>
                 <span class="block text-xs font-medium text-brand-dark/70">برای خرید {{ $title }} کلیک کنید</span>
             </span>
         </span>

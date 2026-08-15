@@ -26,6 +26,15 @@ return [
     'theme_color' => '#f27c22',
 
     /*
+     | Dates when price update timestamps should skip back to the previous
+     | working day. Use Gregorian YYYY-MM-DD or Jalali YYYY-MM-DD values.
+     */
+    'price_update_off_dates' => [
+        'gregorian' => [],
+        'jalali' => [],
+    ],
+
+    /*
      | Shop IDs shown in the home "best shops" showcase banner.
      */
     'home_best_shop_ids' => [1, 2, 3],
