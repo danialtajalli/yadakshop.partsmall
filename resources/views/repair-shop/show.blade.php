@@ -12,7 +12,7 @@
     <div class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($repairShop->cover ?? null)
             <div class="h-40 w-full overflow-hidden border-b border-line sm:h-52">
-                <img src="{{ $repairShop->cover }}" alt="" class="size-full object-cover">
+                <img src="{{ $repairShop->cover }}" alt="تصویر تعمیرگاه {{ $repairShop->name }}" class="size-full object-cover">
             </div>
         @endif
 
@@ -21,6 +21,7 @@
                 <x-ui.company-logo
                     :name="$repairShop->name"
                     :logo-url="$repairShop->logo ?? null"
+                    alt="لوگوی تعمیرگاه {{ $repairShop->name }}"
                     size="xl"
                 />
 

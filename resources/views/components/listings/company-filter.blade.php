@@ -14,7 +14,7 @@
                             @if (filled($selected->logo_url ?? null))
                                 <img
                                     src="{{ $selected->logo_url }}"
-                                    alt=""
+                                    alt="لوگوی برند خودرو {{ $selected->name }}"
                                     class="size-8 rounded-lg object-contain"
                                     loading="lazy"
                                     decoding="async"

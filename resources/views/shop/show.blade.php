@@ -35,7 +35,7 @@
     <header class="mb-8 overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         @if ($shop->cover ?? null)
             <div class="relative h-36 w-full overflow-hidden sm:h-44">
-                <img src="{{ $shop->cover }}" alt="" class="size-full object-cover">
+                <img src="{{ $shop->cover }}" alt="تصویر فروشگاه {{ $shop->name }}" class="size-full object-cover">
                 <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/25 via-transparent to-transparent" aria-hidden="true"></div>
             </div>
         @endif
@@ -46,6 +46,7 @@
                     <x-ui.company-logo
                         :name="$shop->name"
                         :logo-url="$shop->logo ?? null"
+                        alt="لوگوی فروشگاه {{ $shop->name }}"
                         size="xl"
                         @class([
                             'shrink-0',
@@ -359,6 +360,7 @@
                                 <x-ui.company-logo
                                     :name="$company->name"
                                     :logo-url="$company->logo_url ?? null"
+                                    alt="لوگوی برند خودرو {{ $company->name }}"
                                     size="listing"
                                 />
                                 <div class="min-w-0">

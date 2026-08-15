@@ -1,6 +1,7 @@
 @props([
     'name',
     'logoUrl' => null,
+    'alt' => null,
     'size' => 'md',
     'fit' => 'contain',
 ])
@@ -27,12 +28,13 @@
     };
 
     $fitClass = $fit === 'cover' ? 'object-cover' : 'object-contain';
+    $altText = $alt ?? 'لوگوی '.$name;
 @endphp
 
 @if ($logoUrl)
     <img
         src="{{ $logoUrl }}"
-        alt="{{ $name }}"
+        alt="{{ $altText }}"
         loading="lazy"
         decoding="async"
         {{ $attributes->merge(['class' => "shrink-0 {$sizeClass} rounded-xl {$fitClass}"]) }}
