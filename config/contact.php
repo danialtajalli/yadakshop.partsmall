@@ -16,7 +16,7 @@ return [
     'didar' => [
         'base_url' => env('DIDAR_API_BASE', 'https://app.didar.me/api/'),
         'api_key' => env('DIDAR_API_KEY'),
-        'owner_username' => env('DIDAR_OWNER_USERNAME'),
+        'owner_username' => env('DIDAR_DEAL_OWNER_USERNAME'),
         'deal_field_key' => env('DIDAR_DEAL_FIELD_KEY', 'Field_8783_0_1'),
         'verify_ssl' => env('DIDAR_VERIFY_SSL', true),
         'cafile' => env('DIDAR_CURL_CAFILE'),

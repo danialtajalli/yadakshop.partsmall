@@ -99,7 +99,7 @@
                 <i class="fa-solid fa-paper-plane text-xs opacity-90" aria-hidden="true"></i>
                 <span>ارسال پیام</span>
             </span>
-            <span data-submit-loading class="hidden inline-flex items-center justify-center gap-2" aria-hidden="true">
+            <span data-submit-loading class="inline-flex items-center justify-center gap-2" aria-hidden="true" hidden>
                 <i class="fa-solid fa-spinner ps-contact-submit__spinner text-xs" aria-hidden="true"></i>
                 <span>در حال ارسال...</span>
             </span>
@@ -169,8 +169,8 @@
 
         button.disabled = isSubmitting;
         button.setAttribute('aria-busy', isSubmitting ? 'true' : 'false');
-        idle.classList.toggle('hidden', isSubmitting);
-        loading.classList.toggle('hidden', !isSubmitting);
+        idle.hidden = isSubmitting;
+        loading.hidden = !isSubmitting;
         loading.setAttribute('aria-hidden', isSubmitting ? 'false' : 'true');
 
         if (isSubmitting && typeof window.startContactNavigationProgress === 'function') {
@@ -253,22 +253,6 @@
         return '';
     }
 
-    function notifyParentHeight() {
-        if (window.parent === window) {
-            return;
-        }
-
-        const height = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight
-        );
-
-        window.parent.postMessage({
-            type: 'didar-contact-form-resize',
-            height: height,
-        }, window.location.origin);
-    }
-
     form.addEventListener('submit', function (event) {
         let valid = true;
 
@@ -284,29 +268,17 @@
 
         if (!valid) {
             event.preventDefault();
-            notifyParentHeight();
 
             return;
         }
 
         setSubmitting(true);
-        notifyParentHeight();
     });
 
     form.querySelectorAll('input, textarea').forEach(function (input) {
         input.addEventListener('input', function () {
             setFieldError(input.name, '');
-            notifyParentHeight();
         });
     });
-
-    if (window.parent !== window) {
-        notifyParentHeight();
-        window.addEventListener('load', notifyParentHeight);
-
-        if (typeof ResizeObserver !== 'undefined') {
-            new ResizeObserver(notifyParentHeight).observe(document.body);
-        }
-    }
 })();
 </script>
