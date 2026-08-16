@@ -60,19 +60,19 @@ export default function shopCommentForm({ action, csrf }) {
             return Boolean(this.fieldErrors[field]);
         },
 
-        turnstileWidget() {
-            return this.$el?.querySelector('.cf-turnstile') ?? null;
+        arcaptchaWidget() {
+            return this.$el?.querySelector('.arcaptcha') ?? null;
         },
 
-        turnstileToken() {
-            return this.$el?.querySelector('[name="cf-turnstile-response"]')?.value ?? '';
+        arcaptchaToken() {
+            return this.$el?.querySelector('[name="arcaptcha-token"]')?.value ?? '';
         },
 
-        resetTurnstile() {
-            const widget = this.turnstileWidget();
+        resetArCaptcha() {
+            const token = this.$el?.querySelector('[name="arcaptcha-token"]');
 
-            if (window.turnstile && widget) {
-                window.turnstile.reset(widget);
+            if (token) {
+                token.value = '';
             }
         },
 
@@ -87,7 +87,7 @@ export default function shopCommentForm({ action, csrf }) {
             this.hoverRating = 0;
             this.errors = [];
             this.fieldErrors = {};
-            this.resetTurnstile();
+            this.resetArCaptcha();
         },
 
         async submit() {
@@ -111,17 +111,17 @@ export default function shopCommentForm({ action, csrf }) {
                     body.set('company_url', this.form.company_url);
                 }
 
-                const turnstileToken = this.turnstileToken();
+                const arcaptchaToken = this.arcaptchaToken();
 
-                if (this.turnstileWidget() && ! turnstileToken) {
+                if (this.arcaptchaWidget() && ! arcaptchaToken) {
                     this.errors = ['لطفاً کپچای امنیتی را تکمیل کنید.'];
                     this.submitting = false;
 
                     return;
                 }
 
-                if (turnstileToken) {
-                    body.set('cf-turnstile-response', turnstileToken);
+                if (arcaptchaToken) {
+                    body.set('arcaptcha-token', arcaptchaToken);
                 }
 
                 const response = await fetch(this.action, {
@@ -139,14 +139,14 @@ export default function shopCommentForm({ action, csrf }) {
                 if (response.status === 422) {
                     this.fieldErrors = payload.errors ?? {};
                     this.errors = Object.values(this.fieldErrors).flat();
-                    this.resetTurnstile();
+                    this.resetArCaptcha();
 
                     return;
                 }
 
                 if (! response.ok) {
                     this.errors = [payload.message ?? 'ارسال نظر با خطا مواجه شد. لطفاً دوباره تلاش کنید.'];
-                    this.resetTurnstile();
+                    this.resetArCaptcha();
 
                     return;
                 }
@@ -159,7 +159,7 @@ export default function shopCommentForm({ action, csrf }) {
                 }));
             } catch {
                 this.errors = ['ارتباط با سرور برقرار نشد. لطفاً دوباره تلاش کنید.'];
-                this.resetTurnstile();
+                this.resetArCaptcha();
             } finally {
                 this.submitting = false;
             }

@@ -10,13 +10,13 @@
     $mobileId = 'comment-mobile-'.$idSuffix;
     $bodyId = 'comment-body-'.$idSuffix;
     $honeypotId = 'company-url-'.$idSuffix;
-    $turnstileSiteKey = config('services.turnstile.site_key');
+    $arcaptchaSiteKey = config('arcaptcha.site_key');
 @endphp
 
 @once
     @push('head')
-        @if (filled(config('services.turnstile.site_key')))
-            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @if (filled(config('arcaptcha.site_key')))
+            @arcaptchaScript
         @endif
     @endpush
 @endonce
@@ -146,12 +146,9 @@
         ></textarea>
     </div>
 
-    @if (filled($turnstileSiteKey))
+    @if (filled($arcaptchaSiteKey))
         <div class="mt-5 flex justify-center">
-            <div
-                class="cf-turnstile"
-                data-sitekey="{{ $turnstileSiteKey }}"
-            ></div>
+            @arcaptchaWidget(['lang' => 'fa'])
         </div>
     @endif
 

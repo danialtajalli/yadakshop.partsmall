@@ -30,6 +30,9 @@ class StoreContactLeadRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:15'],
             'message' => ['required', 'string', 'min:5', 'max:2000'],
+            'arcaptcha-token' => $this->shouldVerifyArCaptcha()
+                ? ['required', 'arcaptcha']
+                : ['nullable'],
         ];
     }
 
@@ -44,6 +47,12 @@ class StoreContactLeadRequest extends FormRequest
         });
     }
 
+    private function shouldVerifyArCaptcha(): bool
+    {
+        return filled(config('arcaptcha.secret_key'))
+            && ! app()->environment('testing');
+    }
+
     /** @return array<string, string> */
     public function attributes(): array
     {
@@ -52,6 +61,7 @@ class StoreContactLeadRequest extends FormRequest
             'last_name' => 'نام خانوادگی',
             'phone' => 'شماره موبایل',
             'message' => 'پیام',
+            'arcaptcha-token' => 'کپچای امنیتی',
         ];
     }
 
@@ -67,6 +77,8 @@ class StoreContactLeadRequest extends FormRequest
             'message.required' => 'متن پیام را وارد کنید.',
             'message.min' => 'متن پیام باید حداقل 5 کاراکتر باشد.',
             'message.max' => 'متن پیام بیش از حد طولانی است.',
+            'arcaptcha-token.required' => 'لطفاً کپچای امنیتی را تکمیل کنید.',
+            'arcaptcha-token.arcaptcha' => 'کپچای امنیتی معتبر نیست.',
         ];
     }
 }

@@ -41,6 +41,17 @@ class ContactPageTest extends TestCase
             ->assertSee(config('partsmall.contact.email'), false);
     }
 
+    public function test_contact_page_renders_arcaptcha_when_configured(): void
+    {
+        config(['arcaptcha.site_key' => 'test-site-key']);
+
+        $this->get(route('page.show', 'contact'))
+            ->assertOk()
+            ->assertSee('widget.arcaptcha.ir/1/api.js', false)
+            ->assertSee('class="arcaptcha"', false)
+            ->assertSee('data-site-key="test-site-key"', false);
+    }
+
     public function test_contact_form_get_route_is_not_public(): void
     {
         $this->get(route('forms.contact.create', ['embed' => 1]))

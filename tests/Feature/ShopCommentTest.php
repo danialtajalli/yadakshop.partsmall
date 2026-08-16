@@ -211,6 +211,20 @@ class ShopCommentTest extends TestCase
         $response->assertSee('pattern="09[0-9]{9}"', false);
     }
 
+    public function test_shop_comment_form_renders_arcaptcha_when_configured(): void
+    {
+        config(['arcaptcha.site_key' => 'test-site-key']);
+
+        $shop = $this->createShop();
+
+        $response = $this->get(route('shop.profile', $shop->slug));
+
+        $response->assertOk();
+        $response->assertSee('widget.arcaptcha.ir/1/api.js', false);
+        $response->assertSee('class="arcaptcha"', false);
+        $response->assertSee('data-site-key="test-site-key"', false);
+    }
+
     private function createShop(): Shop
     {
         $state = State::create(['name' => 'تهران', 'slug' => 'tehran', 'tel_prefix' => '021']);

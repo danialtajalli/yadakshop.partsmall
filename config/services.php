@@ -17,10 +17,7 @@ return [
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
-	'turnstile' => [
-		'site_key' => env('TURNSTILE_SITE_KEY'),
-		'secret' => env('TURNSTILE_SECRET_KEY'),
-	],
+
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],

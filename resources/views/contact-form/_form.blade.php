@@ -11,6 +11,14 @@
     $labelClass = 'mb-1.5 block text-sm font-medium text-ink';
 @endphp
 
+@once
+    @push('head')
+        @if (filled(config('arcaptcha.site_key')))
+            @arcaptchaScript
+        @endif
+    @endpush
+@endonce
+
 <div class="didar-contact-form font-sans text-ink">
     <form method="post" action="{{ $formAction }}" novalidate data-didar-contact-form class="space-y-4">
         @csrf
@@ -89,6 +97,12 @@
                 {{ $errors->first('message') }}
             </p>
         </div>
+
+        @if (filled(config('arcaptcha.site_key')))
+            <div class="flex justify-center">
+                @arcaptchaWidget(['lang' => 'fa'])
+            </div>
+        @endif
 
         <button
             type="submit"

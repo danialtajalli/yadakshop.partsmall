@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Validation\Validator;
 
 class StoreShopCommentRequest extends FormRequest
 {
@@ -35,47 +33,16 @@ class StoreShopCommentRequest extends FormRequest
             'company_url' => ['prohibited'],
         ];
 
-        if ($this->shouldVerifyTurnstile()) {
-            $rules['cf-turnstile-response'] = ['required'];
+        if ($this->shouldVerifyArCaptcha()) {
+            $rules['arcaptcha-token'] = ['required', 'arcaptcha'];
         }
 
         return $rules;
     }
 
-    public function withValidator($validator): void
+    private function shouldVerifyArCaptcha(): bool
     {
-        $validator->after(function (Validator $validator): void {
-            if (! $this->shouldVerifyTurnstile()) {
-                return;
-            }
-
-            // Turnstile tokens are single-use. Skip siteverify when other fields
-            // already failed so a valid captcha is not consumed prematurely.
-            if ($validator->errors()->isNotEmpty()) {
-                return;
-            }
-
-            $response = Http::asForm()->post(
-                'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-                [
-                    'secret' => config('services.turnstile.secret'),
-                    'response' => $this->input('cf-turnstile-response'),
-                    'remoteip' => $this->ip(),
-                ],
-            );
-
-            if (! ($response->json()['success'] ?? false)) {
-                $validator->errors()->add(
-                    'captcha',
-                    'کپچای امنیتی معتبر نیست.',
-                );
-            }
-        });
-    }
-
-    private function shouldVerifyTurnstile(): bool
-    {
-        return filled(config('services.turnstile.secret'))
+        return filled(config('arcaptcha.secret_key'))
             && ! app()->environment('testing');
     }
 
@@ -113,6 +80,7 @@ class StoreShopCommentRequest extends FormRequest
             'mobile' => 'شماره موبایل',
             'body' => 'متن نظر',
             'rating' => 'امتیاز',
+            'arcaptcha-token' => 'کپچای امنیتی',
         ];
     }
 
@@ -123,7 +91,7 @@ class StoreShopCommentRequest extends FormRequest
             'fullname.required' => 'لطفاً نام خود را وارد کنید.',
             'fullname.string' => 'نام باید یک رشته باشد.',
             'fullname.max' => 'نام نباید بیشتر از ۲۵۵ کاراکتر باشد.',
-            'mobile.nullable' => 'شماره موبایل میتواند خالی باشد.',
+            'mobile.nullable' => 'شماره موبایل می‌تواند خالی باشد.',
             'mobile.string' => 'شماره موبایل باید یک رشته باشد.',
             'mobile.max' => 'شماره موبایل نباید بیشتر از ۱۱ رقم باشد.',
             'mobile.regex' => 'شماره موبایل معتبر نیست. نمونه صحیح: 09121234567',
@@ -133,7 +101,8 @@ class StoreShopCommentRequest extends FormRequest
             'body.min' => 'متن نظر باید حداقل ۱۰ کاراکتر باشد.',
             'body.max' => 'متن نظر نباید بیشتر از ۲۰۰۰ کاراکتر باشد.',
             'rating.required' => 'لطفاً امتیاز خود را انتخاب کنید.',
-            'cf-turnstile-response.required' => 'لطفاً کپچای امنیتی را تکمیل کنید.',
+            'arcaptcha-token.required' => 'لطفاً کپچای امنیتی را تکمیل کنید.',
+            'arcaptcha-token.arcaptcha' => 'کپچای امنیتی معتبر نیست.',
         ];
     }
 }
