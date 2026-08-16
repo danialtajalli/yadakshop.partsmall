@@ -29,7 +29,6 @@ class ContactFormController extends Controller
 
     public function store(StoreContactLeadRequest $request): RedirectResponse
     {
-        $embed = $request->boolean('embed');
         $validated = $request->validated();
 
         $result = $this->submissionService->submit(new ContactLeadData(
@@ -40,7 +39,7 @@ class ContactFormController extends Controller
         ));
 
         $redirect = redirect()
-            ->route('forms.contact.create', $embed ? ['embed' => 1] : [])
+            ->route('page.contact')
             ->with('contact_status_type', $result->success ? 'success' : 'error')
             ->with('contact_status_message', $result->message);
 

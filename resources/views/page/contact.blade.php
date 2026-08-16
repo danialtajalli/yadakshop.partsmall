@@ -2,6 +2,48 @@
 
 @section('title', $title)
 
+@push('head')
+    <style>
+        .didar-contact-form__input--error {
+            border-color: #f87171 !important;
+            background-color: #fffafa !important;
+        }
+
+        .didar-contact-form__input--error:focus {
+            border-color: #ef4444 !important;
+            --tw-ring-color: rgb(239 68 68 / 0.25) !important;
+        }
+
+        .ps-contact-submit {
+            user-select: none;
+            transition: transform 120ms ease, background-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+        }
+
+        .ps-contact-submit:active,
+        .ps-contact-submit.ps-touch-pressed {
+            transform: scale(0.96);
+            background-color: #222c3d;
+            box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.22);
+        }
+
+        .ps-contact-submit:disabled,
+        .ps-contact-submit[aria-busy='true'] {
+            cursor: wait;
+            opacity: 0.85;
+            transform: none;
+            box-shadow: none;
+        }
+
+        @keyframes ps-contact-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ps-contact-submit__spinner {
+            animation: ps-contact-spin 0.75s linear infinite;
+        }
+    </style>
+@endpush
+
 @section('content')
     <x-site.breadcrumb :items="$breadcrumbs" />
 
@@ -69,18 +111,10 @@
                 </div>
             </div>
 
-            {{-- <div class="ps-card min-w-0 p-4 sm:p-5">
+            <div class="ps-card min-w-0 p-4 sm:p-5">
                 <h2 class="mb-4 text-base font-bold text-ink">فرم تماس</h2>
-                <iframe
-                    id="contact-form-iframe"
-                    src="{{ route('forms.contact.create', ['embed' => 1]) }}"
-                    title="فرم تماس"
-                    class="block w-full border-0"
-                    style="min-height: 28rem; height: 28rem;"
-                    scrolling="no"
-                    loading="lazy"
-                ></iframe>
-            </div> --}}
+                @include('contact-form._form', ['formAction' => route('forms.contact.store')])
+            </div>
 
             {{-- @if (filled($page->content))
                 <div class="ps-card min-w-0 overflow-hidden p-4 sm:p-5">
@@ -101,27 +135,5 @@
         </div>
     </div>
 
-    @once
-        @push('scripts')
-            <script>
-                window.addEventListener('message', function (event) {
-                    if (event.origin !== window.location.origin) {
-                        return;
-                    }
-
-                    if (!event.data || event.data.type !== 'didar-contact-form-resize') {
-                        return;
-                    }
-
-                    const iframe = document.getElementById('contact-form-iframe');
-
-                    if (!iframe || typeof event.data.height !== 'number') {
-                        return;
-                    }
-
-                    iframe.style.height = Math.max(event.data.height, 448) + 'px';
-                });
-            </script>
-        @endpush
-    @endonce
+    <x-contact-form.status-modal />
 @endsection

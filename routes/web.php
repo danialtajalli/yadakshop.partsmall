@@ -7,8 +7,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\PartSelectionController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\RepairShopController;
+use App\Http\Controllers\RepresentationController;
 use App\Http\Controllers\Scripts\ConsolidateModelCategoriesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShopCommentController;
@@ -46,7 +46,9 @@ Route::match(['get', 'post'], 'part/{part}', [PartController::class, 'show'])->n
 Route::get('product/{company}/{car}/{model}/{part}', [ProductController::class, 'show'])
     ->name('product.show');
 
-Route::get('forms/contact', function () {return abort(404);})->name('forms.contact.create');
+Route::get('forms/contact', function () {
+    return abort(404);
+})->name('forms.contact.create');
 Route::post('forms/contact', [ContactFormController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('forms.contact.store');
