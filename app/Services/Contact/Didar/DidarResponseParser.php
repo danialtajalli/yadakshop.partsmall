@@ -2,6 +2,8 @@
 
 namespace App\Services\Contact\Didar;
 
+use Illuminate\Support\Facades\Log;
+
 class DidarResponseParser
 {
     /**
@@ -85,6 +87,11 @@ class DidarResponseParser
         }
 
         $pipeline = $pipelines[0];
+
+        //If کاریز پارتس‌مال is set
+        if(array_key_exists(1, $pipelines)) {
+            $pipeline = $pipelines[1];
+        }
 
         if (! is_array($pipeline)) {
             return ['pipeline_stage_id' => null, 'pipeline_id' => null];
