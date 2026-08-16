@@ -28,8 +28,8 @@ class MetaDescriptionTest extends TestCase
         $about = MetaDescription::page('درباره ما', 'محتوا');
         $contact = MetaDescription::page('تماس با ما', 'محتوا');
 
-        $this->assertStringContainsString('مرجع لوازم یدکی خودرو', $about);
-        $this->assertStringContainsString('اتصال خریداران', $about);
+        $this->assertStringContainsString('مرجع جستجوی لوازم یدکی خودرو', $about);
+        $this->assertStringContainsString('دسترسی سریع‌تر خریداران', $about);
         $this->assertStringContainsString('ارسال پیام', $contact);
         $this->assertStringContainsString('همکاری فروشگاه‌ها', $contact);
         $this->assertGreaterThanOrEqual(135, mb_strlen($about, 'UTF-8'));
