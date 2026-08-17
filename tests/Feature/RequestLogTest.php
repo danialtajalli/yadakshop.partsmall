@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Jobs\StoreRequestLogJob;
 use App\Models\RequestLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
 use RuntimeException;
@@ -14,7 +15,7 @@ class RequestLogTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_incoming_request_middleware_queues_every_request(): void
+    public function test_incoming_request_middleware_queues_successful_request(): void
     {
         Queue::fake();
 
@@ -59,6 +60,11 @@ class RequestLogTest extends TestCase
                 && $job->data['status_family'] === 400
                 && $job->data['is_reportable_status'] === true;
         });
+
+        Queue::assertNotPushed(StoreRequestLogJob::class, function (StoreRequestLogJob $job): bool {
+            return $job->data['log_type'] === 'incoming_request'
+                && in_array($job->data['path'], ['request-log-redirect', 'request-log-not-found'], true);
+        });
     }
 
     public function test_global_exception_reporter_queues_500_status_family(): void
@@ -80,6 +86,11 @@ class RequestLogTest extends TestCase
                 && $job->data['status_family'] === 500
                 && $job->data['is_reportable_status'] === true
                 && str_contains((string) $job->data['exception'], RuntimeException::class);
+        });
+
+        Queue::assertNotPushed(StoreRequestLogJob::class, function (StoreRequestLogJob $job): bool {
+            return $job->data['log_type'] === 'incoming_request'
+                && $job->data['path'] === 'request-log-error';
         });
     }
 
@@ -118,5 +129,26 @@ class RequestLogTest extends TestCase
         ]);
 
         $this->assertSame(['source' => 'test'], RequestLog::query()->firstOrFail()->query);
+    }
+
+    public function test_store_request_log_job_logs_final_failure_context(): void
+    {
+        $payload = [
+            'status_code' => 500,
+            'status_family' => 500,
+            'path' => 'request-log-error',
+        ];
+        $exception = new RuntimeException('database write failed');
+
+        Log::shouldReceive('error')
+            ->once()
+            ->with('StoreRequestLogJob exhausted all attempts.', [
+                'exception' => $exception,
+                'exception_class' => RuntimeException::class,
+                'exception_message' => 'database write failed',
+                'request_log_payload' => $payload,
+            ]);
+
+        (new StoreRequestLogJob($payload))->failed($exception);
     }
 }
