@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('route_name')->nullable()->index();
             $table->string('route_action')->nullable();
             $table->unsignedSmallInteger('status_code')->nullable()->index();
-            $table->unsignedTinyInteger('status_family')->nullable()->index();
+            $table->unsignedSmallInteger('status_family')->nullable()->index();
             $table->boolean('is_reportable_status')->default(false)->index();
             $table->unsignedInteger('duration_ms')->nullable();
             $table->foreignId('user_id')->nullable()->index();
