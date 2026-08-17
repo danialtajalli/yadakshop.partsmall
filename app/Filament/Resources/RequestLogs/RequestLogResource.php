@@ -11,12 +11,14 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Schema as SchemaFacade;
+use UnitEnum;
 
 class RequestLogResource extends Resource
 {
     protected static ?string $navigationLabel = 'لاگ درخواست‌ها';
 
     protected static ?int $navigationSort = 99;
+    protected static UnitEnum|string|null $navigationGroup = 'قسمت های جدید';
 
     protected static ?string $model = RequestLog::class;
 

@@ -83,6 +83,13 @@ class RequestLogsTable
                     ->copyable()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('user_agent')
+                    ->label('عامل کاربر')
+                    ->searchable()
+                    ->copyable()
+                    ->limit(90)
+                    ->tooltip(fn ($record): ?string => $record->user_agent)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('user_id')
                     ->label('شناسه کاربر')
                     ->sortable()
