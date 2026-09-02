@@ -138,10 +138,10 @@ class RequestLogsTable
                 SelectFilter::make('status_family')
                     ->label('خانواده وضعیت')
                     ->options([
-                        2 => '2xx',
-                        3 => '3xx',
-                        4 => '4xx',
-                        5 => '5xx',
+                        200 => '2xx',
+                        300 => '3xx',
+                        400 => '4xx',
+                        500 => '5xx',
                     ]),
                 SelectFilter::make('is_reportable_status')
                     ->label('گزارش‌پذیر')

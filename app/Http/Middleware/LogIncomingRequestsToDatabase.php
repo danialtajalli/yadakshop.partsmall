@@ -12,6 +12,10 @@ class LogIncomingRequestsToDatabase
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (! config('request-logging.incoming_requests_enabled', true)) {
+            return $next($request);
+        }
+
         $startedAt = now();
         $startedAtMicrotime = microtime(true);
 

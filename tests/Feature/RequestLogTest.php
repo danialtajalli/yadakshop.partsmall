@@ -2,18 +2,31 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\RequestLogs\Pages\ListRequestLogs;
+use App\Filament\Resources\RequestLogs\Widgets\RequestLogStatusOverviewWidget;
 use App\Jobs\StoreRequestLogJob;
 use App\Models\RequestLog;
+use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
+use ReflectionMethod;
 use RuntimeException;
 use Tests\TestCase;
 
 class RequestLogTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+    }
 
     public function test_incoming_request_middleware_queues_successful_request(): void
     {
@@ -32,6 +45,21 @@ class RequestLogTest extends TestCase
                 && $job->data['status_family'] === 200
                 && $job->data['is_reportable_status'] === false
                 && $job->data['query'] === ['source' => 'test'];
+        });
+    }
+
+    public function test_incoming_request_middleware_can_be_disabled(): void
+    {
+        config(['request-logging.incoming_requests_enabled' => false]);
+        Queue::fake();
+
+        Route::get('/request-log-disabled', fn () => response('ok'))->name('request-log.disabled');
+
+        $this->get('/request-log-disabled')->assertOk();
+
+        Queue::assertNotPushed(StoreRequestLogJob::class, function (StoreRequestLogJob $job): bool {
+            return $job->data['log_type'] === 'incoming_request'
+                && $job->data['path'] === 'request-log-disabled';
         });
     }
 
@@ -129,6 +157,96 @@ class RequestLogTest extends TestCase
         ]);
 
         $this->assertSame(['source' => 'test'], RequestLog::query()->firstOrFail()->query);
+    }
+
+    public function test_request_log_status_overview_widget_counts_selected_range(): void
+    {
+        RequestLog::query()->create([
+            'occurred_at' => now()->subMinutes(5),
+            'log_type' => 'incoming_request',
+            'method' => 'GET',
+            'url' => 'https://example.test/ok',
+            'path' => 'ok',
+            'status_code' => 200,
+            'status_family' => 200,
+            'is_reportable_status' => false,
+        ]);
+        RequestLog::query()->create([
+            'occurred_at' => now()->subMinutes(4),
+            'log_type' => 'reportable_response',
+            'method' => 'GET',
+            'url' => 'https://example.test/missing',
+            'path' => 'missing',
+            'status_code' => 404,
+            'status_family' => 400,
+            'is_reportable_status' => true,
+        ]);
+        RequestLog::query()->create([
+            'occurred_at' => now()->subMinutes(3),
+            'log_type' => 'reportable_exception',
+            'method' => 'GET',
+            'url' => 'https://example.test/error',
+            'path' => 'error',
+            'status_code' => 500,
+            'status_family' => 500,
+            'is_reportable_status' => true,
+        ]);
+        RequestLog::query()->create([
+            'occurred_at' => now()->subDay(),
+            'log_type' => 'incoming_request',
+            'method' => 'GET',
+            'url' => 'https://example.test/old',
+            'path' => 'old',
+            'status_code' => 200,
+            'status_family' => 200,
+            'is_reportable_status' => false,
+        ]);
+
+        $widget = app(RequestLogStatusOverviewWidget::class);
+        $widget->pageFilters = ['range' => '10m'];
+        $method = new ReflectionMethod($widget, 'getStats');
+        $method->setAccessible(true);
+
+        $stats = $method->invoke($widget);
+
+        $this->assertSame('3', $stats[0]->getValue());
+        $this->assertSame('1', $stats[1]->getValue());
+        $this->assertSame('2', $stats[2]->getValue());
+        $this->assertSame('1', $stats[3]->getValue());
+        $this->assertSame('1', $stats[4]->getValue());
+        $this->assertSame('1', $stats[5]->getValue());
+    }
+
+    public function test_request_log_table_filters_by_stored_status_family(): void
+    {
+        $ok = RequestLog::query()->create([
+            'occurred_at' => now(),
+            'log_type' => 'incoming_request',
+            'method' => 'GET',
+            'url' => 'https://example.test/ok',
+            'path' => 'ok',
+            'status_code' => 200,
+            'status_family' => 200,
+            'is_reportable_status' => false,
+        ]);
+        $clientError = RequestLog::query()->create([
+            'occurred_at' => now(),
+            'log_type' => 'reportable_response',
+            'method' => 'GET',
+            'url' => 'https://example.test/missing',
+            'path' => 'missing',
+            'status_code' => 404,
+            'status_family' => 400,
+            'is_reportable_status' => true,
+        ]);
+
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(ListRequestLogs::class)
+            ->assertCanSeeTableRecords([$ok, $clientError])
+            ->filterTable('status_family', 400)
+            ->assertCanSeeTableRecords([$clientError])
+            ->assertCanNotSeeTableRecords([$ok]);
     }
 
     public function test_store_request_log_job_logs_final_failure_context(): void
