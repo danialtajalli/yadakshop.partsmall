@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\RequestLogs\Tables;
 
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class RequestLogsTable
 {
@@ -128,6 +132,29 @@ class RequestLogsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Filter::make('ip')
+                    ->label('آی‌پی')
+                    ->schema([
+                        TextInput::make('value')
+                            ->label('آی‌پی')
+                            ->placeholder('مثال: 192.168.1.1'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            filled($data['value'] ?? null),
+                            fn (Builder $query): Builder => $query->where('ip', $data['value']),
+                        );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        if (blank($data['value'] ?? null)) {
+                            return [];
+                        }
+
+                        return [
+                            Indicator::make('آی‌پی: '.$data['value'])
+                                ->removeField('value'),
+                        ];
+                    }),
                 SelectFilter::make('log_type')
                     ->label('نوع')
                     ->options([

@@ -249,6 +249,40 @@ class RequestLogTest extends TestCase
             ->assertCanNotSeeTableRecords([$ok]);
     }
 
+    public function test_request_log_table_filters_by_ip(): void
+    {
+        $firstIp = RequestLog::query()->create([
+            'occurred_at' => now(),
+            'log_type' => 'incoming_request',
+            'method' => 'GET',
+            'url' => 'https://example.test/first',
+            'path' => 'first',
+            'status_code' => 200,
+            'status_family' => 200,
+            'is_reportable_status' => false,
+            'ip' => '203.0.113.10',
+        ]);
+        $secondIp = RequestLog::query()->create([
+            'occurred_at' => now(),
+            'log_type' => 'incoming_request',
+            'method' => 'GET',
+            'url' => 'https://example.test/second',
+            'path' => 'second',
+            'status_code' => 200,
+            'status_family' => 200,
+            'is_reportable_status' => false,
+            'ip' => '203.0.113.20',
+        ]);
+
+        $this->actingAs(User::factory()->create());
+
+        Livewire::test(ListRequestLogs::class)
+            ->assertCanSeeTableRecords([$firstIp, $secondIp])
+            ->filterTable('ip', ['value' => '203.0.113.10'])
+            ->assertCanSeeTableRecords([$firstIp])
+            ->assertCanNotSeeTableRecords([$secondIp]);
+    }
+
     public function test_store_request_log_job_logs_final_failure_context(): void
     {
         $payload = [
