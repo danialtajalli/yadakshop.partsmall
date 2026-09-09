@@ -107,7 +107,7 @@ class ProductService
             'name' => $company->name.' '.$car->name,
             'title' => 'به گروه تلگرام '.$company->name.' '.$car->name.' سواران بپیوندید',
             'url' => $company->links->firstWhere('link_type', LinkType::Telegram)?->name
-                ?? 'https://t.me/'.$company->slug.'_saravan_partsmall',
+                ?? 'https://t.me/' . 'PartsMallClub',
         ];
     }
 
