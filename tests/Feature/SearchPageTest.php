@@ -11,7 +11,9 @@ use App\Models\Representation;
 use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Enums\ImageType;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Scout\EngineManager;
 use Tests\TestCase;
 
@@ -248,6 +250,14 @@ class SearchPageTest extends TestCase
             ->assertSee('repair/logo/'.$repairShop->id.'/repair-logo.webp', false)
             ->assertSee('representation/logo/', false)
             ->assertSee('rep-logo.webp', false);
+    }
+
+    public function test_search_route_is_rate_limited(): void
+    {
+        RateLimiter::for('search', fn () => Limit::perMinute(1));
+
+        $this->get(route('search.index', ['q' => 'لنت']))->assertOk();
+        $this->get(route('search.index', ['q' => 'لنت']))->assertStatus(429);
     }
 
     /**
