@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Page;
+use App\Support\ContentCacheTag;
 use App\Support\MetaDescription;
 use App\Support\SafeCache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -83,7 +84,9 @@ class PageService
             return $callback();
         }
 
-        return SafeCache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
+        return SafeCache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::PAGES,
+        ]);
     }
 
     private function sanitizeContent(?string $content): ?string

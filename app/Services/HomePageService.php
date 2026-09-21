@@ -12,6 +12,7 @@ use App\Support\CarModelLabel;
 use App\Support\CarModelSort;
 use App\Support\MetaDescription;
 use App\Support\ModelCategoryLabel;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Support\Collection;
@@ -444,6 +445,8 @@ class HomePageService
             return $callback();
         }
 
-        return SafeCache::remember($key, self::CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
+        return SafeCache::remember($key, self::CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::HOME,
+        ]);
     }
 }

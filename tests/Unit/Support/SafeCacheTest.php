@@ -3,12 +3,19 @@
 namespace Tests\Unit\Support;
 
 use __PHP_Incomplete_Class;
+use App\Models\Company;
+use App\Models\Page;
+use App\Support\ContentCacheInvalidator;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class SafeCacheTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -61,5 +68,73 @@ class SafeCacheTest extends TestCase
         );
 
         $this->assertSame(['rebuilt' => true], $value);
+    }
+
+    public function test_flushing_tags_forces_rebuild_on_next_remember(): void
+    {
+        $builds = 0;
+
+        $build = function () use (&$builds): array {
+            $builds++;
+
+            return ['build' => $builds];
+        };
+
+        $first = SafeCache::remember('pages:navigation:v1', 60, $build, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::PAGES,
+        ]);
+        $second = SafeCache::remember('pages:navigation:v1', 60, $build, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::PAGES,
+        ]);
+
+        $this->assertSame(['build' => 1], $first);
+        $this->assertSame(['build' => 1], $second);
+        $this->assertSame(1, $builds);
+
+        SafeCache::flushTags([ContentCacheTag::PAGES]);
+
+        $third = SafeCache::remember('pages:navigation:v1', 60, $build, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::PAGES,
+        ]);
+
+        $this->assertSame(['build' => 2], $third);
+        $this->assertSame(2, $builds);
+    }
+
+    public function test_saving_page_invalidates_pages_cache_tag(): void
+    {
+        $builds = 0;
+
+        SafeCache::remember('pages:navigation:v1', 60, function () use (&$builds): array {
+            $builds++;
+
+            return ['build' => $builds];
+        }, fn (mixed $value): bool => is_array($value), [ContentCacheTag::PAGES]);
+
+        $this->assertSame(1, $builds);
+
+        Page::query()->create([
+            'title' => 'درباره ما',
+            'slug' => 'about',
+            'content' => 'متن',
+        ]);
+
+        SafeCache::remember('pages:navigation:v1', 60, function () use (&$builds): array {
+            $builds++;
+
+            return ['build' => $builds];
+        }, fn (mixed $value): bool => is_array($value), [ContentCacheTag::PAGES]);
+
+        $this->assertSame(2, $builds);
+    }
+
+    public function test_company_maps_to_home_and_catalog_tags(): void
+    {
+        $company = new Company;
+
+        $this->assertSame(
+            [ContentCacheTag::HOME, ContentCacheTag::CATALOG],
+            ContentCacheInvalidator::tagsFor($company),
+        );
     }
 }

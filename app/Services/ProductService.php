@@ -14,6 +14,7 @@ use App\Models\Shop;
 use App\Models\State;
 use App\Support\CarModelLabel;
 use App\Support\MetaDescription;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
@@ -298,7 +299,9 @@ class ProductService
             return $callback();
         }
 
-        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid);
+        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid, [
+            ContentCacheTag::PRODUCT,
+        ]);
     }
 
     /** @return Collection<int, State> */

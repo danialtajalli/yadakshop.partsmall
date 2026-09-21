@@ -15,6 +15,7 @@ use App\Support\MetaDescription;
 use App\Support\ModelCategoryLabel;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
@@ -372,7 +373,9 @@ class VehicleCatalogService
             return $callback();
         }
 
-        return SafeCache::remember($key, self::CATALOG_CACHE_TTL, $callback, $isValid);
+        return SafeCache::remember($key, self::CATALOG_CACHE_TTL, $callback, $isValid, [
+            ContentCacheTag::CATALOG,
+        ]);
     }
 
     private function transformPartForCatalog(Part $part, VehicleCatalogContext $context): Part

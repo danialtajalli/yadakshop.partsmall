@@ -108,6 +108,7 @@
                                 :name="$companyName"
                                 :logo-url="data_get($company, 'logo_url')"
                                 size="sm"
+                                :rounded="false"
                             />
                             <h3 class="line-clamp-2 text-xs font-semibold leading-4 text-ink sm:text-sm sm:leading-5">{{ $companyName }}</h3>
                             @if (! $companyHasModels)

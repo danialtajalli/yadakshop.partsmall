@@ -4,6 +4,7 @@
     'alt' => null,
     'size' => 'md',
     'fit' => 'contain',
+    'rounded' => true,
 ])
 
 @php
@@ -28,6 +29,7 @@
     };
 
     $fitClass = $fit === 'cover' ? 'object-cover' : 'object-contain';
+    $radiusClass = $rounded ? 'rounded-xl' : 'rounded-none';
     $altText = $alt ?? 'لوگوی '.$name;
 @endphp
 
@@ -37,10 +39,10 @@
         alt="{{ $altText }}"
         loading="lazy"
         decoding="async"
-        {{ $attributes->merge(['class' => "shrink-0 {$sizeClass} rounded-xl {$fitClass}"]) }}
+        {{ $attributes->merge(['class' => "shrink-0 {$sizeClass} {$radiusClass} {$fitClass}"]) }}
     >
 @else
-    <div {{ $attributes->merge(['class' => "flex shrink-0 items-center justify-center overflow-hidden rounded-xl ring-1 ring-line {$sizeClass} font-bold text-brand-dark {$fallbackTextClass}"]) }}>
+    <div {{ $attributes->merge(['class' => "flex shrink-0 items-center justify-center overflow-hidden {$radiusClass} ring-1 ring-line {$sizeClass} font-bold text-brand-dark {$fallbackTextClass}"]) }}>
         {{ mb_substr($name, 0, 1) }}
     </div>
 @endif

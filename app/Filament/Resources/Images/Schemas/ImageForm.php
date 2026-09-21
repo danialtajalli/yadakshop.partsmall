@@ -9,6 +9,7 @@ use App\Models\RepairShop;
 use App\Models\Shop;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Arr;
@@ -53,6 +54,14 @@ class ImageForm
                     ->default(fn (): ?int => request()->filled('company_id') ? (int) request('company_id') : null)
                     ->hidden(fn (Get $get): bool => ! self::shouldShowOwnerField('company_id', $get) || self::isOwnerLocked('company_id', $get))
                     ->disabled(fn (): bool => self::contextOwnerField() === 'company_id'),
+                TextInput::make('file_base_name')
+                    ->label('نام فایل')
+                    ->dehydrated(false)
+                    ->maxLength(120)
+                    ->placeholder(fn (Get $get): string => self::resolveOwnerFileBaseName($get))
+                    ->helperText('اختیاری — پسوند تصویر خودکار اضافه می‌شود. خالی = نام پیشنهادی مالک.')
+                    ->disabled(fn (Get $get): bool => blank(self::resolveUploadDirectory($get)))
+                    ->visible(fn (Get $get): bool => filled(self::resolveUploadDirectory($get))),
                 FileUpload::make('path')
                     ->label('تصویر')
                     ->image()
@@ -66,9 +75,10 @@ class ImageForm
                         ? 'ابتدا نوع تصویر را انتخاب کنید.'
                         : (self::resolveOwner($get) === null
                             ? 'ابتدا یکی از فروشگاه / تعمیرگاه / برند خودرو را انتخاب کنید.'
-                            : 'تصویر با نام مالک و در مسیر متناسب با نوع ذخیره می‌شود.'))
+                            : 'می‌توانید نام فایل را در فیلد بالا تعیین کنید؛ در غیر این صورت از نام مالک استفاده می‌شود.'))
                     ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get): string {
-                        $baseName = self::resolveOwnerFileBaseName($get);
+                        $custom = self::sanitizeFileBaseName((string) ($get('file_base_name') ?? ''));
+                        $baseName = $custom !== '' ? $custom : self::resolveOwnerFileBaseName($get);
                         $extension = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
 
                         return "{$baseName}.{$extension}";

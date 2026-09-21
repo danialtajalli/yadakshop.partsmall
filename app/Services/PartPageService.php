@@ -7,6 +7,7 @@ use App\Models\Part;
 use App\Support\MetaDescription;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -176,7 +177,9 @@ class PartPageService
             return $callback();
         }
 
-        return SafeCache::remember($key, self::APPLICATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value));
+        return SafeCache::remember($key, self::APPLICATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value), [
+            ContentCacheTag::PART_PAGE,
+        ]);
     }
 
     private function sanitizeDescription(?string $description, Part $part): ?string

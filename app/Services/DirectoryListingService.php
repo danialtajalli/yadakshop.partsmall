@@ -13,6 +13,7 @@ use App\Models\State;
 use App\Support\MetaDescription;
 use App\Support\PageTitle;
 use App\Support\Pagination;
+use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -421,7 +422,9 @@ class DirectoryListingService
             return $callback();
         }
 
-        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid);
+        return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid, [
+            ContentCacheTag::DIRECTORY,
+        ]);
     }
 
     private function attachImageUrls(Model $model, string $modelType): void
