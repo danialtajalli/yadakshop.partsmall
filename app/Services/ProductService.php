@@ -267,7 +267,7 @@ class ProductService
             ->visibleUnderProduct()
             ->ordered()
             ->with([
-                'phones:id,shop_id,phone_number,type',
+                'phones:id,shop_id,phone_number,label,type',
                 'links:id,shop_id,link_type,name',
                 'city.state:id,name',
                 'images' => fn ($query) => $query

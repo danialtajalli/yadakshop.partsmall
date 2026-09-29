@@ -27,7 +27,7 @@ class RepairShopProfileService
                 'images' => fn ($query) => $query
                     ->select(['id', 'repair_shop_id', 'type', 'path'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
-                'phones:id,repair_shop_id,phone_number,type',
+                'phones:id,repair_shop_id,phone_number,label,type',
                 'links:id,repair_shop_id,link_type,name',
                 'repairCategories:id,name',
             ])

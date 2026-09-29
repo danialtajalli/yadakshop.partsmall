@@ -30,6 +30,11 @@ class PhonesTable
                     ->searchable()
                     ->label('شماره تلفن')
                     ->toggleable(),
+                TextColumn::make('label')
+                    ->searchable()
+                    ->label('برچسب نمایش')
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('type')
                     ->badge()
                     ->label('نوع تلفن')

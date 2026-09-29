@@ -73,9 +73,9 @@
                                 href="{{ $phoneType->actionUrl($phone->phone_number) }}"
                                 class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
                                 dir="ltr"
-                                aria-label="{{ $phoneType->label() }}: {{ $phone->phone_number }}"
+                                aria-label="{{ $phoneType->label() }}: {{ $phone->displayLabel() }}"
                             >
-                                <span class="tabular-nums text-ink">{{ $phone->phone_number }}</span>
+                                <span class="tabular-nums text-ink">{{ $phone->displayLabel() }}</span>
                                 <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-base leading-none text-brand">
                                     <i class="{{ $phoneType->icon() }}" aria-hidden="true"></i>
                                 </span>
@@ -107,7 +107,7 @@
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
-                                    aria-label="{{ $phoneType->label() }}: {{ $phone->phone_number }}"
+                                    aria-label="{{ $phoneType->label() }}: {{ $phone->displayLabel() }}"
                                 >
                                     <span class="ps-messenger-meta">
                                         <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
@@ -115,7 +115,7 @@
                                             <i class="{{ $phoneType->icon() }} {{ $messengerIconClass }} block leading-none" aria-hidden="true"></i>
                                         </span>
                                     </span>
-                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
+                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->displayLabel() }}</span>
                                 </a>
                             </li>
                         @endforeach
@@ -141,7 +141,7 @@
                                     target="_blank"
                                     rel="noopener"
                                     class="flex items-center justify-between gap-3 px-3 py-2.5 text-sm transition hover:bg-brand-soft/40"
-                                    aria-label="{{ $phoneType->label() }}: {{ $phone->phone_number }}"
+                                    aria-label="{{ $phoneType->label() }}: {{ $phone->displayLabel() }}"
                                 >
                                     <span class="ps-messenger-meta">
                                         <span class="ps-messenger-meta__label">{{ $phoneType->label() }}</span>
@@ -149,7 +149,7 @@
                                             <i class="{{ $phoneType->icon() }} {{ $messengerIconClass }} block leading-none" aria-hidden="true"></i>
                                         </span>
                                     </span>
-                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->phone_number }}</span>
+                                    <span class="min-w-0 tabular-nums text-ink" dir="ltr">{{ $phone->displayLabel() }}</span>
                                 </a>
                             </li>
                         @endforeach

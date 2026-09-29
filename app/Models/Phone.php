@@ -13,6 +13,7 @@ class Phone extends Model
         'repair_shop_id',
         'user_id',
         'phone_number',
+        'label',
         'type',
     ];
 
@@ -21,6 +22,16 @@ class Phone extends Model
         return [
             'type' => PhoneType::class,
         ];
+    }
+
+    /**
+     * Text shown to visitors; falls back to the dialable number.
+     */
+    public function displayLabel(): string
+    {
+        $label = trim((string) ($this->label ?? ''));
+
+        return $label !== '' ? $label : (string) $this->phone_number;
     }
 
     public function shop(): BelongsTo
