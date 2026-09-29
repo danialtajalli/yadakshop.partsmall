@@ -39,7 +39,7 @@ class ShopProfileService
                 'images' => fn ($query) => $query
                     ->select(['id', 'shop_id', 'type', 'path'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
-                'phones:id,shop_id,phone_number,type',
+                'phones:id,shop_id,phone_number,label,type',
                 'links:id,shop_id,link_type,name',
                 'partsCategories:id,name',
                 'companies:id,name,slug',
@@ -163,44 +163,53 @@ class ShopProfileService
 
     public function isOpen($shop): bool
     {
-        $now = Carbon::now()->addHours(3)->addMinutes(30);
+        $timezone = (string) config('app.timezone', 'Asia/Tehran');
+        $now = Carbon::now($timezone);
 
-        switch ($now->dayOfWeek) {
-            case 4: // پنجشنبه
-                $open = $shop->open_time_thursday;
-                $close = $shop->close_time_thursday;
-                break;
+        [$open, $close] = match ($now->dayOfWeek) {
+            Carbon::THURSDAY => [$shop->open_time_thursday, $shop->close_time_thursday],
+            Carbon::FRIDAY => [$shop->open_time_friday, $shop->close_time_friday],
+            default => [$shop->open_time, $shop->close_time],
+        };
 
-            case 5: // جمعه
-                $open = $shop->open_time_friday;
-                $close = $shop->close_time_friday;
-                break;
-
-            default: // شنبه تا چهارشنبه
-                $open = $shop->open_time;
-                $close = $shop->close_time;
-                break;
-        }
-
-        if (!$open || !$close) {
+        if (blank($open) || blank($close)) {
             return false;
         }
 
-        $openTime = $this->parseShopTime($open)?->setDateFrom($now);
-        $closeTime = $this->parseShopTime($close)?->setDateFrom($now);
+        $openTime = $this->parseShopTime($open, $timezone)?->setDateFrom($now);
+        $closeTime = $this->parseShopTime($close, $timezone)?->setDateFrom($now);
 
         if ($openTime === null || $closeTime === null) {
             return false;
         }
 
-        return $now->between($openTime, $closeTime);
+        // Overnight shift (e.g. 22:00–02:00): open if after open or before close.
+        if ($closeTime->lessThanOrEqualTo($openTime)) {
+            return $now->greaterThanOrEqualTo($openTime) || $now->lessThanOrEqualTo($closeTime);
+        }
+
+        return $now->betweenIncluded($openTime, $closeTime);
     }
 
-    private function parseShopTime(string $time): ?Carbon
+    private function parseShopTime(mixed $time, string $timezone): ?Carbon
     {
+        if ($time instanceof Carbon) {
+            return $time->copy()->timezone($timezone);
+        }
+
+        if ($time instanceof \DateTimeInterface) {
+            return Carbon::instance($time)->timezone($timezone);
+        }
+
+        $value = trim((string) $time);
+
+        if ($value === '') {
+            return null;
+        }
+
         foreach (['H:i:s', 'H:i'] as $format) {
             try {
-                return Carbon::createFromFormat($format, $time);
+                return Carbon::createFromFormat($format, $value, $timezone);
             } catch (\Throwable) {
                 continue;
             }

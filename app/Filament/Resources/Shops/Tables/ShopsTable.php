@@ -53,16 +53,16 @@ class ShopsTable
                 TextColumn::make('close_time')->label('ساعت پایان کار')
                     ->time()
                     ->sortable()->toggleable(),
-                TextColumn::make('open_time_friday')->label('ساعت شروع کار روز پنجشنبه')
+                TextColumn::make('open_time_friday')->label('ساعت شروع کار روز جمعه')
                     ->time()
                     ->sortable()->toggleable(),
-                TextColumn::make('close_time_friday')->label('ساعت پایان کار روز پنجشنبه')
+                TextColumn::make('close_time_friday')->label('ساعت پایان کار روز جمعه')
                     ->time()
                     ->sortable()->toggleable(),
-                TextColumn::make('open_time_thursday')->label('ساعت شروع کار روز جمعه')
+                TextColumn::make('open_time_thursday')->label('ساعت شروع کار روز پنجشنبه')
                     ->time()
                     ->sortable()->toggleable(),
-                TextColumn::make('close_time_thursday')->label('ساعت پایان کار روز جمعه')
+                TextColumn::make('close_time_thursday')->label('ساعت پایان کار روز پنجشنبه')
                     ->time()
                     ->sortable()->toggleable(),
                 // IconColumn::make('off')->label('غیر فعال')

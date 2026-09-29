@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Shop;
 use App\Models\State;
 use App\Services\ShopProfileService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
@@ -33,7 +34,7 @@ class ShopProfileServiceTest extends TestCase
         $data = $this->service->getProfilePageData($shop->slug);
 
         $this->assertSame(
-            ['shop', 'title', 'averageRating', 'commentsCount', 'relatedShops'],
+            ['shop', 'title', 'metaDescription', 'averageRating', 'commentsCount', 'relatedShops'],
             array_keys($data),
         );
         $this->assertSame('پروفایل یدک شاپ  در پارتس‌مال', $data['title']);
@@ -210,6 +211,100 @@ class ShopProfileServiceTest extends TestCase
         $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
 
         $this->service->getProfilePageData('missing-shop');
+    }
+
+    public function test_is_open_uses_app_timezone_without_manual_offset(): void
+    {
+        config(['app.timezone' => 'Asia/Tehran']);
+
+        $shop = Shop::create([
+            'name' => 'ساعات کاری',
+            'slug' => 'hours-shop',
+            'open_time' => '09:00:00',
+            'close_time' => '18:00:00',
+        ]);
+
+        // Monday 10:00 Tehran — should be open
+        $this->travelTo(Carbon::parse('2026-08-17 10:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+
+        // Monday 20:00 Tehran — should be closed (was wrongly open with +3:30 hack if "now" was 16:30)
+        $this->travelTo(Carbon::parse('2026-08-17 20:00:00', 'Asia/Tehran'));
+        $this->assertFalse($this->service->isOpen($shop));
+
+        // Monday 16:00 Tehran — open
+        $this->travelTo(Carbon::parse('2026-08-17 16:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+    }
+
+    public function test_is_open_uses_thursday_and_friday_hours(): void
+    {
+        config(['app.timezone' => 'Asia/Tehran']);
+
+        $shop = Shop::create([
+            'name' => 'ساعات خاص',
+            'slug' => 'special-hours-shop',
+            'open_time' => '09:00:00',
+            'close_time' => '18:00:00',
+            'open_time_thursday' => '09:00:00',
+            'close_time_thursday' => '14:00:00',
+            'open_time_friday' => '10:00:00',
+            'close_time_friday' => '13:00:00',
+        ]);
+
+        // Thursday 15:00 — closed (Thu closes 14:00)
+        $this->travelTo(Carbon::parse('2026-08-20 15:00:00', 'Asia/Tehran'));
+        $this->assertFalse($this->service->isOpen($shop));
+
+        // Thursday 11:00 — open
+        $this->travelTo(Carbon::parse('2026-08-20 11:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+
+        // Friday 11:00 — open
+        $this->travelTo(Carbon::parse('2026-08-21 11:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+
+        // Friday 15:00 — closed
+        $this->travelTo(Carbon::parse('2026-08-21 15:00:00', 'Asia/Tehran'));
+        $this->assertFalse($this->service->isOpen($shop));
+    }
+
+    public function test_is_open_handles_overnight_hours(): void
+    {
+        config(['app.timezone' => 'Asia/Tehran']);
+
+        $shop = Shop::create([
+            'name' => 'شبانه',
+            'slug' => 'overnight-shop',
+            'open_time' => '22:00:00',
+            'close_time' => '02:00:00',
+        ]);
+
+        $this->travelTo(Carbon::parse('2026-08-17 23:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+
+        $this->travelTo(Carbon::parse('2026-08-18 01:00:00', 'Asia/Tehran'));
+        $this->assertTrue($this->service->isOpen($shop));
+
+        $this->travelTo(Carbon::parse('2026-08-17 12:00:00', 'Asia/Tehran'));
+        $this->assertFalse($this->service->isOpen($shop));
+    }
+
+    public function test_is_open_returns_false_when_day_hours_missing(): void
+    {
+        config(['app.timezone' => 'Asia/Tehran']);
+
+        $shop = Shop::create([
+            'name' => 'جمعه تعطیل',
+            'slug' => 'friday-closed-shop',
+            'open_time' => '09:00:00',
+            'close_time' => '18:00:00',
+            'open_time_friday' => null,
+            'close_time_friday' => null,
+        ]);
+
+        $this->travelTo(Carbon::parse('2026-08-21 11:00:00', 'Asia/Tehran'));
+        $this->assertFalse($this->service->isOpen($shop));
     }
 
     private function createShopWithRelations(): Shop
