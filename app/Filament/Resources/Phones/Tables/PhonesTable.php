@@ -33,7 +33,7 @@ class PhonesTable
                 TextColumn::make('label')
                     ->searchable()
                     ->label('برچسب نمایش')
-                    ->placeholder('—')
+                    ->placeholder(fn ($record): string => (string) ($record?->phone_number ?? '—'))
                     ->toggleable(),
                 TextColumn::make('type')
                     ->badge()

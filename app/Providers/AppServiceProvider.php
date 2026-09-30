@@ -12,6 +12,7 @@ use App\Models\ModelCategory;
 use App\Models\Page;
 use App\Models\Part;
 use App\Models\PartsCategory;
+use App\Models\Phone;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\Representation;
@@ -50,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         Page::class,
         Comment::class,
         Image::class,
+        Phone::class,
     ];
 
     /**

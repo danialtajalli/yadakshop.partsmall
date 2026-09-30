@@ -12,6 +12,7 @@ use App\Models\ModelCategory;
 use App\Models\Page;
 use App\Models\Part;
 use App\Models\PartsCategory;
+use App\Models\Phone;
 use App\Models\RepairCategory;
 use App\Models\RepairShop;
 use App\Models\Representation;
@@ -24,6 +25,11 @@ final class ContentCacheInvalidator
     public static function forModel(Model $model): void
     {
         SafeCache::flushTags(self::tagsFor($model));
+    }
+
+    public static function flushAll(): void
+    {
+        SafeCache::flushTags(ContentCacheTag::all());
     }
 
     /**
@@ -74,9 +80,30 @@ final class ContentCacheInvalidator
                 ContentCacheTag::DIRECTORY,
                 ContentCacheTag::PRODUCT,
             ],
+            $model instanceof Phone => self::tagsForPhone($model),
             $model instanceof Image => self::tagsForImage($model),
             default => [],
         };
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function tagsForPhone(Phone $phone): array
+    {
+        if (filled($phone->shop_id)) {
+            return [
+                ContentCacheTag::HOME,
+                ContentCacheTag::DIRECTORY,
+                ContentCacheTag::PRODUCT,
+            ];
+        }
+
+        if (filled($phone->repair_shop_id)) {
+            return [ContentCacheTag::HOME, ContentCacheTag::DIRECTORY];
+        }
+
+        return [ContentCacheTag::HOME, ContentCacheTag::PRODUCT];
     }
 
     /**

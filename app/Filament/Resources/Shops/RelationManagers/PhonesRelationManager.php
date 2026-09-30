@@ -4,8 +4,11 @@ namespace App\Filament\Resources\Shops\RelationManagers;
 
 use App\Filament\Concerns\ConfiguresModalRelationCreate;
 use App\Filament\Resources\Phones\PhoneResource;
+use App\Filament\Resources\Phones\Schemas\PhoneForm;
 use Filament\Actions\DissociateAction;
+use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class PhonesRelationManager extends RelationManager
@@ -21,9 +24,14 @@ class PhonesRelationManager extends RelationManager
     {
         return $table
             ->headerActions([
-                $this->makeModalCreateAction('shop_id', 'افزودن تلفن'),
+                $this->makeModalCreateAction('shop_id', 'افزودن تلفن')
+                    ->schema(fn (Schema $schema): Schema => PhoneForm::configure($schema)),
             ])
             ->actions([
+                EditAction::make()
+                    ->label('ویرایش')
+                    ->modal()
+                    ->schema(fn (Schema $schema): Schema => PhoneForm::configure($schema)),
                 DissociateAction::make()->label('حذف تلفن'),
             ]);
     }
