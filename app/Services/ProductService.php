@@ -18,6 +18,7 @@ use App\Support\ContentCacheTag;
 use App\Support\SafeCache;
 use App\Support\ShopImageUrlBuilder;
 use App\Support\VehicleCatalogBreadcrumbs;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProductService
@@ -268,18 +269,7 @@ class ProductService
             ? fn () => Shop::query()
             : fn () => Shop::whereIn('id', $shopIds);
 
-        $query = fn () => $query()
-            ->visibleUnderProduct()
-            ->ordered()
-            ->with([
-                'phones:id,shop_id,phone_number,label,type',
-                'links:id,shop_id,link_type,name',
-                'city.state:id,name',
-                'images' => fn ($query) => $query
-                    ->select(['id', 'shop_id', 'type', 'path'])
-                    ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
-            ])
-            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
+        $query = fn () => $this->applyShopListingConstraints($query());
 
         $shops = $query()
             ->whereHas('parts', fn ($q) => $q->whereKey($part->id))
@@ -295,7 +285,64 @@ class ProductService
                 ->get();
         }
 
-        return $shops;
+        return $this->pinPriorityShopsForCompany($shops, $company_id);
+    }
+
+    /**
+     * For companies linked to shop 409, force-add shops 409, 4, and 6 at the top.
+     *
+     * @param  Collection<int, Shop>  $shops
+     * @return Collection<int, Shop>
+     */
+    private function pinPriorityShopsForCompany(Collection $shops, int $company_id): Collection
+    {
+        $anchorShopId = 409;
+        $pinnedIds = [409, 4, 6];
+
+        $companyUsesAnchorShop = Shop::query()
+            ->whereKey($anchorShopId)
+            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id))
+            ->exists();
+
+        if (! $companyUsesAnchorShop) {
+            return $shops;
+        }
+
+        $pinned = Shop::query()
+            ->whereIn('id', $pinnedIds)
+            ->with($this->shopListingRelations())
+            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating')
+            ->get()
+            ->sortBy(fn (Shop $shop): int|false => array_search($shop->id, $pinnedIds, true))
+            ->values();
+
+        $rest = $shops
+            ->reject(fn (Shop $shop): bool => in_array($shop->id, $pinnedIds, true))
+            ->values();
+
+        return $pinned->concat($rest);
+    }
+
+    private function applyShopListingConstraints(Builder $query): Builder
+    {
+        return $query
+            ->visibleUnderProduct()
+            ->ordered()
+            ->with($this->shopListingRelations())
+            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
+    }
+
+    /** @return array<string, mixed> */
+    private function shopListingRelations(): array
+    {
+        return [
+            'phones:id,shop_id,phone_number,type',
+            'links:id,shop_id,link_type,name',
+            'city.state:id,name',
+            'images' => fn ($query) => $query
+                ->select(['id', 'shop_id', 'type', 'path'])
+                ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
+        ];
     }
 
     private function rememberFilterData(string $key, callable $callback, ?callable $isValid = null): mixed

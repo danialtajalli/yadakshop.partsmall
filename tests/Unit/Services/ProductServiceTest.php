@@ -286,18 +286,81 @@ class ProductServiceTest extends TestCase
         $this->assertTrue($data['relatedProducts']->contains('id', $otherCategoryPart->id));
     }
 
+    public function test_it_pins_priority_shops_for_companies_linked_to_shop_409(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
+
+        $regularShop = Shop::create([
+            'name' => 'فروشگاه عادی',
+            'slug' => 'regular-shop',
+            'show_under_product' => true,
+            'order' => 1,
+        ]);
+        $regularShop->parts()->attach($part);
+
+        $pinnedShops = collect([409, 4, 6])->map(function (int $id): Shop {
+            $shop = new Shop([
+                'name' => "فروشگاه {$id}",
+                'slug' => "pinned-shop-{$id}",
+                'show_under_product' => true,
+                'order' => 99,
+            ]);
+            $shop->id = $id;
+            $shop->save();
+
+            return $shop;
+        });
+
+        $company->shops()->attach(409);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertSame([409, 4, 6, $regularShop->id], $data['shops']->pluck('id')->all());
+        $this->assertTrue($pinnedShops->every(fn (Shop $shop): bool => $data['shops']->contains('id', $shop->id)));
+    }
+
+    public function test_it_does_not_pin_priority_shops_when_company_is_not_linked_to_shop_409(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
+
+        $anchor = new Shop([
+            'name' => 'فروشگاه ۴۰۹',
+            'slug' => 'shop-409',
+            'show_under_product' => true,
+            'order' => 1,
+        ]);
+        $anchor->id = 409;
+        $anchor->save();
+
+        $regularShop = Shop::create([
+            'name' => 'فروشگاه عادی',
+            'slug' => 'regular-shop',
+            'show_under_product' => true,
+            'order' => 1,
+        ]);
+        $regularShop->parts()->attach($part);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertSame([$regularShop->id], $data['shops']->pluck('id')->all());
+    }
+
     /**
      * @param  array<string, mixed>  $overrides
      * @return array{0: Company, 1: Car, 2: CarModel, 3: Part}
      */
     private function seedProductGraph(array $overrides = []): array
     {
-        $company = Company::create([
+        $company = new Company([
             'name' => 'هیوندای',
             'slug' => 'hyundai',
             'country' => 'کره',
             'wage_strike' => $overrides['wage_strike'] ?? 1,
         ]);
+        if (isset($overrides['company_id'])) {
+            $company->id = $overrides['company_id'];
+        }
+        $company->save();
 
         $car = Car::create([
             'name' => 'سانتافه',
