@@ -59,10 +59,9 @@
             @php
                 $phoneType = $section['type'];
                 $phonesInGroup = $section['items'];
-                $isGrouped = $phonesInGroup->count() > 1;
             @endphp
 
-            <li @class(['rounded-xl border border-line', 'overflow-hidden' => $isGrouped])>
+            <li class="overflow-hidden rounded-xl border border-line">
                 <div class="border-b border-line bg-surface/50 px-3 py-2.5">
                     <span class="font-medium text-ink">{{ $phoneType->label() }}</span>
                 </div>
@@ -162,10 +161,9 @@
             @php
                 $contact = $contactsInGroup->first();
                 $label = $contact['label'] ?? 'تماس';
-                $isGrouped = $contactsInGroup->count() > 1;
             @endphp
 
-            <li @class(['rounded-xl border border-line', 'overflow-hidden' => $isGrouped])>
+            <li class="overflow-hidden rounded-xl border border-line">
                 <div class="border-b border-line bg-surface/50 px-3 py-2.5">
                     <span class="font-medium text-ink">{{ $label }}</span>
                 </div>
