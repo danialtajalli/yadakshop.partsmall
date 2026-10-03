@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PhoneType;
 use App\Support\EnglishDigits;
+use App\Support\IranAreaCodes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -37,31 +38,32 @@ class Phone extends Model
 
         return match ($this->type) {
             PhoneType::Land => $this->formatLandlineLabel($digits, $raw),
-            PhoneType::Mobile => $this->formatMobileLabel($digits, $raw),
+            PhoneType::Mobile => strlen($digits) < 8
+                ? $raw
+                : $this->formatMobileLabel($digits),
             default => $raw,
         };
     }
 
     private function formatLandlineLabel(string $digits, string $fallback): string
     {
-        if (strlen($digits) < 8) {
+        $city = IranAreaCodes::matchPrefix($digits);
+        $local = $city === null ? $digits : substr($digits, strlen($city));
+
+        // Local part must be a full 8-digit subscriber number.
+        if (strlen($local) !== 8) {
             return $fallback;
         }
 
-        [$a, $b, $c, $d] = str_split(substr($digits, -8), 2);
-        $local = "{$a} {$b} {$c}{$d}";
-        $city = substr($digits, 0, -8);
+        [$a, $b, $c, $d] = str_split($local, 2);
+        $formatted = "{$a} {$b} {$c}{$d}";
 
-        return $city === '' ? $local : "{$city} - {$local}";
+        return $city === null ? $formatted : "{$city} - {$formatted}";
     }
 
-    private function formatMobileLabel(string $digits, string $fallback): string
+    private function formatMobileLabel(string $digits): string
     {
         // From the right: 2 + 2 + 3, remainder is the prefix (e.g. 0911).
-        if (strlen($digits) < 7) {
-            return $fallback;
-        }
-
         $pair1 = substr($digits, -2);
         $pair2 = substr($digits, -4, 2);
         $triple = substr($digits, -7, 3);

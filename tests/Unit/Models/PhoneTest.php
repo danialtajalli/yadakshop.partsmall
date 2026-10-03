@@ -32,6 +32,17 @@ class PhoneTest extends TestCase
     }
 
     #[Test]
+    public function landline_display_label_keeps_incomplete_local_after_city_code_unchanged(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '02154614',
+            'type' => PhoneType::Land,
+        ]);
+
+        $this->assertSame('02154614', $phone->displayLabel());
+    }
+
+    #[Test]
     public function landline_display_label_keeps_short_numbers_unchanged(): void
     {
         $phone = new Phone([
@@ -40,6 +51,17 @@ class PhoneTest extends TestCase
         ]);
 
         $this->assertSame('9155616', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function landline_display_label_keeps_unknown_long_prefix_unchanged(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '0991556162',
+            'type' => PhoneType::Land,
+        ]);
+
+        $this->assertSame('0991556162', $phone->displayLabel());
     }
 
     #[Test]
@@ -79,11 +101,11 @@ class PhoneTest extends TestCase
     public function mobile_display_label_keeps_short_numbers_unchanged(): void
     {
         $phone = new Phone([
-            'phone_number' => '091111',
+            'phone_number' => '0911111',
             'type' => PhoneType::Mobile,
         ]);
 
-        $this->assertSame('091111', $phone->displayLabel());
+        $this->assertSame('0911111', $phone->displayLabel());
     }
 
     #[Test]
