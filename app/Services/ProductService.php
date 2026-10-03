@@ -257,11 +257,16 @@ class ProductService
     /** @return Collection<int, Shop> */
     private function loadShopsForPart(Part $part, int $company_id): Collection
     {
-        if (in_array($company_id, [1, 2])) {
-            $query = fn () => Shop::whereIn('id', [1, 2, 3]);
-        } else {
-            $query = fn () => Shop::query();
-        }
+        // KIA (1) / Hyundai (2): curated shop lists; everyone else sees all shops.
+        $shopIds = match ($company_id) {
+            1 => [1, 2, 3, 411, 412], // KIA
+            2 => [1, 2, 3, 411, 413], // Hyundai
+            default => null,
+        };
+
+        $query = $shopIds === null
+            ? fn () => Shop::query()
+            : fn () => Shop::whereIn('id', $shopIds);
 
         $query = fn () => $query()
             ->visibleUnderProduct()
