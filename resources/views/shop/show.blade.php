@@ -340,7 +340,7 @@
             @if ($shop->description)
                 <section class="ps-card px-5 py-6 sm:px-6">
                     <x-ui.section-heading title="درباره فروشگاه" />
-                    <x-ui.expandable-description id="shop-description">
+                    <x-ui.expandable-description id="shop-description" class="text-justify">
                         {!! $shop->description !!}
                     </x-ui.expandable-description>
                 </section>
