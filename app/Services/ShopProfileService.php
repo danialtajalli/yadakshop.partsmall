@@ -39,7 +39,7 @@ class ShopProfileService
                 'images' => fn ($query) => $query
                     ->select(['id', 'shop_id', 'type', 'path'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
-                'phones:id,shop_id,phone_number,label,type',
+                'phones:id,shop_id,phone_number,type',
                 'links:id,shop_id,link_type,name',
                 'partsCategories:id,name',
                 'companies:id,name,slug',

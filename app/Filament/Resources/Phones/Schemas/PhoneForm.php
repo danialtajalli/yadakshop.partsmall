@@ -21,11 +21,7 @@ class PhoneForm
                     ->tel()
                     ->required()
                     ->label('شماره تلفن')
-                    ->helperText('شماره‌ای که هنگام کلیک شماره‌گیری می‌شود (مثلاً 021xxxxxxxx).'),
-                TextInput::make('label')
-                    ->label('برچسب نمایش')
-                    ->maxLength(255)
-                    ->helperText('متن نمایشی اختیاری (مثلاً 021 xx xx xx xx). خالی = همان شماره تلفن.'),
+                    ->helperText('شماره شماره‌گیری (مثلاً 02191556162). تلفن ثابت در سایت به‌صورت 021 - 91 55 6162 نمایش داده می‌شود.'),
                 Select::make('shop_id')
                     ->relationship('shop', 'name')
                     ->searchable()

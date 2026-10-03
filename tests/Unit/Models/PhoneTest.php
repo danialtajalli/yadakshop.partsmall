@@ -10,37 +10,68 @@ use Tests\TestCase;
 class PhoneTest extends TestCase
 {
     #[Test]
-    public function display_label_falls_back_to_phone_number(): void
+    public function landline_display_label_formats_city_code_and_local_pairs(): void
     {
         $phone = new Phone([
-            'phone_number' => '02133979370',
+            'phone_number' => '02191556162',
             'type' => PhoneType::Land,
         ]);
 
-        $this->assertSame('02133979370', $phone->displayLabel());
+        $this->assertSame('021 - 91 55 6162', $phone->displayLabel());
     }
 
     #[Test]
-    public function display_label_uses_label_when_present(): void
+    public function landline_display_label_formats_eight_digit_numbers_without_city_code(): void
     {
         $phone = new Phone([
-            'phone_number' => '02133979370',
-            'label' => '021 33 97 93 70',
+            'phone_number' => '91556162',
             'type' => PhoneType::Land,
         ]);
 
-        $this->assertSame('021 33 97 93 70', $phone->displayLabel());
+        $this->assertSame('91 55 6162', $phone->displayLabel());
     }
 
     #[Test]
-    public function display_label_ignores_blank_label(): void
+    public function landline_display_label_keeps_short_numbers_unchanged(): void
     {
         $phone = new Phone([
-            'phone_number' => '02133979370',
-            'label' => '   ',
+            'phone_number' => '9155616',
             'type' => PhoneType::Land,
         ]);
 
-        $this->assertSame('02133979370', $phone->displayLabel());
+        $this->assertSame('9155616', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function landline_display_label_normalizes_persian_digits(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '۰۲۱۹۱۵۵۶۱۶۲',
+            'type' => PhoneType::Land,
+        ]);
+
+        $this->assertSame('021 - 91 55 6162', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function mobile_display_label_keeps_stored_number(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '09120818355',
+            'type' => PhoneType::Mobile,
+        ]);
+
+        $this->assertSame('09120818355', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function messenger_display_label_keeps_stored_number(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '09120818355',
+            'type' => PhoneType::Whatsapp,
+        ]);
+
+        $this->assertSame('09120818355', $phone->displayLabel());
     }
 }
