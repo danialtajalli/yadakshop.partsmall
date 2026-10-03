@@ -24,6 +24,8 @@ class ShopsTable
                     ->searchable()->label('نام لاتین فروشگاه')->toggleable(),
                 IconColumn::make('confirmed')
                     ->boolean()->label('تایید شده')->toggleable(),
+                IconColumn::make('verified')
+                    ->boolean()->label('فروشگاه مورد اعتماد')->toggleable(),
                 IconColumn::make('show_under_product')
                     ->boolean()->label('نمایش تحت محصول')->toggleable(),
                 TextColumn::make('person_responsible_name')

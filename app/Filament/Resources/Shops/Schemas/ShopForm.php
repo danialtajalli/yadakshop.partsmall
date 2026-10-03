@@ -24,6 +24,8 @@ class ShopForm
                     ->required()->label('نام لاتین فروشگاه'),
                 Toggle::make('confirmed')
                     ->required()->label('تایید شده'),
+                Toggle::make('verified')
+                    ->label('فروشگاه مورد اعتماد'),
                 Toggle::make('show_under_product')
                     ->required()->label('نمایش تحت محصول'),
                 Textarea::make('description')
