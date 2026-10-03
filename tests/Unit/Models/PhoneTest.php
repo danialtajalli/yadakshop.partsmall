@@ -54,14 +54,36 @@ class PhoneTest extends TestCase
     }
 
     #[Test]
-    public function mobile_display_label_keeps_stored_number(): void
+    public function mobile_display_label_formats_prefix_triple_and_pairs(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '09111111111',
+            'type' => PhoneType::Mobile,
+        ]);
+
+        $this->assertSame('0911 111 11 11', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function mobile_display_label_formats_typical_iranian_number(): void
     {
         $phone = new Phone([
             'phone_number' => '09120818355',
             'type' => PhoneType::Mobile,
         ]);
 
-        $this->assertSame('09120818355', $phone->displayLabel());
+        $this->assertSame('0912 081 83 55', $phone->displayLabel());
+    }
+
+    #[Test]
+    public function mobile_display_label_keeps_short_numbers_unchanged(): void
+    {
+        $phone = new Phone([
+            'phone_number' => '091111',
+            'type' => PhoneType::Mobile,
+        ]);
+
+        $this->assertSame('091111', $phone->displayLabel());
     }
 
     #[Test]

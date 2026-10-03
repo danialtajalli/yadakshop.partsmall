@@ -21,7 +21,7 @@ class PhoneForm
                     ->tel()
                     ->required()
                     ->label('شماره تلفن')
-                    ->helperText('شماره شماره‌گیری (مثلاً 02191556162). تلفن ثابت در سایت به‌صورت 021 - 91 55 6162 نمایش داده می‌شود.'),
+                    ->helperText('شماره شماره‌گیری. تلفن ثابت: 021 - 91 55 6162؛ همراه: 0911 111 11 11.'),
                 Select::make('shop_id')
                     ->relationship('shop', 'name')
                     ->searchable()
