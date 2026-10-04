@@ -223,6 +223,29 @@
                 </section>
             @endif
 
+            @if (filled($shop->address) || filled($locationLabel))
+                <section class="ps-card p-5">
+                    <h2 class="mb-4 text-base font-bold text-ink">آدرس</h2>
+                    <div class="space-y-2 text-sm leading-7 text-ink">
+                        @if (filled($locationLabel))
+                            <p class="inline-flex items-start gap-2 text-ink-muted">
+                                <i class="fa-solid fa-location-dot mt-1 text-[12px] text-brand" aria-hidden="true"></i>
+                                <span>
+                                    @if ($hasMap)
+                                        <a href="#shop-location" class="transition hover:text-ink">{{ $locationLabel }}</a>
+                                    @else
+                                        {{ $locationLabel }}
+                                    @endif
+                                </span>
+                            </p>
+                        @endif
+                        @if (filled($shop->address))
+                            <p class="font-medium text-ink">{{ $shop->address }}</p>
+                        @endif
+                    </div>
+                </section>
+            @endif
+
             @if ($shop->links->isNotEmpty() || $websiteLink)
                 <section class="ps-card p-5">
                     <h2 class="mb-4 text-base font-bold text-ink">شبکه‌های اجتماعی و وب‌سایت</h2>
