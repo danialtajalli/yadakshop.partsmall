@@ -38,6 +38,8 @@ class PartPageServiceTest extends TestCase
         $data = $this->service->getPartPageData('arm', Request::create('/part/arm'));
 
         $this->assertSame('یکی از قطعات جلوبندی می باشد.', $data['part']->description);
+        $this->assertSame('خانه', $data['breadcrumbs'][0]['label']);
+        $this->assertSame('قطعات', $data['breadcrumbs'][1]['label']);
     }
 
     public function test_it_filters_and_paginates_vehicle_applications(): void

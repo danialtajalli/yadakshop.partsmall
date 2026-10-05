@@ -59,8 +59,8 @@ class PartPageService
             'metaDescription' => MetaDescription::part($part->name),
             'breadcrumbs' => Pagination::buildBreadcrumbs(
                 [
-                    ['label' => 'ط®ط§ظ†ظ‡', 'url' => route('home')],
-                    ['label' => 'ظ‚ط·ط¹ط§طھ', 'url' => route('car.parts')],
+                    ['label' => 'خانه', 'url' => route('home')],
+                    ['label' => 'قطعات', 'url' => route('car.parts')],
                     ['label' => $part->name],
                 ],
                 $vehicleApplications->currentPage(),
@@ -189,8 +189,8 @@ class PartPageService
         }
 
         return str_replace(
-            ['rn', 'xxx', 'ط·ط·ط·', 'ط¸ط¸ط¸'],
-            ['', $part->partsCategory?->name ?? '', ''],
+            ['rn', 'xxx', 'ططط', 'ظظظ'],
+            ['', $part->partsCategory?->name ?? '', '', ''],
             $description,
         );
     }
