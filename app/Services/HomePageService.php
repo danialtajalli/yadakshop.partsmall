@@ -308,9 +308,9 @@ class HomePageService
                         ->where('type', ImageType::Logo),
                 ])
                 ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
-                ->ordered()
+                ->orderedForHome()
                 ->limit(self::FEATURED_LIMIT)
-                ->get(['id', 'name', 'slug', 'verified', 'order'])
+                ->get(['id', 'name', 'slug', 'verified', 'home_order'])
                 ->map(fn (Shop $shop): array => [
                     'name' => $shop->name,
                     'slug' => $shop->slug,

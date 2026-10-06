@@ -35,7 +35,10 @@ class ShopsTable
                 TextColumn::make('website_show')
                     ->label('نمایش وبسایت')->toggleable(),
                 TextColumn::make('order')
-                    ->numeric()->label('ترتیب')
+                    ->numeric()->label('ترتیب محصول و فروشگاه‌های مرتبط')
+                    ->sortable()->toggleable(),
+                TextColumn::make('home_order')
+                    ->numeric()->label('ترتیب صفحه اصلی')
                     ->sortable()->toggleable(),
                 TextColumn::make('latitude')
                     ->numeric()

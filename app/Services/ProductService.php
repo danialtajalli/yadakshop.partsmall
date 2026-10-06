@@ -259,15 +259,15 @@ class ProductService
     private function loadShopsForPart(Part $part, Car $car): Collection
     {
         $shopIds = match ((int) $car->company_id) {
-            1 => [1, 2, 3, 411, 412], // KIA
-            2 => [1, 2, 3, 411, 413], // Hyundai
+            2 => [1, 2, 3, 411, 412], // KIA
+            1 => [1, 2, 3, 411, 413], // Hyundai
             default => null,
         };
         $query = Shop::query();
 
         // Curated company lists constrain every matching rule, including priority shops.
         if ($shopIds !== null) {
-            return $query->whereIn('shops.id', $shopIds)->get();
+            $query =  $query->whereIn('shops.id', $shopIds);
         }
 
         // Empty product selections cover all products for assigned vehicles, not all vehicles.

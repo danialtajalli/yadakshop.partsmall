@@ -32,6 +32,7 @@ class Shop extends Model
         'person_responsible_email',
         'website_show',
         'order',
+        'home_order',
         'visited_count',
         'latitude',
         'longitude',
@@ -55,6 +56,7 @@ class Shop extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'order' => 'integer',
+            'home_order' => 'integer',
             'visited_count' => 'integer',
             'off' => 'boolean',
         ];
@@ -98,6 +100,10 @@ class Shop extends Model
         static::creating(function (Shop $shop): void {
             if ($shop->order === null) {
                 $shop->order = (static::withoutGlobalScope('confirmed')->max('order') ?? 0) + 1;
+            }
+
+            if ($shop->home_order === null) {
+                $shop->home_order = (static::withoutGlobalScope('confirmed')->max('home_order') ?? 0) + 1;
             }
 
             if ($shop->visited_count === null || $shop->visited_count <= 0) {
@@ -166,6 +172,11 @@ class Shop extends Model
     public function scopeOrdered(Builder $query): void
     {
         $query->orderBy('order')->orderBy('name')->orderBy('id');
+    }
+
+    public function scopeOrderedForHome(Builder $query): void
+    {
+        $query->orderBy('home_order')->orderBy('name')->orderBy('id');
     }
 
     public function scopeConfirmed(Builder $query): void
