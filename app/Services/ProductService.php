@@ -59,7 +59,7 @@ class ProductService
         $part->description = $this->sanitizeDescription($part->description, $company, $car, $model);
 
         $repairCards = $this->buildRepairCards($part, $company);
-        $shops = $this->loadShopsForPart($part, $car->company_id);
+        $shops = $this->loadShopsForPart($part, $car);
 
         $shops->each(function (Shop $shop) use ($company, $car, $model): void {
             $shop->description = $this->sanitizeDescription($shop->description, $company, $car, $model);
@@ -256,33 +256,37 @@ class ProductService
     }
 
     /** @return Collection<int, Shop> */
-    private function loadShopsForPart(Part $part, int $company_id): Collection
+    private function loadShopsForPart(Part $part, Car $car): Collection
     {
-        // KIA (1) / Hyundai (2) have curated lists; all shops must match the company.
-        $shopIds = match ($company_id) {
+        $shopIds = match ((int) $car->company_id) {
             1 => [1, 2, 3, 411, 412], // KIA
             2 => [1, 2, 3, 411, 413], // Hyundai
             default => null,
         };
+        $query = Shop::query();
 
-        $query = $shopIds === null
-            ? fn () => Shop::query()
-            : fn () => Shop::whereIn('id', $shopIds);
-
-        $query = fn () => $this->applyShopListingConstraints($query())
-            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id));
-
-        $shops = $query()
-            ->whereHas('parts', fn ($q) => $q->whereKey($part->id))
-            ->get();
-
-        if ($shops->isEmpty() && $company_id) {
-            $shops = $query()
-                ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
-                ->get();
+        // Curated company lists constrain every matching rule, including priority shops.
+        if ($shopIds !== null) {
+            return $query->whereIn('shops.id', $shopIds)->get();
         }
 
-        return $this->pinPriorityShopsForCompany($shops, $company_id);
+        // Empty product selections cover all products for assigned vehicles, not all vehicles.
+        $shops = $this->applyShopListingConstraints($query)
+            ->where(fn (Builder $query): Builder => $query
+                ->whereHas('companies', fn (Builder $companies): Builder => $companies->whereKey($car->company_id))
+                ->orWhereHas('cars', fn (Builder $cars): Builder => $cars->whereKey($car->id))
+                ->orWhere(fn (Builder $unscoped): Builder => $unscoped->doesntHave('companies')->doesntHave('cars'))
+            )
+            ->where(fn (Builder $query): Builder => $query
+                ->whereHas('parts', fn (Builder $parts): Builder => $parts->whereKey($part->id))
+                ->orWhereHas('partsCategories', fn (Builder $categories): Builder => $categories->whereKey($part->parts_category_id))
+                ->orWhere(fn (Builder $allProducts): Builder => $allProducts
+                    ->doesntHave('parts')
+                    ->doesntHave('partsCategories')
+                    ->where(fn (Builder $scoped): Builder => $scoped->has('companies')->orHas('cars'))))
+            ->get();
+
+        return $this->pinPriorityShops($shops, (int) $car->company_id);
     }
 
     /**
@@ -291,26 +295,22 @@ class ProductService
      * @param  Collection<int, Shop>  $shops
      * @return Collection<int, Shop>
      */
-    private function pinPriorityShopsForCompany(Collection $shops, int $company_id): Collection
+    private function pinPriorityShops(Collection $shops, int $companyId): Collection
     {
         $anchorShopId = 409;
         $pinnedIds = [409, 4, 6];
 
         $companyUsesAnchorShop = Shop::query()
             ->whereKey($anchorShopId)
-            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id))
+            ->whereHas('companies', fn (Builder $companies): Builder => $companies->whereKey($companyId))
             ->exists();
 
         if (! $companyUsesAnchorShop) {
             return $shops;
         }
 
-        $pinned = Shop::query()
-            ->whereIn('id', $pinnedIds)
-            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id))
-            ->with($this->shopListingRelations())
-            ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating')
-            ->get()
+        $pinned = $shops
+            ->filter(fn (Shop $shop): bool => in_array($shop->id, $pinnedIds, true))
             ->sortBy(fn (Shop $shop): int|false => array_search($shop->id, $pinnedIds, true))
             ->values();
 

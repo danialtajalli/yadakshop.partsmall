@@ -27,7 +27,7 @@ class ProductShowTest extends TestCase
 
     public function test_product_show_excludes_part_shops_not_linked_to_its_company(): void
     {
-        [$company, $car, $model, $part] = $this->seedProductGraph();
+        [$company, $car, $model, $part] = $this->seedProductGraph(10);
         $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
         $wrongShop = Shop::create([
             'name' => 'Wrong company shop', 'slug' => 'wrong-company-shop', 'show_under_product' => true,
@@ -42,6 +42,51 @@ class ProductShowTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('shops', fn ($shops): bool => $shops->pluck('slug')->all() === ['test-shop']);
         $response->assertDontSee('Wrong company shop');
+    }
+
+    public function test_product_show_includes_car_category_and_global_part_shops(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(10);
+        $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
+        $otherCar = Car::create(['name' => 'Other car', 'slug' => 'other-car', 'company_id' => $company->id]);
+        $carShop = Shop::create(['name' => 'Car category shop', 'slug' => 'car-category-shop', 'show_under_product' => true]);
+        $carShop->cars()->attach($car);
+        $carShop->companies()->attach($otherCompany);
+        $carShop->partsCategories()->attach($part->parts_category_id);
+        $globalShop = Shop::create(['name' => 'Global part shop', 'slug' => 'global-part-shop', 'show_under_product' => true]);
+        $globalShop->parts()->attach($part);
+        $wrongCarShop = Shop::create(['name' => 'Wrong car shop', 'slug' => 'wrong-car-shop', 'show_under_product' => true]);
+        $wrongCarShop->cars()->attach($otherCar);
+        $wrongCarShop->parts()->attach($part);
+
+        foreach ([411 => 'company', 412 => 'car'] as $id => $scope) {
+            $vehicleOnlyShop = new Shop([
+                'name' => 'Vehicle-only '.$scope.' shop',
+                'slug' => 'vehicle-only-'.$scope.'-shop',
+                'show_under_product' => true,
+            ]);
+            $vehicleOnlyShop->id = $id;
+            $vehicleOnlyShop->save();
+
+            if ($scope === 'company') {
+                $vehicleOnlyShop->companies()->attach($company);
+            } else {
+                $vehicleOnlyShop->cars()->attach($car);
+            }
+        }
+
+        $response = $this->get(route('product.show', [
+            'company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug, 'part' => $part->slug,
+        ]));
+
+        $response->assertOk();
+        $response->assertViewHas('shops', fn ($shops): bool => $shops->pluck('slug')->all() === [
+            'test-shop', 'car-category-shop', 'global-part-shop',
+            'vehicle-only-company-shop', 'vehicle-only-car-shop',
+        ]);
+        $response->assertDontSee('Wrong car shop');
+        $response->assertSee('Vehicle-only company shop');
+        $response->assertSee('Vehicle-only car shop');
     }
 
     public function test_product_show_returns_successful_response_for_valid_slugs(): void
@@ -230,14 +275,16 @@ class ProductShowTest extends TestCase
     /**
      * @return array{0: Company, 1: Car, 2: CarModel, 3: Part}
      */
-    private function seedProductGraph(): array
+    private function seedProductGraph(int $companyId = 1): array
     {
-        $company = Company::create([
+        $company = new Company([
             'name' => 'هیوندای',
             'slug' => 'hyundai',
             'country' => 'کره',
             'wage_strike' => 2.5,
         ]);
+        $company->id = $companyId;
+        $company->save();
 
         $car = Car::create([
             'name' => 'سانتافه',
