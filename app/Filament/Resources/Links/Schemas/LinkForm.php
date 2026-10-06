@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class LinkForm
 {
@@ -35,7 +36,7 @@ class LinkForm
                     ->default(fn (): ?int => request()->filled('repair_shop_id') ? (int) request('repair_shop_id') : null)
                     ->hidden(fn (Get $get): bool => ! self::shouldShowOwnerField('repair_shop_id', $get)),
                 Select::make('shop_id')
-                    ->relationship('shop', 'name')
+                    ->relationship('shop', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))
                     ->searchable()
                     ->preload()
                     ->default(fn (): ?int => request()->filled('shop_id') ? (int) request('shop_id') : null)

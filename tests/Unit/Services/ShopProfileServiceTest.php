@@ -51,6 +51,7 @@ class ShopProfileServiceTest extends TestCase
         $shop = $this->createShopWithRelations();
 
         $relatedShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه مرتبط',
             'slug' => 'related-shop',
             'show_under_product' => true,
@@ -60,6 +61,7 @@ class ShopProfileServiceTest extends TestCase
         $relatedShop->companies()->attach($shop->companies->first());
 
         $unrelatedShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه دیگر',
             'slug' => 'unrelated-shop',
             'order' => 3,
@@ -87,6 +89,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_it_finds_shop_even_when_hidden_from_product_scope(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'مخفی',
             'slug' => 'hidden-shop',
             'show_under_product' => false,
@@ -102,6 +105,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_it_increments_visited_count_on_profile_view(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'بازدید',
             'slug' => 'visited-shop',
             'visited_count' => 2050,
@@ -118,6 +122,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_it_increments_null_visited_count_on_profile_view(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'بازدید صفر',
             'slug' => 'null-visited-shop',
             'order' => 1,
@@ -135,6 +140,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_it_increments_zero_visited_count_from_random_baseline_on_profile_view(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'بازدید صفر عددی',
             'slug' => 'zero-visited-shop',
             'visited_count' => 0,
@@ -153,6 +159,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_it_increments_visited_count_at_most_twice_per_ip_per_day(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'بازدید محدود',
             'slug' => 'visited-limit-shop',
             'visited_count' => 2000,
@@ -170,6 +177,7 @@ class ShopProfileServiceTest extends TestCase
     public function test_new_shops_get_random_visited_count_between_two_thousand_and_twenty_five_hundred(): void
     {
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه جدید',
             'slug' => 'new-visited-shop',
             'order' => 1,
@@ -218,6 +226,7 @@ class ShopProfileServiceTest extends TestCase
         config(['app.timezone' => 'Asia/Tehran']);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'ساعات کاری',
             'slug' => 'hours-shop',
             'open_time' => '09:00:00',
@@ -242,6 +251,7 @@ class ShopProfileServiceTest extends TestCase
         config(['app.timezone' => 'Asia/Tehran']);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'ساعات خاص',
             'slug' => 'special-hours-shop',
             'open_time' => '09:00:00',
@@ -274,6 +284,7 @@ class ShopProfileServiceTest extends TestCase
         config(['app.timezone' => 'Asia/Tehran']);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'شبانه',
             'slug' => 'overnight-shop',
             'open_time' => '22:00:00',
@@ -295,6 +306,7 @@ class ShopProfileServiceTest extends TestCase
         config(['app.timezone' => 'Asia/Tehran']);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'جمعه تعطیل',
             'slug' => 'friday-closed-shop',
             'open_time' => '09:00:00',
@@ -313,6 +325,7 @@ class ShopProfileServiceTest extends TestCase
         $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
             'city_id' => $city->id,

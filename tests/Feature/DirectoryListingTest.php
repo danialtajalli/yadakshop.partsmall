@@ -186,6 +186,7 @@ class DirectoryListingTest extends TestCase
     private function createListedShop(array $attributes): Shop
     {
         $shop = Shop::create(array_merge([
+            'confirmed' => true,
             'show_under_product' => true,
             'order' => 1,
         ], $attributes));

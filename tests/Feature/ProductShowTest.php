@@ -30,6 +30,7 @@ class ProductShowTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(10);
         $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
         $wrongShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Wrong company shop', 'slug' => 'wrong-company-shop', 'show_under_product' => true,
         ]);
         $wrongShop->parts()->attach($part);
@@ -49,18 +50,19 @@ class ProductShowTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(10);
         $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
         $otherCar = Car::create(['name' => 'Other car', 'slug' => 'other-car', 'company_id' => $company->id]);
-        $carShop = Shop::create(['name' => 'Car category shop', 'slug' => 'car-category-shop', 'show_under_product' => true]);
+        $carShop = Shop::create(['confirmed' => true, 'name' => 'Car category shop', 'slug' => 'car-category-shop', 'show_under_product' => true]);
         $carShop->cars()->attach($car);
         $carShop->companies()->attach($otherCompany);
         $carShop->partsCategories()->attach($part->parts_category_id);
-        $globalShop = Shop::create(['name' => 'Global part shop', 'slug' => 'global-part-shop', 'show_under_product' => true]);
+        $globalShop = Shop::create(['confirmed' => true, 'name' => 'Global part shop', 'slug' => 'global-part-shop', 'show_under_product' => true]);
         $globalShop->parts()->attach($part);
-        $wrongCarShop = Shop::create(['name' => 'Wrong car shop', 'slug' => 'wrong-car-shop', 'show_under_product' => true]);
+        $wrongCarShop = Shop::create(['confirmed' => true, 'name' => 'Wrong car shop', 'slug' => 'wrong-car-shop', 'show_under_product' => true]);
         $wrongCarShop->cars()->attach($otherCar);
         $wrongCarShop->parts()->attach($part);
 
         foreach ([411 => 'company', 412 => 'car'] as $id => $scope) {
             $vehicleOnlyShop = new Shop([
+                'confirmed' => true,
                 'name' => 'Vehicle-only '.$scope.' shop',
                 'slug' => 'vehicle-only-'.$scope.'-shop',
                 'show_under_product' => true,
@@ -307,6 +309,7 @@ class ProductShowTest extends TestCase
         ]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه تست',
             'slug' => 'test-shop',
             'show_under_product' => true,

@@ -80,6 +80,7 @@ class ShopProfileTest extends TestCase
         $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'بدون نظر',
             'slug' => 'no-comments-shop',
             'city_id' => $city->id,
@@ -99,6 +100,7 @@ class ShopProfileTest extends TestCase
         $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه تلگرام',
             'slug' => 'telegram-shop',
             'city_id' => $city->id,
@@ -131,6 +133,7 @@ class ShopProfileTest extends TestCase
         $shop = $this->seedShopProfileGraph();
 
         $relatedShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه مرتبط',
             'slug' => 'related-shop',
             'order' => 2,
@@ -159,6 +162,7 @@ class ShopProfileTest extends TestCase
         $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'یدک شاپ',
             'secondary_name' => 'لوازم یدکی',
             'slug' => 'yadak-shop',

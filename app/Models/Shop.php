@@ -85,11 +85,19 @@ class Shop extends Model
         return 'shops';
     }
 
+    public function shouldBeSearchable(): bool
+    {
+        return (bool) $this->confirmed;
+    }
+
     protected static function booted(): void
     {
+        static::addGlobalScope('confirmed', fn (Builder $query): Builder => $query
+            ->where($query->qualifyColumn('confirmed'), true));
+
         static::creating(function (Shop $shop): void {
             if ($shop->order === null) {
-                $shop->order = (static::max('order') ?? 0) + 1;
+                $shop->order = (static::withoutGlobalScope('confirmed')->max('order') ?? 0) + 1;
             }
 
             if ($shop->visited_count === null || $shop->visited_count <= 0) {
@@ -145,6 +153,11 @@ class Shop extends Model
         return $this->belongsToMany(Company::class, 'company_shops');
     }
 
+    public function cars(): BelongsToMany
+    {
+        return $this->belongsToMany(Car::class, 'car_shop');
+    }
+
     public function scopeVisibleUnderProduct(Builder $query): void
     {
         $query->where('show_under_product', true);
@@ -157,7 +170,7 @@ class Shop extends Model
 
     public function scopeConfirmed(Builder $query): void
     {
-        $query->where('confirmed', true);
+        $query->where($query->qualifyColumn('confirmed'), true);
     }
 
     public static function randomVisitedCountBaseline(): int

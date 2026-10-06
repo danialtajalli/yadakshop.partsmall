@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class CommentForm
 {
@@ -22,7 +23,7 @@ class CommentForm
                     ->numeric(),
                 Toggle::make('confirmed')->label('تایید شده'),
                 Select::make('shop_id')->label('فروشگاه')
-                    ->relationship('shop', 'name')
+                    ->relationship('shop', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))
                     ->required()->searchable()->preload()->default(fn () => request('shop_id')),
             ]);
     }

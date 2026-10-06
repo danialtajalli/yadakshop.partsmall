@@ -28,6 +28,7 @@ class ShopCommentServiceTest extends TestCase
         $city = City::create(['name' => 'تهران', 'slug' => 'tehran-city', 'state_id' => $state->id]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
             'city_id' => $city->id,

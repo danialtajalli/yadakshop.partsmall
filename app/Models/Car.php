@@ -46,4 +46,9 @@ class Car extends Model
     {
         return $this->belongsToMany(CarModel::class, 'car_model', 'car_id', 'model_id');
     }
+
+    public function shops(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'car_shop');
+    }
 }

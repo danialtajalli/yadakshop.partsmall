@@ -29,8 +29,8 @@ class SystemOverviewWidget extends StatsOverviewWidget
     protected function getStats(): array
     {
         $confirmedShops = Shop::query()->where('confirmed', true)->count();
-        $totalShops = Shop::query()->count();
-        $verifiedShops = Shop::query()->where('verified', true)->count();
+        $totalShops = Shop::withoutGlobalScope('confirmed')->count();
+        $verifiedShops = Shop::withoutGlobalScope('confirmed')->where('verified', true)->count();
 
         return [
             Stat::make('فروشگاه‌ها', number_format($totalShops))

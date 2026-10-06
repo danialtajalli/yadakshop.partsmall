@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class PhoneForm
 {
@@ -23,7 +24,7 @@ class PhoneForm
                     ->label('شماره تلفن')
                     ->helperText('شماره شماره‌گیری. تلفن ثابت: 021 - 91 55 6162؛ همراه: 0911 111 11 11.'),
                 Select::make('shop_id')
-                    ->relationship('shop', 'name')
+                    ->relationship('shop', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))
                     ->searchable()
                     ->preload()
                     ->default(fn (): ?int => request()->filled('shop_id') ? (int) request('shop_id') : null)

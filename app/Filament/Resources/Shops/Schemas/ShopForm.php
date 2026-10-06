@@ -62,6 +62,7 @@ class ShopForm
                 Select::make('parts_categories_id')->relationship('partsCategories', 'name')->label('دسته بندی های قطعات')->searchable()->preload()->multiple(),
                 Select::make('parts_id')->relationship('parts', 'name')->label('قطعات')->searchable()->preload()->multiple(),
                 Select::make('companies_id')->relationship('companies', 'name')->label('شرکت ها')->searchable()->preload()->multiple(),
+                Select::make('cars_id')->relationship('cars', 'name')->label('خودروها')->searchable()->preload()->multiple(),
                 View::make('components.view-product')->columnSpanFull(),
             ]);
     }

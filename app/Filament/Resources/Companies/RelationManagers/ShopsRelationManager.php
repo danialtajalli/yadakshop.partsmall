@@ -7,6 +7,7 @@ use Filament\Actions\DetachAction;
 use Filament\Actions\AttachAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ShopsRelationManager extends RelationManager
 {
@@ -18,8 +19,9 @@ class ShopsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))
             ->headerActions([
-                AttachAction::make()->label('اضافه کردن فروشگاه'),
+                AttachAction::make()->recordSelectOptionsQuery(fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))->label('اضافه کردن فروشگاه'),
             ])
             ->actions([
                 DetachAction::make()->label('حذف فروشگاه'),

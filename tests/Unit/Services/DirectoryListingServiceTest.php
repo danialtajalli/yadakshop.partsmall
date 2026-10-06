@@ -126,6 +126,7 @@ class DirectoryListingServiceTest extends TestCase
         $withLogo = $this->createShopWithLogo(['name' => 'دارای لوگو', 'slug' => 'with-logo']);
 
         $withoutLogo = Shop::create([
+            'confirmed' => true,
             'name' => 'بدون لوگو',
             'slug' => 'without-logo',
             'show_under_product' => false,
@@ -312,6 +313,7 @@ class DirectoryListingServiceTest extends TestCase
     private function createShopWithLogo(array $overrides = [], string $logoPath = 'logo.webp'): Shop
     {
         $shop = Shop::create(array_merge([
+            'confirmed' => true,
             'name' => 'فروشگاه',
             'slug' => 'shop-'.uniqid(),
             'show_under_product' => true,

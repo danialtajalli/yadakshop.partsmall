@@ -12,6 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -28,7 +29,7 @@ class ImageForm
                     ->live()
                     ->label('نوع'),
                 Select::make('shop_id')
-                    ->relationship('shop', 'name')
+                    ->relationship('shop', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))
                     ->label('فروشگاه')
                     ->searchable()
                     ->preload()
@@ -189,7 +190,7 @@ class ImageForm
         }
 
         $model = match ($owner['model_type']) {
-            'shop' => Shop::query()->find($owner['model_id']),
+            'shop' => Shop::withoutGlobalScope('confirmed')->find($owner['model_id']),
             'repair' => RepairShop::query()->find($owner['model_id']),
             'company' => Company::query()->find($owner['model_id']),
             default => null,

@@ -78,6 +78,7 @@ class SearchPageTest extends TestCase
         ]);
 
         Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه آزمایش',
             'slug' => 'test-shop',
         ]);
@@ -220,6 +221,7 @@ class SearchPageTest extends TestCase
         ]);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه تصویر',
             'slug' => 'image-shop',
         ]);

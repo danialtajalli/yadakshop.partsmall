@@ -169,6 +169,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph();
 
         $linkedShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه مستقیم',
             'slug' => 'direct-shop',
             'show_under_product' => true,
@@ -178,6 +179,7 @@ class ProductServiceTest extends TestCase
         $linkedShop->companies()->attach($company);
 
         $unlinkedShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه دیگر',
             'slug' => 'other-shop',
             'order' => 2,
@@ -199,16 +201,19 @@ class ProductServiceTest extends TestCase
         $otherCompany->save();
 
         $wrongCompanyShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Wrong company shop', 'slug' => 'wrong-company-shop', 'show_under_product' => true,
         ]);
         $wrongCompanyShop->parts()->attach($part);
         $wrongCompanyShop->companies()->attach($otherCompany);
         $matchingShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Matching shop', 'slug' => 'matching-shop', 'show_under_product' => true,
         ]);
         $matchingShop->parts()->attach($part);
         $matchingShop->companies()->attach($company);
         $companylessShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Companyless shop', 'slug' => 'companyless-shop', 'show_under_product' => true,
         ]);
         $companylessShop->parts()->attach($part);
@@ -228,6 +233,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
 
         $companyShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه شرکت',
             'slug' => 'company-shop',
             'show_under_product' => true,
@@ -249,11 +255,13 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
         $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
         $wrongShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Wrong shop', 'slug' => 'wrong-shop', 'show_under_product' => true,
         ]);
         $wrongShop->parts()->attach($part);
         $wrongShop->companies()->attach($otherCompany);
         $fallbackShop = Shop::create([
+            'confirmed' => true,
             'name' => 'Fallback shop', 'slug' => 'fallback-shop', 'show_under_product' => true,
         ]);
         $fallbackShop->companies()->attach($company);
@@ -269,6 +277,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
 
         $companyShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه شرکت',
             'slug' => 'company-shop',
             'show_under_product' => true,
@@ -286,6 +295,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph();
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه',
             'slug' => 'shop',
             'description' => 'ظظظ ططط مممrn',
@@ -349,6 +359,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
 
         $regularShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه عادی',
             'slug' => 'regular-shop',
             'show_under_product' => true,
@@ -359,6 +370,7 @@ class ProductServiceTest extends TestCase
 
         $pinnedShops = collect([409, 4, 6])->map(function (int $id) use ($part): Shop {
             $shop = new Shop([
+                'confirmed' => true,
                 'name' => "فروشگاه {$id}",
                 'slug' => "pinned-shop-{$id}",
                 'show_under_product' => true,
@@ -384,6 +396,7 @@ class ProductServiceTest extends TestCase
     {
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
         $anchor = new Shop([
+            'confirmed' => true,
             'name' => 'Priority anchor',
             'slug' => 'priority-anchor',
             'show_under_product' => $reason !== 'hidden',
@@ -402,6 +415,7 @@ class ProductServiceTest extends TestCase
 
         foreach ([500 => 1, 501 => 2, 6 => 3, 4 => 4] as $id => $order) {
             $shop = new Shop([
+                'confirmed' => true,
                 'name' => 'Shop '.$id,
                 'slug' => 'ordered-shop-'.$id,
                 'show_under_product' => true,
@@ -436,6 +450,7 @@ class ProductServiceTest extends TestCase
 
         foreach ([500 => 1, 6 => 2, 4 => 3, 409 => 4] as $id => $order) {
             $shop = new Shop([
+                'confirmed' => true,
                 'name' => 'Shop '.$id,
                 'slug' => 'unlinked-shop-'.$id,
                 'show_under_product' => true,
@@ -473,6 +488,7 @@ class ProductServiceTest extends TestCase
 
         foreach ([409, 4, 6] as $id) {
             $shop = new Shop([
+                'confirmed' => true,
                 'name' => 'Priority shop '.$id, 'slug' => 'priority-shop-'.$id, 'show_under_product' => true,
             ]);
             $shop->id = $id;
@@ -491,6 +507,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
 
         $anchor = new Shop([
+            'confirmed' => true,
             'name' => 'فروشگاه ۴۰۹',
             'slug' => 'shop-409',
             'show_under_product' => true,
@@ -500,6 +517,7 @@ class ProductServiceTest extends TestCase
         $anchor->save();
 
         $regularShop = Shop::create([
+            'confirmed' => true,
             'name' => 'فروشگاه عادی',
             'slug' => 'regular-shop',
             'show_under_product' => true,
@@ -521,7 +539,7 @@ class ProductServiceTest extends TestCase
         $otherCar = Car::create(['name' => 'Other car', 'slug' => 'other-car', 'company_id' => $company->id]);
         $otherCategory = PartsCategory::create(['name' => 'Other category']);
         $otherPart = Part::create(['name' => 'Other part', 'slug' => 'other-part', 'parts_category_id' => $otherCategory->id]);
-        $shop = new Shop(['name' => 'Selected shop', 'slug' => 'selected-shop', 'show_under_product' => true]);
+        $shop = new Shop(['confirmed' => true, 'name' => 'Selected shop', 'slug' => 'selected-shop', 'show_under_product' => true]);
         $shop->id = 500;
         $shop->save();
         if ($hasLogo) {
@@ -580,12 +598,12 @@ class ProductServiceTest extends TestCase
     public function test_vehicle_wide_and_part_specific_shops_are_both_included(): void
     {
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
-        $specific = Shop::create(['name' => 'Specific', 'slug' => 'specific', 'show_under_product' => true]);
+        $specific = Shop::create(['confirmed' => true, 'name' => 'Specific', 'slug' => 'specific', 'show_under_product' => true]);
         $specific->parts()->attach($part);
-        $broad = Shop::create(['name' => 'Broad', 'slug' => 'broad', 'show_under_product' => true]);
+        $broad = Shop::create(['confirmed' => true, 'name' => 'Broad', 'slug' => 'broad', 'show_under_product' => true]);
         $broad->cars()->attach($car);
         $broad->images()->create(['type' => ImageType::Logo, 'path' => 'logo.jpg']);
-        $hidden = Shop::create(['name' => 'Hidden', 'slug' => 'hidden', 'show_under_product' => false]);
+        $hidden = Shop::create(['confirmed' => true, 'name' => 'Hidden', 'slug' => 'hidden', 'show_under_product' => false]);
         $hidden->partsCategories()->attach($part->parts_category_id);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
@@ -600,7 +618,7 @@ class ProductServiceTest extends TestCase
         $otherCategory = PartsCategory::create(['name' => 'Other category']);
 
         foreach ([409, 4, 6] as $id) {
-            $shop = new Shop(['name' => 'Pinned '.$id, 'slug' => 'pinned-'.$id, 'show_under_product' => true]);
+            $shop = new Shop(['confirmed' => true, 'name' => 'Pinned '.$id, 'slug' => 'pinned-'.$id, 'show_under_product' => true]);
             $shop->id = $id;
             $shop->save();
 
@@ -624,7 +642,7 @@ class ProductServiceTest extends TestCase
         [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => $companyId]);
 
         foreach ([1, 2, 3, 4, 6, 409, 411, 412, 413, 500] as $id) {
-            $shop = new Shop(['name' => 'Shop '.$id, 'slug' => 'shop-'.$id, 'show_under_product' => true]);
+            $shop = new Shop(['confirmed' => true, 'name' => 'Shop '.$id, 'slug' => 'shop-'.$id, 'show_under_product' => true]);
             $shop->id = $id;
             $shop->save();
 

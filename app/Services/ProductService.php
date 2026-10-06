@@ -284,6 +284,7 @@ class ProductService
                     ->doesntHave('parts')
                     ->doesntHave('partsCategories')
                     ->where(fn (Builder $scoped): Builder => $scoped->has('companies')->orHas('cars'))))
+            ->whereHas('images', fn (Builder $images): Builder => $images->where('type', ImageType::Logo))
             ->get();
 
         return $this->pinPriorityShops($shops, (int) $car->company_id);
@@ -300,7 +301,7 @@ class ProductService
         $anchorShopId = 409;
         $pinnedIds = [409, 4, 6];
 
-        $companyUsesAnchorShop = Shop::query()
+        $companyUsesAnchorShop = Shop::withoutGlobalScope('confirmed')
             ->whereKey($anchorShopId)
             ->whereHas('companies', fn (Builder $companies): Builder => $companies->whereKey($companyId))
             ->exists();

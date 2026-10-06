@@ -68,6 +68,7 @@ class HomePageTest extends TestCase
         $company = Company::create(['name' => 'ایران خودرو', 'slug' => 'ikco']);
 
         $shop = Shop::create([
+            'confirmed' => true,
             'name' => 'یدک شاپ',
             'slug' => 'yadak-shop',
             'city_id' => $city->id,

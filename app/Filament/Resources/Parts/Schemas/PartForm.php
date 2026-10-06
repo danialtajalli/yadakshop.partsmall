@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class PartForm
 {
@@ -28,7 +29,7 @@ class PartForm
                     ->required()->label('دسته بندی قطعه')->searchable()->preload(),
                 Select::make('repair_categories_id')->relationship('repairCategories', 'name')->label('دسته بندی های نوع مکانیک')->searchable()->preload()->multiple(),
                 Select::make('wages_id')->relationship('wages', 'name')->label('اجرت')->searchable()->preload()->multiple(),
-                Select::make('shops_id')->relationship('shops', 'name')->label('فروشگاه ها')->searchable()->preload()->multiple(),
+                Select::make('shops_id')->relationship('shops', 'name', modifyQueryUsing: fn (Builder $query): Builder => $query->withoutGlobalScope('confirmed'))->label('فروشگاه ها')->searchable()->preload()->multiple(),
             ]);
     }
 }
