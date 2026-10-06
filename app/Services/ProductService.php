@@ -258,7 +258,7 @@ class ProductService
     /** @return Collection<int, Shop> */
     private function loadShopsForPart(Part $part, int $company_id): Collection
     {
-        // KIA (1) / Hyundai (2): curated shop lists; everyone else sees all shops.
+        // KIA (1) / Hyundai (2) have curated lists; all shops must match the company.
         $shopIds = match ($company_id) {
             1 => [1, 2, 3, 411, 412], // KIA
             2 => [1, 2, 3, 411, 413], // Hyundai
@@ -269,7 +269,8 @@ class ProductService
             ? fn () => Shop::query()
             : fn () => Shop::whereIn('id', $shopIds);
 
-        $query = fn () => $this->applyShopListingConstraints($query());
+        $query = fn () => $this->applyShopListingConstraints($query())
+            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id));
 
         $shops = $query()
             ->whereHas('parts', fn ($q) => $q->whereKey($part->id))
@@ -277,10 +278,6 @@ class ProductService
 
         if ($shops->isEmpty() && $company_id) {
             $shops = $query()
-                ->whereHas(
-                    'companies',
-                    fn ($q) => $q->where('companies.id', $company_id),
-                )
                 ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
                 ->get();
         }
@@ -289,7 +286,7 @@ class ProductService
     }
 
     /**
-     * For companies linked to shop 409, force-add shops 409, 4, and 6 at the top.
+     * For companies linked to shop 409, pin eligible shops 409, 4, and 6 at the top.
      *
      * @param  Collection<int, Shop>  $shops
      * @return Collection<int, Shop>
@@ -310,6 +307,7 @@ class ProductService
 
         $pinned = Shop::query()
             ->whereIn('id', $pinnedIds)
+            ->whereHas('companies', fn ($q) => $q->where('companies.id', $company_id))
             ->with($this->shopListingRelations())
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating')
             ->get()

@@ -13,6 +13,8 @@ use App\Models\Shop;
 use App\Models\Wage;
 use App\Services\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ProductServiceTest extends TestCase
@@ -24,6 +26,8 @@ class ProductServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Http::fake(['https://api.qrserver.com/*' => Http::response('', 503)]);
 
         $this->service = new ProductService;
     }
@@ -171,6 +175,7 @@ class ProductServiceTest extends TestCase
             'order' => 1,
         ]);
         $linkedShop->parts()->attach($part);
+        $linkedShop->companies()->attach($company);
 
         $unlinkedShop = Shop::create([
             'name' => 'فروشگاه دیگر',
@@ -183,6 +188,39 @@ class ProductServiceTest extends TestCase
 
         $this->assertCount(1, $data['shops']);
         $this->assertSame('direct-shop', $data['shops']->first()->slug);
+    }
+
+    #[DataProvider('companyIds')]
+    public function test_part_links_do_not_bypass_company_associations(int $companyId): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => $companyId]);
+        $otherCompany = new Company(['name' => 'Other company', 'slug' => 'other-company']);
+        $otherCompany->id = $companyId === 1 ? 2 : 1;
+        $otherCompany->save();
+
+        $wrongCompanyShop = Shop::create([
+            'name' => 'Wrong company shop', 'slug' => 'wrong-company-shop', 'show_under_product' => true,
+        ]);
+        $wrongCompanyShop->parts()->attach($part);
+        $wrongCompanyShop->companies()->attach($otherCompany);
+        $matchingShop = Shop::create([
+            'name' => 'Matching shop', 'slug' => 'matching-shop', 'show_under_product' => true,
+        ]);
+        $matchingShop->parts()->attach($part);
+        $matchingShop->companies()->attach($company);
+        $companylessShop = Shop::create([
+            'name' => 'Companyless shop', 'slug' => 'companyless-shop', 'show_under_product' => true,
+        ]);
+        $companylessShop->parts()->attach($part);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertSame([$matchingShop->id], $data['shops']->pluck('id')->all());
+    }
+
+    public static function companyIds(): array
+    {
+        return ['kia' => [1], 'hyundai' => [2], 'other_company' => [10]];
     }
 
     public function test_it_falls_back_to_company_shops_when_part_has_no_direct_shops(): void
@@ -205,6 +243,26 @@ class ProductServiceTest extends TestCase
 
         $this->assertCount(1, $data['shops']);
         $this->assertSame('company-shop', $data['shops']->first()->slug);
+    }
+
+    public function test_ineligible_part_shops_do_not_prevent_company_fallback(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
+        $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
+        $wrongShop = Shop::create([
+            'name' => 'Wrong shop', 'slug' => 'wrong-shop', 'show_under_product' => true,
+        ]);
+        $wrongShop->parts()->attach($part);
+        $wrongShop->companies()->attach($otherCompany);
+        $fallbackShop = Shop::create([
+            'name' => 'Fallback shop', 'slug' => 'fallback-shop', 'show_under_product' => true,
+        ]);
+        $fallbackShop->companies()->attach($company);
+        $fallbackShop->images()->create(['type' => ImageType::Logo, 'path' => 'logo.jpg']);
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertSame([$fallbackShop->id], $data['shops']->pluck('id')->all());
     }
 
     public function test_if_shop_has_no_logo_it_wont_be_retrieved(): void
@@ -297,6 +355,7 @@ class ProductServiceTest extends TestCase
             'order' => 1,
         ]);
         $regularShop->parts()->attach($part);
+        $regularShop->companies()->attach($company);
 
         $pinnedShops = collect([409, 4, 6])->map(function (int $id): Shop {
             $shop = new Shop([
@@ -311,12 +370,32 @@ class ProductServiceTest extends TestCase
             return $shop;
         });
 
-        $company->shops()->attach(409);
+        $company->shops()->attach([409, 4, 6]);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 
         $this->assertSame([409, 4, 6, $regularShop->id], $data['shops']->pluck('id')->all());
         $this->assertTrue($pinnedShops->every(fn (Shop $shop): bool => $data['shops']->contains('id', $shop->id)));
+    }
+
+    public function test_priority_shops_must_each_belong_to_the_company(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph(['company_id' => 10]);
+        $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
+
+        foreach ([409, 4, 6] as $id) {
+            $shop = new Shop([
+                'name' => 'Priority shop '.$id, 'slug' => 'priority-shop-'.$id, 'show_under_product' => true,
+            ]);
+            $shop->id = $id;
+            $shop->save();
+            $shop->parts()->attach($part);
+            $shop->companies()->attach($id === 6 ? $otherCompany : $company);
+        }
+
+        $data = $this->service->getProductPageData($company, $car, $model, $part);
+
+        $this->assertSame([409, 4], $data['shops']->pluck('id')->all());
     }
 
     public function test_it_does_not_pin_priority_shops_when_company_is_not_linked_to_shop_409(): void
@@ -339,6 +418,7 @@ class ProductServiceTest extends TestCase
             'order' => 1,
         ]);
         $regularShop->parts()->attach($part);
+        $regularShop->companies()->attach($company);
 
         $data = $this->service->getProductPageData($company, $car, $model, $part);
 

@@ -11,11 +11,38 @@ use App\Models\RepairCategory;
 use App\Models\Shop;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ProductShowTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Http::fake(['https://api.qrserver.com/*' => Http::response('', 503)]);
+    }
+
+    public function test_product_show_excludes_part_shops_not_linked_to_its_company(): void
+    {
+        [$company, $car, $model, $part] = $this->seedProductGraph();
+        $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
+        $wrongShop = Shop::create([
+            'name' => 'Wrong company shop', 'slug' => 'wrong-company-shop', 'show_under_product' => true,
+        ]);
+        $wrongShop->parts()->attach($part);
+        $wrongShop->companies()->attach($otherCompany);
+
+        $response = $this->get(route('product.show', [
+            'company' => $company->slug, 'car' => $car->slug, 'model' => $model->slug, 'part' => $part->slug,
+        ]));
+
+        $response->assertOk();
+        $response->assertViewHas('shops', fn ($shops): bool => $shops->pluck('slug')->all() === ['test-shop']);
+        $response->assertDontSee('Wrong company shop');
+    }
 
     public function test_product_show_returns_successful_response_for_valid_slugs(): void
     {
@@ -239,6 +266,7 @@ class ProductShowTest extends TestCase
             'order' => 1,
         ]);
         $shop->parts()->attach($part);
+        $shop->companies()->attach($company);
 
         return [$company, $car, $model, $part];
     }
