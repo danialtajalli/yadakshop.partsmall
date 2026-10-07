@@ -23,7 +23,7 @@ new class extends Component
                 minZoom: 2,
                 maxZoom: 21,
                 trackResize: true,
-                mapKey: "web.6657b65ae6c44634964f23f8b613d46d",
+                mapKey: "web.189c60d7503046d9990cb1dab541a043",
                 poi: true,
                 traffic: true,
                 mapTypeControllerOptions: {

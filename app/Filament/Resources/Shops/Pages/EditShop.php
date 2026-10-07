@@ -3,18 +3,26 @@
 namespace App\Filament\Resources\Shops\Pages;
 
 use App\Filament\Resources\Shops\ShopResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 use Livewire\Attributes\On;
 
 class EditShop extends EditRecord
 {
     protected static ?string $title = 'ویرایش فروشگاه';
+
     protected static string $resource = ShopResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('viewShop')
+                ->label('مشاهده فروشگاه در سایت')
+                ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
+                ->url(fn (): string => route('shop.profile', ['shop_slug' => $this->getRecord()->slug]))
+                ->openUrlInNewTab(),
             DeleteAction::make()->label('حذف فروشگاه'),
         ];
     }
