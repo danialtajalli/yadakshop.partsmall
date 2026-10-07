@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -23,7 +24,11 @@ return new class extends Migration
         Schema::table('parts', function (Blueprint $table): void {
             $table->index('name', 'parts_name_index');
             $table->index('slug', 'parts_slug_index');
-            $table->index(['parts_category_id', 'category_description'], 'parts_category_description_index');
+            $categoryDescription = in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)
+                ? DB::raw('`category_description`(191)')
+                : 'category_description';
+
+            $table->index(['parts_category_id', $categoryDescription], 'parts_category_description_index');
         });
 
         Schema::table('pages', function (Blueprint $table): void {

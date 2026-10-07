@@ -3,6 +3,8 @@
 .env
 .env.backup
 .env.production
+.env.docker
+/docker/backups/
 .phpactor.json
 .phpunit.result.cache
 /.codex

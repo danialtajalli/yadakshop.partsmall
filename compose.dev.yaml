@@ -1,0 +1,58 @@
+x-development: &development
+  image: partsmall-app:development
+  environment:
+    APP_ENV: local
+    APP_DEBUG: "true"
+  volumes:
+    - .:/var/www/html
+    - vendor:/var/www/html/vendor
+    - bootstrap-cache:/var/www/html/bootstrap/cache
+    - storage:/var/www/html/storage
+    - uploads:/var/www/html/storage/app/public
+    - uploads:/var/www/html/public/panel/assets/uploads
+
+services:
+  app:
+    <<: *development
+    build:
+      target: development
+  queue:
+    <<: *development
+    command: ["php", "artisan", "queue:listen", "--sleep=3", "--tries=3", "--timeout=120"]
+  setup:
+    <<: *development
+  web:
+    volumes:
+      - .:/var/www/html:ro
+      - uploads:/var/www/html/storage/app/public:ro
+  vite:
+    image: node:24-bookworm-slim
+    working_dir: /var/www/html
+    init: true
+    command: ["sh", "docker/vite.sh"]
+    environment:
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      VITE_HMR_HOST: ${VITE_HMR_HOST:-localhost}
+      VITE_PORT: ${VITE_PORT:-5173}
+      VITE_USE_POLLING: ${VITE_USE_POLLING:-true}
+    ports:
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${VITE_PORT:-5173}:${VITE_PORT:-5173}"
+    volumes:
+      - .:/var/www/html
+      - node-modules:/var/www/html/node_modules
+      - vendor:/var/www/html/vendor:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:'+process.env.VITE_PORT+'/@vite/client').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  vendor:
+  bootstrap-cache:
+  node-modules:
