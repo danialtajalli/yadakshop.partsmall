@@ -34,8 +34,10 @@ class ShopForm
                 TextInput::make('person_responsible_email')
                     ->email()->label('ایمیل مسئول فروشگاه'),
                 TextInput::make('website_show')->label('نمایش وبسایت'),
-                TextInput::make('order')->label('ترتیب')
+                TextInput::make('order')->label('ترتیب محصول و فروشگاه‌های مرتبط')
                     ->numeric(),
+                TextInput::make('home_order')->label('ترتیب صفحه اصلی')
+                    ->numeric()->minValue(0)->step(1)->rules(['integer']),
                 TextInput::make('latitude')
                     ->numeric()->label('طول جغرافیایی'),
                 TextInput::make('longitude')

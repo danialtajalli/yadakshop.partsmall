@@ -73,6 +73,7 @@ class DirectoryListingService
 
         $listings = $query
             ->whereHas('images', fn ($q) => $q->where('type', ImageType::Logo))
+            ->orderedForHome()
             ->paginate(self::PER_PAGE)
             ->appends($this->paginationQuery($filters));
 

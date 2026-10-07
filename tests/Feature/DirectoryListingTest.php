@@ -10,6 +10,7 @@ use App\Models\RepairShop;
 use App\Models\Shop;
 use App\Models\State;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class DirectoryListingTest extends TestCase
@@ -73,6 +74,50 @@ class DirectoryListingTest extends TestCase
         $response->assertSee('تعمیرگاه آریا', false);
         $response->assertDontSee('تعمیرگاه دیگر', false);
         $response->assertSee('تخصص‌ها', false);
+    }
+
+    public function test_shops_index_orders_by_home_order_then_name_and_id(): void
+    {
+        Http::fake(['https://api.qrserver.com/*' => Http::response('', 503)]);
+        $last = $this->createListedShop(['name' => 'Z', 'slug' => 'last', 'order' => 1, 'home_order' => 3]);
+        $middle = $this->createListedShop(['name' => 'B', 'slug' => 'middle', 'order' => 2, 'home_order' => 2]);
+        $first = $this->createListedShop(['name' => 'A', 'slug' => 'first', 'order' => 3, 'home_order' => 2]);
+        $second = $this->createListedShop(['name' => 'A', 'slug' => 'second', 'order' => 4, 'home_order' => 2]);
+
+        $this->get(route('shops.index'))->assertOk()
+            ->assertViewHas('listings', fn ($listings): bool => $listings->pluck('id')->all() === [$first->id, $second->id, $middle->id, $last->id]);
+    }
+
+    public function test_company_shop_listing_orders_by_home_order(): void
+    {
+        Http::fake(['https://api.qrserver.com/*' => Http::response('', 503)]);
+        $company = Company::create(['name' => 'Company', 'slug' => 'company']);
+        $otherCompany = Company::create(['name' => 'Other company', 'slug' => 'other-company']);
+        $excluded = $this->createListedShop(['name' => 'Excluded', 'slug' => 'excluded', 'home_order' => 0]);
+        $excluded->companies()->attach($otherCompany);
+        $last = $this->createListedShop(['name' => 'Last', 'slug' => 'last', 'order' => 1, 'home_order' => 2]);
+        $first = $this->createListedShop(['name' => 'First', 'slug' => 'first', 'order' => 2, 'home_order' => 1]);
+        $company->shops()->attach([$last->id, $first->id]);
+
+        $this->get(route('shops.company', $company))->assertOk()
+            ->assertViewHas('listings', fn ($listings): bool => $listings->pluck('id')->all() === [$first->id, $last->id]);
+    }
+
+    public function test_shop_listing_applies_home_order_before_pagination(): void
+    {
+        Http::fake(['https://api.qrserver.com/*' => Http::response('', 503)]);
+        $ids = [];
+
+        foreach (range(1, 30) as $index) {
+            $shop = $this->createListedShop(['name' => 'Shop', 'slug' => 'shop-'.$index, 'order' => $index, 'home_order' => 31 - $index]);
+            $ids[] = $shop->id;
+        }
+
+        $expected = array_reverse($ids);
+        $this->get(route('shops.index'))->assertOk()
+            ->assertViewHas('listings', fn ($listings): bool => $listings->total() === 30 && $listings->pluck('id')->all() === array_slice($expected, 0, 24));
+        $this->get(route('shops.index', ['page' => 2]))->assertOk()
+            ->assertViewHas('listings', fn ($listings): bool => $listings->total() === 30 && $listings->pluck('id')->all() === array_slice($expected, 24));
     }
 
     public function test_shops_index_paginates_results(): void
