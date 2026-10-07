@@ -30,7 +30,7 @@
 
     $fitClass = $fit === 'cover' ? 'object-cover' : 'object-contain';
     $radiusClass = $rounded ? 'rounded-xl' : 'rounded-none';
-    $altText = $alt ?? 'لوگوی '.$name;
+    $altText = filled($alt) ? trim($alt) : 'لوگوی '.$name;
 @endphp
 
 @if ($logoUrl)

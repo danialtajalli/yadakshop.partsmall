@@ -84,7 +84,7 @@ class HomePageService
             $companies = Company::query()
                 ->with([
                     'images' => fn ($query) => $query
-                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->select(['id', 'company_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                     'cars' => fn ($query) => $query->select(['id', 'company_id', 'name', 'slug']),
                     'cars.models' => fn ($query) => $query->select(['models.id', 'models.name', 'models.slug', 'models.category_id']),
@@ -143,6 +143,7 @@ class HomePageService
                     return [
                         'slug' => $company->slug,
                         'name' => $company->name,
+                        'logo_alt' => $logo?->alt,
                         'logo_url' => $logo
                             ? ShopImageUrlBuilder::buildCompanyLogoUrl('company', $company->id, $logo->path)
                             : null,
@@ -179,6 +180,7 @@ class HomePageService
                     'slug' => $company['slug'],
                     'name' => $company['name'],
                     'logo_url' => $company['logo_url'],
+                    'logo_alt' => $company['logo_alt'] ?? null,
                     'cars' => collect($company['cars'])
                         ->filter(fn (array $car) => $car['modelCategories'] !== [])
                         ->values()
@@ -222,6 +224,7 @@ class HomePageService
                 'slug' => $company['slug'],
                 'name' => $company['name'],
                 'logo_url' => $company['logo_url'] ?? null,
+                'logo_alt' => $company['logo_alt'] ?? null,
             ];
 
             $carsByCompany[$company['slug']] = [];
@@ -279,7 +282,7 @@ class HomePageService
             return Shop::query()
                 ->with([
                     'images' => fn ($query) => $query
-                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->whereIn('id', $ids)
@@ -290,6 +293,7 @@ class HomePageService
                     'name' => $shop->name,
                     'slug' => $shop->slug,
                     'logo' => $this->shopLogoUrl($shop),
+                    'logo_alt' => $shop->images->firstWhere('type', ImageType::Logo)?->alt,
                 ])
                 ->all();
         }));
@@ -304,7 +308,7 @@ class HomePageService
             return Shop::query()
                 ->with([
                     'images' => fn ($query) => $query
-                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->whereHas('images', fn ($query) => $query->where('type', ImageType::Logo))
@@ -316,6 +320,7 @@ class HomePageService
                     'slug' => $shop->slug,
                     'verified' => (bool) $shop->verified,
                     'logo' => $this->shopLogoUrl($shop),
+                    'logo_alt' => $shop->images->firstWhere('type', ImageType::Logo)?->alt,
                 ])
                 ->all();
         }));
@@ -330,7 +335,7 @@ class HomePageService
             return RepairShop::query()
                 ->with([
                     'images' => fn ($query) => $query
-                        ->select(['id', 'repair_shop_id', 'type', 'path'])
+                        ->select(['id', 'repair_shop_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->orderBy('name')
@@ -341,6 +346,7 @@ class HomePageService
                     'slug' => $shop->slug,
                     'profile_url' => $shop->profileUrl(),
                     'logo' => $this->repairShopLogoUrl($shop),
+                    'logo_alt' => $shop->images->firstWhere('type', ImageType::Logo)?->alt,
                 ])
                 ->all();
         }));
@@ -355,11 +361,12 @@ class HomePageService
             return Representation::query()
                 ->orderBy('name')
                 ->limit(self::FEATURED_LIMIT)
-                ->get(['id', 'name', 'slug', 'logo'])
+                ->get(['id', 'name', 'slug', 'logo', 'logo_alt'])
                 ->map(fn (Representation $representation): array => [
                     'name' => $representation->name,
                     'slug' => $representation->slug,
                     'logo' => $this->representationLogoUrl($representation),
+                    'logo_alt' => $representation->logo_alt,
                 ])
                 ->all();
         }));

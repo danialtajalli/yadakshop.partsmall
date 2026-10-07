@@ -15,7 +15,7 @@
                 <x-ui.company-logo
                     :name="$representation->name"
                     :logo-url="$representation->logo ?? null"
-                    alt="لوگوی نمایندگی {{ $representation->name }}"
+                    :alt="filled($representation->logo_alt) ? $representation->logo_alt : 'لوگوی نمایندگی '.$representation->name"
                     size="xl"
                 />
 
@@ -91,7 +91,7 @@
                         <x-ui.company-logo
                             :name="$representation->company->name"
                             :logo-url="$representation->company->logo_url ?? null"
-                            alt="لوگوی برند خودرو {{ $representation->company->name }}"
+                            :alt="filled($representation->company->logo_alt) ? $representation->company->logo_alt : 'لوگوی برند خودرو '.$representation->company->name"
                             size="listing"
                         />
                         <div class="min-w-0">

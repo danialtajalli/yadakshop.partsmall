@@ -37,14 +37,14 @@ class ShopProfileService
             ->with([
                 'city.state:id,name',
                 'images' => fn ($query) => $query
-                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
                 'phones:id,shop_id,phone_number,type',
                 'links:id,shop_id,link_type,name',
                 'partsCategories:id,name',
                 'companies:id,name,slug',
                 'companies.images' => fn ($query) => $query
-                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->select(['id', 'company_id', 'type', 'path', 'alt'])
                     ->where('type', ImageType::Logo),
                 'comments' => fn ($query) => $query
                     ->confirmed()
@@ -71,6 +71,7 @@ class ShopProfileService
 
         $shop->companies->each(function (Company $company): void {
             $logo = $company->images->firstWhere('type', ImageType::Logo);
+            $company->logo_alt = $logo?->alt;
 
             $company->logo_url = $logo
                 ? ShopImageUrlBuilder::companyLogoUrl($logo)
@@ -143,7 +144,7 @@ class ShopProfileService
         $relatedShops = Shop::query()
             ->with([
                 'images' => fn ($query) => $query
-                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                     ->where('type', ImageType::Logo),
             ])
             ->whereKeyNot($shop->id)

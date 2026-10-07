@@ -25,7 +25,7 @@ class RepairShopProfileService
             ->with([
                 'city.state:id,name',
                 'images' => fn ($query) => $query
-                    ->select(['id', 'repair_shop_id', 'type', 'path'])
+                    ->select(['id', 'repair_shop_id', 'type', 'path', 'alt'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
                 'phones:id,repair_shop_id,phone_number,type',
                 'links:id,repair_shop_id,link_type,name',

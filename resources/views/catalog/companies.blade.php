@@ -55,6 +55,7 @@
                             class="mb-3"
                             :name="$company->name"
                             :logo-url="$company->logo_url ?? null"
+                            :alt="$company->logo_alt ?? null"
                             :rounded="false"
                         />
                         <h2 class="text-base font-semibold text-ink">{{ $company->name }}</h2>

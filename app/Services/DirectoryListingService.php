@@ -52,7 +52,7 @@ class DirectoryListingService
             ->with([
                 'city.state:id,name',
                 'images' => fn ($relation) => $relation
-                    ->select(['id', 'shop_id', 'type', 'path'])
+                    ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
             ])
             ->withAvg(['comments as average_rating' => fn ($q) => $q->where('confirmed', true)], 'rating');
@@ -115,7 +115,7 @@ class DirectoryListingService
             ->with([
                 'city.state:id,name',
                 'images' => fn ($relation) => $relation
-                    ->select(['id', 'repair_shop_id', 'type', 'path'])
+                    ->select(['id', 'repair_shop_id', 'type', 'path', 'alt'])
                     ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
                 'repairCategories:id,name',
             ]);
@@ -314,6 +314,7 @@ class DirectoryListingService
         if ($type === 'shop' && $filterCompany !== null) {
             $matched = $shopCompanies->firstWhere('id', $filterCompany->id);
             $filterCompany->logo_url = $matched?->logo_url;
+            $filterCompany->logo_alt = $matched?->logo_alt;
         }
 
         return [
@@ -349,7 +350,7 @@ class DirectoryListingService
             $companies = Company::query()
                 ->with([
                     'images' => fn ($relation) => $relation
-                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->select(['id', 'company_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->whereHas('shops')
@@ -358,6 +359,7 @@ class DirectoryListingService
 
             $companies->each(function (Company $company): void {
                 $logo = $company->images->firstWhere('type', ImageType::Logo);
+                $company->logo_alt = $logo?->alt;
 
                 $company->logo_url = $logo
                     ? ShopImageUrlBuilder::companyLogoUrl($logo)

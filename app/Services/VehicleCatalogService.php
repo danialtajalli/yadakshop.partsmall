@@ -324,7 +324,7 @@ class VehicleCatalogService
             $companies = Company::query()
                 ->with([
                     'images' => fn ($query) => $query
-                        ->select(['id', 'company_id', 'type', 'path'])
+                        ->select(['id', 'company_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->withCount('cars')
@@ -333,6 +333,7 @@ class VehicleCatalogService
 
             $companies->each(function (Company $company): void {
                 $logo = $company->images->firstWhere('type', ImageType::Logo);
+                $company->logo_alt = $logo?->alt;
 
                 $company->logo_url = $logo
                     ? ShopImageUrlBuilder::companyLogoUrl($logo)

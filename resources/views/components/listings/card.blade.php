@@ -12,6 +12,7 @@
         <x-ui.company-logo
             :name="$listing->name"
             :logo-url="$listing->logo ?? null"
+            :alt="$listing->logo_alt ?? null"
             size="listing"
         />
 

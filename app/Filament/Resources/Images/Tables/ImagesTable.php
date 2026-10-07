@@ -23,6 +23,11 @@ class ImagesTable
                     ->label('آدرس')
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('alt')
+                    ->label('متن جایگزین تصویر')
+                    ->searchable()
+                    ->limit(60)
+                    ->toggleable(),
                 TextColumn::make('company.name')
                     ->searchable()
                     ->label('نام شرکت')

@@ -35,6 +35,7 @@ class Representation extends Model
         'longitude',
         'description',
         'logo',
+        'logo_alt',
         'nearby_railway',
         'nearby_bus',
         'nearby_railway_name',

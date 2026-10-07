@@ -28,6 +28,7 @@
                         <x-ui.company-logo
                             :name="$relatedShop->name"
                             :logo-url="$relatedShop->logo ?? null"
+                            :alt="$relatedShop->logo_alt ?? null"
                             size="xs"
                             class="shrink-0 ring-1 ring-line"
                         />

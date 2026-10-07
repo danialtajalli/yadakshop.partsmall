@@ -97,7 +97,7 @@ class SearchService
                 ->with([
                     'city.state:id,name',
                     'images' => fn ($imageQuery) => $imageQuery
-                        ->select(['id', 'shop_id', 'type', 'path'])
+                        ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                         ->where('type', ImageType::Logo),
                 ])
                 ->where('name', 'like', '%'.$query.'%')
@@ -170,13 +170,13 @@ class SearchService
         $companies = Company::search($query)->query(fn ($builder) => $builder->with([
             'cars:id,company_id,name,slug',
             'images' => fn ($imageQuery) => $imageQuery
-                ->select(['id', 'company_id', 'type', 'path'])
+                ->select(['id', 'company_id', 'type', 'path', 'alt'])
                 ->where('type', ImageType::Logo),
         ]))->get();
         $cars = Car::search($query)->query(fn ($builder) => $builder->with([
             'company:id,name,slug,country',
             'company.images' => fn ($imageQuery) => $imageQuery
-                ->select(['id', 'company_id', 'type', 'path'])
+                ->select(['id', 'company_id', 'type', 'path', 'alt'])
                 ->where('type', ImageType::Logo),
         ]))->get();
         $items = $companies->map(fn (Company $company): array => $this->mapResult($company, 'companies'))
@@ -208,7 +208,7 @@ class SearchService
             ->with([
                 'cars:id,company_id,name,slug',
                 'images' => fn ($imageQuery) => $imageQuery
-                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->select(['id', 'company_id', 'type', 'path', 'alt'])
                     ->where('type', ImageType::Logo),
             ])
             ->get(['id', 'name', 'slug', 'country'])
@@ -218,7 +218,7 @@ class SearchService
             ->with([
                 'company:id,name,slug,country',
                 'company.images' => fn ($imageQuery) => $imageQuery
-                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->select(['id', 'company_id', 'type', 'path', 'alt'])
                     ->where('type', ImageType::Logo),
                 'models:id,name,slug',
             ])
@@ -359,6 +359,13 @@ class SearchService
      */
     private function mapResult(Model $result, string $key): array
     {
+        $imageOwner = $result instanceof Car ? ($result->company ?? $result) : $result;
+        $imageAlt = $imageOwner instanceof Representation
+            ? $imageOwner->logo_alt
+            : (method_exists($imageOwner, 'images')
+                ? $imageOwner->images->firstWhere('type', ImageType::Logo)?->alt
+                : null);
+
         return match (true) {
             $result instanceof Part => [
                 'title' => $result->name,
@@ -412,7 +419,7 @@ class SearchService
                 'type' => $key,
                 'image_url' => null,
             ],
-        };
+        } + ['image_alt' => $imageAlt];
     }
 
     private function imageUrlFor(Model $result): ?string

@@ -107,6 +107,7 @@
                                 class="mb-2"
                                 :name="$companyName"
                                 :logo-url="data_get($company, 'logo_url')"
+                                :alt="data_get($company, 'logo_alt')"
                                 size="sm"
                                 :rounded="false"
                             />

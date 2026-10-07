@@ -314,6 +314,7 @@
                             <x-ui.company-logo
                                 :name="$shop->name"
                                 :logo-url="$shop->logo ?? null"
+                                :alt="$shop->logo_alt ?? null"
                                 size="xs"
                             />
                             <div class="min-w-0 flex-1">

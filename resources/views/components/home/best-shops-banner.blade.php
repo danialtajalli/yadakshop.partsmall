@@ -123,6 +123,7 @@
                                     <x-ui.company-logo
                                         :name="$shopName"
                                         :logo-url="data_get($shop, 'logo')"
+                                        :alt="data_get($shop, 'logo_alt')"
                                         size="md"
                                         @class([$medal['logo'] => true])
                                     />

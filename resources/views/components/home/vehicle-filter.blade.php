@@ -54,6 +54,7 @@
                                             value="{{ $company['slug'] }}"
                                             @if (filled($company['logo_url'] ?? null))
                                                 data-logo="{{ $company['logo_url'] }}"
+                                                data-logo-alt="{{ $company['logo_alt'] ?? '' }}"
                                             @endif
                                         >{{ $company['name'] }}</option>
                                     @endforeach

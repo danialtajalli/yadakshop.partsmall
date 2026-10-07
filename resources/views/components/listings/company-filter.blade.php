@@ -14,7 +14,7 @@
                             @if (filled($selected->logo_url ?? null))
                                 <img
                                     src="{{ $selected->logo_url }}"
-                                    alt="لوگوی برند خودرو {{ $selected->name }}"
+                                    alt="{{ filled($selected->logo_alt) ? $selected->logo_alt : 'لوگوی برند خودرو '.$selected->name }}"
                                     class="size-8 rounded-lg object-contain"
                                     loading="lazy"
                                     decoding="async"
@@ -64,6 +64,7 @@
                                 data-url="{{ route('shops.company', $company) }}"
                                 @if (filled($company->logo_url ?? null))
                                     data-logo="{{ $company->logo_url }}"
+                                    data-logo-alt="{{ $company->logo_alt }}"
                                 @endif
                                 @selected($selected?->is($company))
                             >

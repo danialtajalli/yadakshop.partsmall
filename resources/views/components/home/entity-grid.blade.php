@@ -31,6 +31,7 @@
                 <x-ui.company-logo
                     :name="$name"
                     :logo-url="data_get($item, 'logo')"
+                    :alt="data_get($item, 'logo_alt')"
                     size="grid"
                 />
 

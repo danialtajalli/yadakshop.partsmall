@@ -8,6 +8,7 @@
         <x-ui.company-logo
             :name="$item['title']"
             :logo-url="$item['image_url'] ?? null"
+            :alt="$item['image_alt'] ?? null"
             size="listing"
         />
 

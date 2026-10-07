@@ -140,7 +140,7 @@ function formatSelectOptionWithLogo(option) {
             jQuery('<img>', {
                 class: 'ps-select2-company-option__logo',
                 src: logoUrl,
-                alt: '',
+                alt: element?.getAttribute('data-logo-alt') || label,
             }),
         );
     } else {

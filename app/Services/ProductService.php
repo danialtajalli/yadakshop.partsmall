@@ -339,7 +339,7 @@ class ProductService
             'links:id,shop_id,link_type,name',
             'city.state:id,name',
             'images' => fn ($query) => $query
-                ->select(['id', 'shop_id', 'type', 'path'])
+                ->select(['id', 'shop_id', 'type', 'path', 'alt'])
                 ->whereIn('type', [ImageType::Logo, ImageType::Cover]),
         ];
     }

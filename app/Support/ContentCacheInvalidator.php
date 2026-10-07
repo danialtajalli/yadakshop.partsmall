@@ -112,7 +112,7 @@ final class ContentCacheInvalidator
     private static function tagsForImage(Image $image): array
     {
         if (filled($image->company_id)) {
-            return [ContentCacheTag::HOME, ContentCacheTag::CATALOG];
+            return [ContentCacheTag::HOME, ContentCacheTag::CATALOG, ContentCacheTag::DIRECTORY];
         }
 
         if (filled($image->shop_id)) {

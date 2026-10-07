@@ -11,6 +11,7 @@ class Image extends Model
     protected $fillable = [
         'type',
         'path',
+        'alt',
         'company_id',
         'repair_shop_id',
         'shop_id',

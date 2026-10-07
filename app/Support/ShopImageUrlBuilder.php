@@ -43,6 +43,7 @@ class ShopImageUrlBuilder
 
             $property = $image->type === ImageType::Cover ? 'cover' : 'logo';
             $model->{$property} = self::build($modelType, $image->type, $model->id, $image->path);
+            $model->{$property.'_alt'} = $image->alt;
         });
     }
 
@@ -60,6 +61,7 @@ class ShopImageUrlBuilder
     public static function attachRepairShopMedia(RepairShop $repairShop): void
     {
         $logo = $repairShop->images->firstWhere('type', ImageType::Logo);
+        $repairShop->logo_alt = $logo?->alt;
 
         $repairShop->logo = $logo?->path
             ? self::build('repair', ImageType::Logo, $repairShop->id, $logo->path)
@@ -69,6 +71,7 @@ class ShopImageUrlBuilder
 
         if ($cover?->path) {
             $repairShop->cover = self::build('repair', ImageType::Cover, $repairShop->id, $cover->path);
+            $repairShop->cover_alt = $cover->alt;
         }
     }
 

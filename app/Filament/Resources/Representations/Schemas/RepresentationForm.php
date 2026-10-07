@@ -59,6 +59,10 @@ class RepresentationForm
                     ->numeric(),
                 Textarea::make('description')->label('توضیحات')
                     ->columnSpanFull(),
+                TextInput::make('logo_alt')
+                    ->label('متن جایگزین لوگو (alt)')
+                    ->maxLength(255)
+                    ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null),
                 FileUpload::make('logo')
                     ->label('لوگو')
                     ->image()

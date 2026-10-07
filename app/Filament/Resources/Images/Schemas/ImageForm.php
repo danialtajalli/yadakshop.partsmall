@@ -36,7 +36,9 @@ class ImageForm
                     ->live()
                     ->default(fn (): ?int => request()->filled('shop_id') ? (int) request('shop_id') : null)
                     ->hidden(fn (Get $get): bool => ! self::shouldShowOwnerField('shop_id', $get) || self::isOwnerLocked('shop_id', $get))
-                    ->disabled(fn (): bool => self::contextOwnerField() === 'shop_id'),
+                    ->disabled(fn (): bool => self::contextOwnerField() === 'shop_id')
+                    ->dehydrated()
+                    ->dehydratedWhenHidden(),
                 Select::make('repair_shop_id')
                     ->relationship('repairShop', 'name')
                     ->label('تعمیرگاه')
@@ -45,7 +47,9 @@ class ImageForm
                     ->live()
                     ->default(fn (): ?int => request()->filled('repair_shop_id') ? (int) request('repair_shop_id') : null)
                     ->hidden(fn (Get $get): bool => ! self::shouldShowOwnerField('repair_shop_id', $get) || self::isOwnerLocked('repair_shop_id', $get))
-                    ->disabled(fn (): bool => self::contextOwnerField() === 'repair_shop_id'),
+                    ->disabled(fn (): bool => self::contextOwnerField() === 'repair_shop_id')
+                    ->dehydrated()
+                    ->dehydratedWhenHidden(),
                 Select::make('company_id')
                     ->relationship('company', 'name')
                     ->label('برند خودرو')
@@ -54,7 +58,9 @@ class ImageForm
                     ->live()
                     ->default(fn (): ?int => request()->filled('company_id') ? (int) request('company_id') : null)
                     ->hidden(fn (Get $get): bool => ! self::shouldShowOwnerField('company_id', $get) || self::isOwnerLocked('company_id', $get))
-                    ->disabled(fn (): bool => self::contextOwnerField() === 'company_id'),
+                    ->disabled(fn (): bool => self::contextOwnerField() === 'company_id')
+                    ->dehydrated()
+                    ->dehydratedWhenHidden(),
                 TextInput::make('file_base_name')
                     ->label('نام فایل')
                     ->dehydrated(false)
@@ -63,6 +69,10 @@ class ImageForm
                     ->helperText('اختیاری — پسوند تصویر خودکار اضافه می‌شود. خالی = نام پیشنهادی مالک.')
                     ->disabled(fn (Get $get): bool => blank(self::resolveUploadDirectory($get)))
                     ->visible(fn (Get $get): bool => filled(self::resolveUploadDirectory($get))),
+                TextInput::make('alt')
+                    ->label('متن جایگزین تصویر (alt)')
+                    ->maxLength(255)
+                    ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null),
                 FileUpload::make('path')
                     ->label('تصویر')
                     ->image()

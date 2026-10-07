@@ -29,7 +29,7 @@ class RepresentationProfileService
                 'city.state:id,name',
                 'company:id,name,slug',
                 'company.images' => fn ($query) => $query
-                    ->select(['id', 'company_id', 'type', 'path'])
+                    ->select(['id', 'company_id', 'type', 'path', 'alt'])
                     ->where('type', ImageType::Logo),
             ])
             ->where('slug', $slug)
@@ -46,6 +46,7 @@ class RepresentationProfileService
         $companyLogo = $representation->company?->images->firstWhere('type', ImageType::Logo);
         if ($representation->company && $companyLogo) {
             $representation->company->logo_url = ShopImageUrlBuilder::companyLogoUrl($companyLogo);
+            $representation->company->logo_alt = $companyLogo->alt;
         }
 
         return [
