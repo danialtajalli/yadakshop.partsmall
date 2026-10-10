@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
+import scopeMapStyles from './resources/js/map/scope-styles';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
@@ -17,6 +18,11 @@ export default defineConfig(({ mode }) => {
         : [appUrl.origin];
 
     return {
+        css: {
+            postcss: {
+                plugins: [scopeMapStyles()],
+            },
+        },
         plugins: [
             laravel({
                 input: ['resources/css/app.css', 'resources/js/app.js'],
