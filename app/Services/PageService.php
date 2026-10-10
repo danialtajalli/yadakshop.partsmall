@@ -80,10 +80,6 @@ class PageService
             ])
             ->all();
 
-        if (app()->environment('testing')) {
-            return $callback();
-        }
-
         return SafeCache::remember('pages:navigation:v1', self::NAVIGATION_CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value), [
             ContentCacheTag::PAGES,
         ]);

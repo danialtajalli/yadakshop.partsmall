@@ -1,0 +1,10 @@
+<?php
+
+// Append to the host phpMyAdmin configuration after its existing server entries.
+$serverIds = array_keys($cfg['Servers'] ?? []);
+$i = $serverIds === [] ? 1 : max($serverIds) + 1;
+$cfg['Servers'][$i]['verbose'] = 'Partsmall Docker';
+$cfg['Servers'][$i]['host'] = '127.0.0.1';
+$cfg['Servers'][$i]['port'] = '3307';
+$cfg['Servers'][$i]['auth_type'] = 'cookie';
+$cfg['Servers'][$i]['AllowNoPassword'] = false;

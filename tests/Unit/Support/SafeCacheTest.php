@@ -137,4 +137,59 @@ class SafeCacheTest extends TestCase
             ContentCacheInvalidator::tagsFor($company),
         );
     }
+
+    public function test_nested_incomplete_objects_are_rebuilt_once(): void
+    {
+        $incomplete = @unserialize('O:17:"MissingCacheClass":0:{}');
+        Cache::put('nested-cache:test', ['rows' => [$incomplete]], 60);
+        $builds = 0;
+        $build = function () use (&$builds): array {
+            $builds++;
+
+            return ['rows' => [['id' => 1, 'name' => 'Example']]];
+        };
+
+        $first = SafeCache::remember('nested-cache:test', 60, $build);
+        $this->assertSame($first, SafeCache::remember('nested-cache:test', 60, $build));
+        $this->assertSame(1, $builds);
+    }
+
+    public function test_builders_cannot_store_nested_objects(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+
+        SafeCache::remember('object-cache:test', 60, fn (): array => ['nested' => new \stdClass]);
+    }
+
+    public function test_expiry_rebuilds_cache_but_hits_do_not_extend_expiry(): void
+    {
+        $builds = 0;
+        $build = function () use (&$builds): array {
+            return ['build' => ++$builds];
+        };
+
+        $this->assertSame(['build' => 1], SafeCache::remember('expiry:test', 60, $build));
+        $this->travel(30)->seconds();
+        $this->assertSame(['build' => 1], SafeCache::remember('expiry:test', 60, $build));
+        $this->travel(31)->seconds();
+        $this->assertSame(['build' => 2], SafeCache::remember('expiry:test', 60, $build));
+    }
+
+    public function test_saving_unchanged_content_does_not_invalidate_cache(): void
+    {
+        $page = Page::query()->create(['title' => 'About', 'slug' => 'about', 'content' => 'Example']);
+        $builds = 0;
+        $build = function () use (&$builds): array {
+            return ['build' => ++$builds];
+        };
+
+        SafeCache::remember('pages:unchanged', 60, $build, tags: [ContentCacheTag::PAGES]);
+        $page->save();
+        SafeCache::remember('pages:unchanged', 60, $build, tags: [ContentCacheTag::PAGES]);
+        $this->assertSame(1, $builds);
+
+        $page->update(['title' => 'Changed']);
+        SafeCache::remember('pages:unchanged', 60, $build, tags: [ContentCacheTag::PAGES]);
+        $this->assertSame(2, $builds);
+    }
 }

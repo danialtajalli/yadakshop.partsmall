@@ -346,7 +346,7 @@ class DirectoryListingService
     private function shopFilterCompanies(): Collection
     {
         /** @var Collection<int, Company> $companies */
-        $companies = $this->rememberFilterData('directory-listing:shop-filter-companies', function (): Collection {
+        $companies = Company::hydrate($this->rememberFilterData('directory-listing:shop-filter-companies:v2', function (): array {
             $companies = Company::query()
                 ->with([
                     'images' => fn ($relation) => $relation
@@ -366,8 +366,8 @@ class DirectoryListingService
                     : null;
             });
 
-            return $companies;
-        }, fn (mixed $value): bool => $value instanceof Collection);
+            return $companies->map(fn (Company $company): array => $company->getAttributes())->all();
+        }, fn (mixed $value): bool => SafeCache::isRowList($value, ['id', 'name', 'slug'])));
 
         return $companies->values();
     }
@@ -399,9 +399,11 @@ class DirectoryListingService
     private function states(): Collection
     {
         /** @var Collection<int, State> $states */
-        $states = $this->rememberFilterData('directory-listing:states', fn (): Collection => State::query()
+        $states = State::hydrate($this->rememberFilterData('directory-listing:states:v2', fn (): array => State::query()
             ->orderBy('name')
-            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
+            ->get(['id', 'name'])
+            ->map(fn (State $state): array => $state->getAttributes())
+            ->all(), fn (mixed $value): bool => SafeCache::isRowList($value)));
 
         return $states;
     }
@@ -412,19 +414,17 @@ class DirectoryListingService
     private function repairCategories(): Collection
     {
         /** @var Collection<int, RepairCategory> $categories */
-        $categories = $this->rememberFilterData('directory-listing:repair-categories', fn (): Collection => RepairCategory::query()
+        $categories = RepairCategory::hydrate($this->rememberFilterData('directory-listing:repair-categories:v2', fn (): array => RepairCategory::query()
             ->orderBy('name')
-            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
+            ->get(['id', 'name'])
+            ->map(fn (RepairCategory $category): array => $category->getAttributes())
+            ->all(), fn (mixed $value): bool => SafeCache::isRowList($value)));
 
         return $categories;
     }
 
     private function rememberFilterData(string $key, callable $callback, ?callable $isValid = null): mixed
     {
-        if (app()->environment('testing')) {
-            return $callback();
-        }
-
         return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid, [
             ContentCacheTag::DIRECTORY,
         ]);

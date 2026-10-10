@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContentCacheObserver
 {
-    public function saved(Model $model): void
+    public function created(Model $model): void
+    {
+        ContentCacheInvalidator::forModel($model);
+    }
+
+    public function updated(Model $model): void
     {
         ContentCacheInvalidator::forModel($model);
     }

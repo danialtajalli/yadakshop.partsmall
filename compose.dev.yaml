@@ -51,6 +51,11 @@ services:
       retries: 12
       start_period: 30s
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "${DOCKER_LOG_MAX_SIZE:-20m}"
+        max-file: "${DOCKER_LOG_MAX_FILES:-5}"
 
 volumes:
   vendor:

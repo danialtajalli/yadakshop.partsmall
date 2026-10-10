@@ -1,8 +1,9 @@
 # syntax=docker/dockerfile:1
-ARG PHP_VERSION=8.3
+ARG PHP_VERSION=8.4
 ARG NODE_VERSION=24
 
 FROM php:${PHP_VERSION}-fpm-bookworm AS php-base
+ARG PHPREDIS_VERSION=6.3.0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         gosu git unzip libicu-dev libonig-dev libzip-dev libpng-dev \
@@ -10,6 +11,8 @@ RUN apt-get update \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath gd intl mbstring opcache pcntl pdo_mysql pdo_sqlite zip \
+    && pecl install redis-${PHPREDIS_VERSION} \
+    && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 WORKDIR /var/www/html
@@ -41,11 +44,13 @@ RUN npm run build
 FROM php-base AS development
 COPY --chown=www-data:www-data --from=development-dependencies /var/www/html/vendor ./vendor
 COPY . .
-RUN composer dump-autoload --no-interaction --no-scripts \
+RUN mkdir -p storage/app/private storage/app/public storage/framework/cache/data \
+        storage/framework/sessions storage/framework/views storage/logs public/panel/assets/uploads bootstrap/cache \
+    && test -f resources/views/vendor/pagination/tailwind.blade.php \
+    && test -f public/vendor/tinymce/tinymce.min.js \
+    && composer dump-autoload --no-interaction --no-scripts \
     && php artisan package:discover --ansi \
     && php artisan filament:assets \
-    && mkdir -p storage/app/private storage/app/public storage/framework/cache/data \
-        storage/framework/sessions storage/framework/views storage/logs public/panel/assets/uploads \
     && chown -R www-data:www-data storage bootstrap/cache
 
 FROM php-base AS production
@@ -53,11 +58,13 @@ ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr
 COPY --from=production-dependencies /var/www/html/vendor ./vendor
 COPY . .
 COPY --from=frontend /var/www/html/public/build ./public/build
-RUN composer dump-autoload --no-dev --classmap-authoritative --no-interaction --no-scripts \
+RUN mkdir -p storage/app/private storage/app/public storage/framework/cache/data \
+        storage/framework/sessions storage/framework/views storage/logs public/panel/assets/uploads bootstrap/cache \
+    && test -f resources/views/vendor/pagination/tailwind.blade.php \
+    && test -f public/vendor/tinymce/tinymce.min.js \
+    && composer dump-autoload --no-dev --classmap-authoritative --no-interaction --no-scripts \
     && php artisan package:discover --ansi \
     && php artisan filament:assets \
-    && mkdir -p storage/app/private storage/app/public storage/framework/cache/data \
-        storage/framework/sessions storage/framework/views storage/logs public/panel/assets/uploads \
     && chown -R www-data:www-data storage bootstrap/cache
 
 FROM nginx:1.28-alpine AS web

@@ -1,0 +1,44 @@
+x-production-environment: &production-environment
+  APP_ENV: production
+  APP_DEBUG: "false"
+  SESSION_SECURE_COOKIE: "true"
+  TRUSTED_PROXIES: ${DOCKER_SUBNET:-172.30.50.0/24}
+
+services:
+  app:
+    environment:
+      <<: *production-environment
+  setup:
+    environment:
+      <<: *production-environment
+  queue:
+    profiles: ["workers"]
+    environment:
+      <<: *production-environment
+  web:
+    ports: !override
+      - "127.0.0.1:${WEB_PORT:-8000}:80"
+  mysql:
+    command: ["mysqld", "--binlog-expire-logs-seconds=${MYSQL_BINLOG_EXPIRE_LOGS_SECONDS:-2592000}"]
+    ports:
+      - "127.0.0.1:${MYSQL_ADMIN_PORT:-3307}:3306"
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET:-172.30.50.0/24}
+
+volumes:
+  mysql:
+    external: true
+    name: ${PRODUCTION_VOLUME_PREFIX:-partsmall-prod}-mysql
+  storage:
+    external: true
+    name: ${PRODUCTION_VOLUME_PREFIX:-partsmall-prod}-storage
+  uploads:
+    external: true
+    name: ${PRODUCTION_VOLUME_PREFIX:-partsmall-prod}-uploads
+  redis-queue:
+    external: true
+    name: ${PRODUCTION_VOLUME_PREFIX:-partsmall-prod}-redis-queue

@@ -448,10 +448,6 @@ class HomePageService
 
     private function rememberHomeData(string $key, callable $callback): mixed
     {
-        if (app()->environment('testing')) {
-            return $callback();
-        }
-
         return SafeCache::remember($key, self::CACHE_TTL, $callback, fn (mixed $value): bool => is_array($value), [
             ContentCacheTag::HOME,
         ]);

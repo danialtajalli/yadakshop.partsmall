@@ -1,5 +1,11 @@
 name: partsmall
 
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "${DOCKER_LOG_MAX_SIZE:-20m}"
+    max-file: "${DOCKER_LOG_MAX_FILES:-5}"
+
 x-application: &application
   image: partsmall-app:production
   env_file: ${DOCKER_ENV_FILE:-.env.docker}
@@ -8,8 +14,31 @@ x-application: &application
     DB_HOST: mysql
     DB_PORT: 3306
     DB_URL: ""
-    QUEUE_CONNECTION: database
-    CACHE_STORE: database
+    QUEUE_CONNECTION: ${QUEUE_CONNECTION:-redis}
+    CACHE_STORE: ${CACHE_STORE:-redis}
+    REDIS_CLIENT: phpredis
+    REDIS_URL: ""
+    REDIS_HOST: redis-queue
+    REDIS_PORT: 6379
+    REDIS_DB: 0
+    REDIS_PASSWORD: ""
+    REDIS_USERNAME: ""
+    REDIS_CACHE_HOST: redis-cache
+    REDIS_CACHE_PORT: 6379
+    REDIS_CACHE_DB: 0
+    REDIS_CACHE_URL: ""
+    REDIS_CACHE_PASSWORD: ""
+    REDIS_QUEUE_HOST: redis-queue
+    REDIS_QUEUE_PORT: 6379
+    REDIS_QUEUE_DB: 0
+    REDIS_QUEUE_URL: ""
+    REDIS_QUEUE_PASSWORD: ""
+    REDIS_QUEUE_USERNAME: ""
+    REDIS_QUEUE_CONNECTION: queue
+    REDIS_CACHE_CONNECTION: cache
+    REDIS_CACHE_LOCK_CONNECTION: queue
+    REDIS_QUEUE_RETRY_AFTER: 180
+    REDIS_QUEUE_BLOCK_FOR: 5
     SESSION_DRIVER: database
     SCOUT_DRIVER: collection
     LOG_CHANNEL: stderr
@@ -21,8 +50,13 @@ x-application: &application
   depends_on:
     mysql:
       condition: service_healthy
+    redis-cache:
+      condition: service_healthy
+    redis-queue:
+      condition: service_healthy
   init: true
   restart: unless-stopped
+  logging: *logging
 
 services:
   app:
@@ -55,15 +89,26 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
+    logging: *logging
 
   queue:
     <<: *application
     depends_on:
       app:
         condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=120", "--max-time=3600"]
     stop_signal: SIGTERM
     stop_grace_period: 150s
+    healthcheck:
+      test: ["CMD", "php", "docker/worker-healthcheck.php"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   setup:
     <<: *application
@@ -85,14 +130,44 @@ services:
       - uploads:/target-uploads
       - ./docker/import-uploads.sh:/usr/local/bin/import-uploads:ro
     restart: "no"
+    logging: *logging
+
+  redis-cache:
+    image: redis:${REDIS_VERSION:-7.4.11-alpine}
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "${REDIS_CACHE_MAXMEMORY:-256mb}", "--maxmemory-policy", "allkeys-lru"]
+    tmpfs:
+      - /data:size=16m,mode=1777
+    mem_limit: ${REDIS_CACHE_CONTAINER_MEMORY:-512m}
+    healthcheck:
+      test: ["CMD-SHELL", 'test "$$(redis-cli ping)" = PONG']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging: *logging
+
+  redis-queue:
+    image: redis:${REDIS_VERSION:-7.4.11-alpine}
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory", "${REDIS_QUEUE_MAXMEMORY:-256mb}", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis-queue:/data
+    mem_limit: ${REDIS_QUEUE_CONTAINER_MEMORY:-768m}
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD-SHELL", 'test "$$(redis-cli ping)" = PONG']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging: *logging
 
   mysql:
-    image: mysql:8.4
+    image: mysql:${MYSQL_VERSION:-8.4}
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-partsmall}
       MYSQL_USER: ${DB_USERNAME:-partsmall}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?Run php docker/init-env.php first}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Run php docker/init-env.php first}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the selected Docker environment file}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in the selected Docker environment file}
     volumes:
       - mysql:/var/lib/mysql
     healthcheck:
@@ -102,8 +177,10 @@ services:
       retries: 20
       start_period: 30s
     restart: unless-stopped
+    logging: *logging
 
 volumes:
   mysql:
   storage:
   uploads:
+  redis-queue:

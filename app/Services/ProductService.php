@@ -167,9 +167,11 @@ class ProductService
     private function states(): Collection
     {
         /** @var Collection<int, State> $states */
-        $states = $this->rememberFilterData('product:states', fn (): Collection => State::query()
+        $states = State::hydrate($this->rememberFilterData('product:states:v2', fn (): array => State::query()
             ->orderBy('name')
-            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
+            ->get(['id', 'name'])
+            ->map(fn (State $state): array => $state->getAttributes())
+            ->all(), fn (mixed $value): bool => SafeCache::isRowList($value)));
 
         return $states;
     }
@@ -346,10 +348,6 @@ class ProductService
 
     private function rememberFilterData(string $key, callable $callback, ?callable $isValid = null): mixed
     {
-        if (app()->environment('testing')) {
-            return $callback();
-        }
-
         return SafeCache::remember($key, self::FILTER_CACHE_TTL, $callback, $isValid, [
             ContentCacheTag::PRODUCT,
         ]);

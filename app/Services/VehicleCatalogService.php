@@ -320,7 +320,7 @@ class VehicleCatalogService
     private function companiesForIndex(): Collection
     {
         /** @var Collection<int, Company> $companies */
-        $companies = $this->rememberCatalogData('catalog:companies-index:v1', function (): Collection {
+        $companies = Company::hydrate($this->rememberCatalogData('catalog:companies-index:v2', function (): array {
             $companies = Company::query()
                 ->with([
                     'images' => fn ($query) => $query
@@ -340,8 +340,8 @@ class VehicleCatalogService
                     : null;
             });
 
-            return $companies;
-        }, fn (mixed $value): bool => $value instanceof Collection);
+            return $companies->map(fn (Company $company): array => $company->getAttributes())->all();
+        }, fn (mixed $value): bool => SafeCache::isRowList($value, ['id', 'name', 'slug'])));
 
         return $companies;
     }
@@ -350,9 +350,11 @@ class VehicleCatalogService
     private function companyOptions(): Collection
     {
         /** @var Collection<int, Company> $companies */
-        $companies = $this->rememberCatalogData('catalog:company-options:v1', fn (): Collection => Company::query()
+        $companies = Company::hydrate($this->rememberCatalogData('catalog:company-options:v2', fn (): array => Company::query()
             ->orderBy('name')
-            ->get(['id', 'name', 'slug']), fn (mixed $value): bool => $value instanceof Collection);
+            ->get(['id', 'name', 'slug'])
+            ->map(fn (Company $company): array => $company->getAttributes())
+            ->all(), fn (mixed $value): bool => SafeCache::isRowList($value, ['id', 'name', 'slug'])));
 
         return $companies;
     }
@@ -361,19 +363,17 @@ class VehicleCatalogService
     private function partCategories(): Collection
     {
         /** @var Collection<int, PartsCategory> $categories */
-        $categories = $this->rememberCatalogData('catalog:part-categories:v1', fn (): Collection => PartsCategory::query()
+        $categories = PartsCategory::hydrate($this->rememberCatalogData('catalog:part-categories:v2', fn (): array => PartsCategory::query()
             ->orderBy('name')
-            ->get(['id', 'name']), fn (mixed $value): bool => $value instanceof Collection);
+            ->get(['id', 'name'])
+            ->map(fn (PartsCategory $category): array => $category->getAttributes())
+            ->all(), fn (mixed $value): bool => SafeCache::isRowList($value)));
 
         return $categories;
     }
 
     private function rememberCatalogData(string $key, callable $callback, ?callable $isValid = null): mixed
     {
-        if (app()->environment('testing')) {
-            return $callback();
-        }
-
         return SafeCache::remember($key, self::CATALOG_CACHE_TTL, $callback, $isValid, [
             ContentCacheTag::CATALOG,
         ]);
