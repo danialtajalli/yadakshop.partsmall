@@ -1,0 +1,12 @@
+[Unit]
+Description=Partsmall profile QR image SFTP access
+RequiresMountsFor=/var/lib/docker/volumes/partsmall-prod-uploads/_data/img
+
+[Mount]
+What=/var/lib/docker/volumes/partsmall-prod-uploads/_data/img
+Where=/srv/partsmall/qr
+Type=none
+Options=bind,nosuid,nodev,noexec
+
+[Install]
+WantedBy=multi-user.target

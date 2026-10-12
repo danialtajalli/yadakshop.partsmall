@@ -71,13 +71,16 @@ guarantee exactly-once external effects.
 
 ## Retention, Monitoring, and Acceptance
 
-Production Compose provides `MYSQL_BINLOG_EXPIRE_LOGS_SECONDS`, preserving the
-audited production value 2592000 (30 days) until the recovery window is approved.
-The proposed three-day value is 259200; confirm backup/PITR and replication needs
-before shortening it. Database dumps alone do not provide a complete PITR chain.
-Apply by controlled recreation and verify the effective variable; check whether
-persisted MySQL settings override it. Review any `PURGE BINARY LOGS` operation
-separately after backup validation. Never delete binlog files from disk.
+Production defaults are 86400 seconds (24 hours), 67108864 bytes (64 MiB) per
+binlog rotation, automatic expiration, and transaction compression enabled.
+Confirm backup/PITR and replication needs before shortening retention. Full SQL
+dumps alone do not provide a complete PITR chain; archive required binlogs off
+server. Retention is an age limit, not an aggregate byte cap, and a transaction
+can exceed the rotation size. Cache write amplification must still be fixed.
+See `BINLOG_POLICY.md` for the guarded live change, verification, upload paths,
+and rollback. `SET PERSIST` avoids a MySQL restart; its values can override
+Compose arguments, so keep the existing production environment consistent too.
+Never delete binlog files from disk or reset binary logs/GTIDs as cleanup.
 
 Container logs are limited to 20 MB times 5 files. App, Nginx, and PHP container
 logs use stdout/stderr. Inspect legacy file-log rotation and shared journal limits

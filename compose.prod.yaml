@@ -19,7 +19,12 @@ services:
     ports: !override
       - "127.0.0.1:${WEB_PORT:-8000}:80"
   mysql:
-    command: ["mysqld", "--binlog-expire-logs-seconds=${MYSQL_BINLOG_EXPIRE_LOGS_SECONDS:-2592000}"]
+    command:
+      - mysqld
+      - --binlog-expire-logs-seconds=${MYSQL_BINLOG_EXPIRE_LOGS_SECONDS:-86400}
+      - --max-binlog-size=${MYSQL_MAX_BINLOG_SIZE:-67108864}
+      - --binlog-expire-logs-auto-purge=ON
+      - --binlog-transaction-compression=${MYSQL_BINLOG_TRANSACTION_COMPRESSION:-ON}
     ports:
       - "127.0.0.1:${MYSQL_ADMIN_PORT:-3307}:3306"
 

@@ -89,7 +89,10 @@ class ComposeConfigurationTest extends TestCase
         $this->assertContains('noeviction', $queueCommand);
         $this->assertContains('--appendonly', $queueCommand);
         $this->assertContains('everysec', $queueCommand);
-        $this->assertContains('--binlog-expire-logs-seconds=2592000', $config['services']['mysql']['command']);
+        $this->assertContains('--binlog-expire-logs-seconds=86400', $config['services']['mysql']['command']);
+        $this->assertContains('--max-binlog-size=67108864', $config['services']['mysql']['command']);
+        $this->assertContains('--binlog-expire-logs-auto-purge=ON', $config['services']['mysql']['command']);
+        $this->assertContains('--binlog-transaction-compression=ON', $config['services']['mysql']['command']);
         foreach (['app', 'web', 'queue', 'mysql', 'redis-cache', 'redis-queue'] as $service) {
             $this->assertSame('20m', $config['services'][$service]['logging']['options']['max-size']);
             $this->assertSame('5', $config['services'][$service]['logging']['options']['max-file']);
