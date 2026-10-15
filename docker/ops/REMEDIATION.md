@@ -82,7 +82,9 @@ and rollback. `SET PERSIST` avoids a MySQL restart; its values can override
 Compose arguments, so keep the existing production environment consistent too.
 Never delete binlog files from disk or reset binary logs/GTIDs as cleanup.
 
-Container logs are limited to 20 MB times 5 files. App, Nginx, and PHP container
+Container log configuration defaults to 10 MB times 3 files per container. These
+limits take effect when containers are created or recreated; changing the files
+alone does not update running containers. App, Nginx, and PHP container
 logs use stdout/stderr. Inspect legacy file-log rotation and shared journal limits
 before changing them. Define business retention and archives for `request_logs`
 before deleting records; no automatic deletion is configured without that decision.

@@ -3,8 +3,8 @@ name: partsmall
 x-logging: &logging
   driver: json-file
   options:
-    max-size: "${DOCKER_LOG_MAX_SIZE:-20m}"
-    max-file: "${DOCKER_LOG_MAX_FILES:-5}"
+    max-size: "${DOCKER_LOG_MAX_SIZE:-10m}"
+    max-file: "${DOCKER_LOG_MAX_FILES:-3}"
 
 x-application: &application
   image: partsmall-app:production
