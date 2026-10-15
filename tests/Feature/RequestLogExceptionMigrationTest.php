@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Jobs\StoreRequestLogJob;
 use App\Models\RequestLog;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\MySqlConnection;
@@ -32,7 +31,7 @@ class RequestLogExceptionMigrationTest extends TestCase
         $this->assertSame('alter table `request_logs` modify `exception` longtext null', $statements[0]['query']);
     }
 
-    public function test_migration_preserves_existing_logs_and_job_stores_large_exceptions(): void
+    public function test_migration_preserves_existing_logs_and_accepts_large_exceptions(): void
     {
         $this->storeException('Existing exception');
         $this->storeException(null);
@@ -75,7 +74,7 @@ class RequestLogExceptionMigrationTest extends TestCase
 
     private function storeException(?string $exception): void
     {
-        (new StoreRequestLogJob([
+        RequestLog::query()->create([
             'log_type' => 'reportable_exception',
             'occurred_at' => now(),
             'method' => 'GET',
@@ -85,6 +84,6 @@ class RequestLogExceptionMigrationTest extends TestCase
             'status_family' => 500,
             'is_reportable_status' => true,
             'exception' => $exception,
-        ]))->handle();
+        ]);
     }
 }

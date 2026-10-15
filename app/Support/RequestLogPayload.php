@@ -7,6 +7,25 @@ use Throwable;
 
 class RequestLogPayload
 {
+    public const MAX_EXCEPTION_BYTES = 16 * 1024;
+
+    public static function limitException(array $data): array
+    {
+        $exception = $data['exception'] ?? null;
+
+        if (is_string($exception) && strlen($exception) > self::MAX_EXCEPTION_BYTES) {
+            $marker = "\n[truncated]";
+            $data['exception'] = mb_strcut(
+                $exception,
+                0,
+                self::MAX_EXCEPTION_BYTES - strlen($marker),
+                'UTF-8',
+            ).$marker;
+        }
+
+        return $data;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -21,7 +40,7 @@ class RequestLogPayload
         $statusFamily = intdiv($statusCode, 100) * 100;
         $route = $request->route();
 
-        return [
+        return self::limitException([
             'log_type' => $logType,
             'occurred_at' => $occurredAt ?? now(),
             'method' => $request->method(),
@@ -41,6 +60,6 @@ class RequestLogPayload
             'referer' => $request->headers->get('referer'),
             'exception' => $exception ? $exception::class.': '.$exception->getMessage() : null,
             'query' => $request->query(),
-        ];
+        ]);
     }
 }

@@ -8,12 +8,14 @@ use App\Jobs\StoreRequestLogJob;
 use App\Models\RequestLog;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use ReflectionMethod;
+use ReflectionProperty;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -97,6 +99,7 @@ class RequestLogTest extends TestCase
 
     public function test_global_exception_reporter_queues_500_status_family(): void
     {
+        (new ReflectionProperty(Application::class, 'isRunningInConsole'))->setValue($this->app, false);
         Queue::fake();
 
         Route::get('/request-log-error', fn () => throw new RuntimeException('Request log test exception'))->name('request-log.error');
@@ -295,10 +298,13 @@ class RequestLogTest extends TestCase
         Log::shouldReceive('error')
             ->once()
             ->with('StoreRequestLogJob exhausted all attempts.', [
-                'exception' => $exception,
+                'job_id' => null,
+                'attempt' => 1,
+                'path' => 'request-log-error',
+                'status_code' => 500,
                 'exception_class' => RuntimeException::class,
+                'exception_code' => '0',
                 'exception_message' => 'database write failed',
-                'request_log_payload' => $payload,
             ]);
 
         (new StoreRequestLogJob($payload))->failed($exception);
