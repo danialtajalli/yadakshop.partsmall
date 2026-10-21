@@ -73,6 +73,12 @@ guarantee exactly-once external effects.
 
 Production defaults are 86400 seconds (24 hours), 67108864 bytes (64 MiB) per
 binlog rotation, automatic expiration, and transaction compression enabled.
+The owner's standalone production policy additionally uses a host timer to
+keep total binlogs within a 4 GiB retention budget. It may discard logs younger
+than 24 hours, keeps the active log, and checks every minute. See
+`BINLOG_POLICY.md` for authorization, replication guards, installation paths,
+temporary overshoot limits, and disabling the policy before adding recovery
+or replication requirements. No application/database restart is required.
 Confirm backup/PITR and replication needs before shortening retention. Full SQL
 dumps alone do not provide a complete PITR chain; archive required binlogs off
 server. Retention is an age limit, not an aggregate byte cap, and a transaction

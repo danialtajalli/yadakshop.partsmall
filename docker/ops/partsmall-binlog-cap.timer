@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Partsmall MySQL binary log budget every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=5s
+Unit=partsmall-binlog-cap.service
+
+[Install]
+WantedBy=timers.target

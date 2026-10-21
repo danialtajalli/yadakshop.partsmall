@@ -1,0 +1,20 @@
+[Unit]
+Description=Enforce Partsmall standalone MySQL binary log storage budget
+After=docker.service
+ConditionPathExists=/var/run/docker.sock
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+RuntimeDirectory=partsmall-binlog-cap
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+Environment=DOCKER_CONFIG=/run/partsmall-binlog-cap/docker
+ExecStart=/usr/bin/python3 /usr/local/lib/partsmall/mysql-binlog-cap.py --config /etc/partsmall/binlog-cap.json --enforce
+TimeoutStartSec=90
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
