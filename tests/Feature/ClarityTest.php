@@ -24,14 +24,15 @@ class ClarityTest extends TestCase
         return Blade::render("@include('layouts.partials.clarity') @include('layouts.partials.clarity') @stack('overlays') @stack('privacy-settings')");
     }
 
-    public function test_production_has_one_tracker_and_consent_controls(): void
+    public function test_production_has_one_tracker_without_consent_controls(): void
     {
         $html = $this->renderTracker();
 
         $this->assertSame(1, substr_count($html, 'data-clarity-project-id="abc123"'));
-        $this->assertSame(1, substr_count($html, 'id="ps-clarity-consent"'));
-        $this->assertStringContainsString('id="ps-clarity-reject"', $html);
-        $this->assertStringContainsString('id="ps-clarity-settings"', $html);
+        $this->assertStringNotContainsString('ps-clarity-consent', $html);
+        $this->assertStringNotContainsString('ps-clarity-reject', $html);
+        $this->assertStringNotContainsString('ps-clarity-settings', $html);
+        $this->assertStringNotContainsString('css/clarity.css', $html);
         $this->assertStringNotContainsString('https://www.clarity.ms/tag/', $html);
     }
 
@@ -66,11 +67,15 @@ class ClarityTest extends TestCase
         }
     }
 
-    public function test_public_layout_contains_consent_controls(): void
+    public function test_public_layout_contains_tracker_without_consent_controls(): void
     {
         $html = view('layouts.app')->render();
 
         $this->assertStringContainsString('data-clarity-project-id="abc123"', $html);
-        $this->assertStringContainsString('id="ps-clarity-consent"', $html);
+        $this->assertStringNotContainsString('ps-clarity-consent', $html);
+        $this->assertStringNotContainsString('ps-clarity-settings', $html);
+        if ($directory = getenv('CLARITY_BROWSER_FIXTURE_DIRECTORY')) {
+            file_put_contents($directory.'/public.html', $html);
+        }
     }
 }
