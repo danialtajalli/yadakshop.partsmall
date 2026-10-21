@@ -8,7 +8,6 @@
     <div class="mx-auto max-w-xl rounded-2xl border border-line bg-white p-5 shadow-sm sm:p-6">
         @include('contact-form._form')
     </div>
-    <div class="ps-clarity-footer">@stack('privacy-settings')</div>
     @stack('overlays')
 </body>
 </html>
