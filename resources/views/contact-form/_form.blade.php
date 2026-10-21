@@ -19,7 +19,7 @@
     @endpush
 @endonce
 
-<div class="didar-contact-form font-sans text-ink">
+<div class="didar-contact-form font-sans text-ink" data-clarity-mask="True">
     <form method="post" action="{{ $formAction }}" novalidate data-didar-contact-form class="space-y-4">
         @csrf
 

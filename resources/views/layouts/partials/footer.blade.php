@@ -31,6 +31,7 @@
             <span>تمام حقوق این وب‌سایت برای پارتس‌مال محفوظ است.</span>
             <span class="mx-1" aria-hidden="true">©</span>
             <span dir="ltr">{{ date('Y') }}</span>
+            @stack('privacy-settings')
         </div>
     </div>
 </footer>
