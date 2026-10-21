@@ -12,7 +12,7 @@
     $commentsCount = $commentsCount ?? $comments->count();
 @endphp
 
-<section {{ $attributes->merge(['id' => 'comments', 'class' => 'scroll-mt-24']) }}>
+<section data-clarity-mask="True" {{ $attributes->merge(['id' => 'comments', 'class' => 'scroll-mt-24']) }}>
     <x-ui.section-heading
         title="نظرات کاربران"
         :description="$commentsCount > 0

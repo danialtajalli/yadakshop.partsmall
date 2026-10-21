@@ -8,6 +8,7 @@
     <x-ui.modal
         id="contact-form-status-modal"
         data-contact-form-status-modal
+        data-clarity-mask="True"
         class="max-w-sm"
     >
         <div class="px-6 py-8 text-center">

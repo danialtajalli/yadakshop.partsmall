@@ -2,6 +2,11 @@
 
 return [
 
+    'clarity' => [
+        'enabled' => env('CLARITY_ENABLED', true),
+        'project_id' => env('CLARITY_PROJECT_ID', 'z02pt3ef4k'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
