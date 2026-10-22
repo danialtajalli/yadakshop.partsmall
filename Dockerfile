@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
-ARG PHP_VERSION=8.4
+# Minimum patched PHP release for CVE-2026-109618 and CVE-2026-109619.
+ARG PHP_VERSION=8.4.27
 ARG NODE_VERSION=24
 
 FROM php:${PHP_VERSION}-fpm-bookworm AS php-base

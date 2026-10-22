@@ -5,6 +5,21 @@ services for cache and durable queues. Development also runs Vite. The existing
 host `.env`, MySQL database, and uploads are not modified by setup. Horizon and
 Meilisearch are not required.
 
+The Dockerfile pins PHP to 8.4.27, which fixes CVE-2026-109618 and
+CVE-2026-109619. Existing containers must be rebuilt and recreated to use it;
+restarting an old image does not update PHP. For an existing local development
+stack, preserve its environment file and project name, then run:
+
+```powershell
+./docker/compose.ps1 build --pull app
+./docker/compose.ps1 up -d --no-deps --force-recreate app queue
+./docker/compose.ps1 exec app php -v
+./docker/compose.ps1 exec queue php -v
+```
+
+Use the production release procedure for a server; do not run the development
+commands against production data. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-1).
+
 ## Development on Windows
 
 Run from the repository root with Docker Desktop using Linux containers:
