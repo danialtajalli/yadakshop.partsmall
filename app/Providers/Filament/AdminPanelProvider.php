@@ -28,6 +28,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->spa()
+            ->spaUrlExceptions(fn (): array => [
+                route('home'),
+                route('home').'?*',
+                url('/profile/*'),
+            ])
             ->login()
             ->colors([
                 'primary' => Color::Slate,
